@@ -1,4 +1,4 @@
-# End Communiy - www.ec.com
+# End Communiy
 
 ### Running the app
 
@@ -22,7 +22,7 @@ local:docker:down
 - GraphQL
 - Redis
 - PostgreSQL
-- github actions
+- Github actions
 - Sentry
 - Docker
 - Jest [TDD]
