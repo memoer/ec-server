@@ -12,7 +12,7 @@ $ npm run start:local:server
 ### clear local docker container
 
 ```bash
-local:docker:down
+$ npm run local:docker:down
 ```
 
 ### Stack
