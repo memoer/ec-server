@@ -1,0 +1,31 @@
+version: '3'
+services:
+  DB:
+    hostname: ec
+    image: postgres:13-alpine
+    container_name: ec-DB
+    networks:
+      - ec-network
+    restart: on-failure
+    ports:
+      - 5432:5432
+    volumes:
+      - './db:/data/db'
+    environment:
+      - POSTGRES_DB=ecTestDB
+      - POSTGRES_USER=ecTestUser
+      - POSTGRES_PASSWORD=q1w2e3
+    volumes:
+      - ./database:/var/lib/postgresql/data
+  redis:
+    hostname: ec
+    image: redis:6-alpine
+    container_name: ec-redis
+    networks:
+      - ec-network
+    restart: on-failure
+    ports:
+      - 6379:6379
+
+networks:
+  ec-network:
