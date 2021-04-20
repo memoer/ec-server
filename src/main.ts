@@ -15,6 +15,7 @@ function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
   const prodFormat =
     ':remote-addr - :remote-user [:date[clf]] HTTP/:http-version :status ":referrer" ":user-agent" :response-time ms :userId';
+
   logger.token('userId', (req): string =>
     String('user' in req ? -1 : (req as any).user.id),
   );
