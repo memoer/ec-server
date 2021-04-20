@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
-import getMs from 'src/lib/getMs';
+import getMs from '~/lib/getMs';
 
 export const databaseValidationSchema = {
   TYPEORM_HOST: Joi.string().required(),

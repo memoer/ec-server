@@ -1,7 +1,7 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import databaseConfig from 'src/@config/database.config';
+import databaseConfig from '~/@config/database.config';
+import redisConfig from '~/@config/redis.config';
 import DatabaseFactory from './db.factory';
-import redisConfig from 'src/@config/redis.config';
 
 export default TypeOrmModule.forRootAsync({
   useFactory: DatabaseFactory,

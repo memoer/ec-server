@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
-import isEnv from 'src/lib/isEnv';
+import isEnv from '~/lib/isEnv';
 
 export const appValidationSchema = {
   NODE_ENV: Joi.string()

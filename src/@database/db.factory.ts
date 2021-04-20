@@ -2,9 +2,9 @@ import { ConfigType } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
 import { LoggerOptions } from 'typeorm';
-import databaseConfig from 'src/@config/database.config';
-import redisConfig from 'src/@config/redis.config';
-import isEnv from 'src/lib/isEnv';
+import databaseConfig from '~/@config/database.config';
+import redisConfig from '~/@config/redis.config';
+import isEnv from '~/lib/isEnv';
 
 export default (
   dbc: ConfigType<typeof databaseConfig>,

@@ -13,7 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "local:docker:up": "docker-compose -f docker-compose.local.yml up -d",
     "local:docker:down": "docker-compose -f docker-compose.local.yml down",
-    "start:local": "yarn local:docker:up && yarn start:local:server",
+    "start:local": "npm run local:docker:up && npm run start:local:server",
     "start:local:server": "NODE_ENV=local nest start --watch",
     "start:dev": "NODE_ENV=dev node dist/main",
     "start:staging": "NODE_ENV=staging node dist/main",
@@ -80,6 +80,9 @@
     "typescript": "^4.2.3"
   },
   "jest": {
+    "moduleNameMapper": {
+      "^~/(.*)$": "<rootDir>/$1"
+    },
     "moduleFileExtensions": [
       "js",
       "json",
@@ -90,10 +93,19 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "testEnvironment": "node",
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.service.(t|j)s",
+      "lib/**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": -10
+      }
+    }
   }
 }

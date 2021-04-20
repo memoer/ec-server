@@ -1,8 +1,8 @@
 import { ConfigType } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
 import { join } from 'path';
-import appConfig from 'src/@config/app.config';
-import isEnv from 'src/lib/isEnv';
+import appConfig from '~/@config/app.config';
+import isEnv from '~/lib/isEnv';
 
 export default (ac: ConfigType<typeof appConfig>): GqlModuleOptions => {
   const options: GqlModuleOptions = {
