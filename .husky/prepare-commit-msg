@@ -4,6 +4,11 @@ if [ -t 1 ]; then
   exec < /dev/tty
 fi
 read -n1 -p "[1]feat[2]fix[3]docs[4]refactor[5]test[6]chore : " category
+read -n1 -p "related to do on the issue : " toDo
+if ! [[ "$toDo" =~ ^[0-9]+$ ]]; then
+  echo "related to do must be number type"
+  exit 1
+fi
 case ${category} in
   1) category="feat" ;;
   2) category="fix" ;;
@@ -21,5 +26,5 @@ first_line=`head -n1 ${COMMIT_MSG_FILE}`
 
 
 if [ -z "$first_line" ]; then
-  sed -i ".bak" "1s/^/${category}(${issue_number}): /" ${COMMIT_MSG_FILE}
+  sed -i ".bak" "1s/^/${category}(${issue_number}_\$${toDo}): /" ${COMMIT_MSG_FILE}
 fi
