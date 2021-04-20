@@ -10,14 +10,17 @@
 - 공통된 하나의 `Milestone`을 가진 `Issue` 들은 서로 다른 `Project`들을 가질 수 있다.
   - 여러 개의 `Project` 가 하나의 `Milestone` 를 향하여 가는 것.
 
-# Process
+# Commit&Push Process
 
 1. `./git-checkout-b.sh <feat|fix|chore|refactor> <ISSUE_NUMBER>`
 2. `git add .`
 3. `git commit`
-   - commit category 선택 -> [1]feat [2]fix [3]docs [4]refactor [5]test [6]chore
-   - branch에 적은 `ISSUE_NUMBER` 가 자동으로 message에 적힌다.
+   1. commit category 선택 -> [1]feat [2]fix [3]docs [4]refactor [5]test [6]chore
+   2. 해당 issue에 적힌 to do 하나 선택 -> "related to do on the issue :" [관련된 것이 없으면 숫자 외 입력]
+   3. branch에 적힌 `ISSUE_NUMBER` 와 위에서 적은 `TO_DO_NUMBER`가 합쳐져서 commit message가 작성됨 [chore(#2_$4): ...]
 4. branch 규칙 / commit 규칙이 맞다면 정상적으로 commit 된다.
+5. push하기 전 `npm run test:cov` 가 실행된다
+6. 설정해놓은 `coverage threshold` 에 부합하지 않다면 push가 진행되지 않는다.
 
 # Branch Rules
 
@@ -45,18 +48,18 @@
 - `.husky/commit-msg` 를 통해 commit message validation을 합니다.
 - `.husky/prepare-commit-msg`를 통해 branch name을 기반으로 commit message를 자동으로 만들어줍니다.
 
-- `feat(#<ISSUE_NUMBER>): MESSAGE`
+- `feat(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - new feature for the user, not a new feature for build script
-- `fix(#<ISSUE_NUMBER>): MESSAGE`
+- `fix(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - bug fix for the user, not a fix to a build script
-- `docs(#<ISSUE_NUMBER>): MESSAGE`
+- `docs(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - changes to the documentation
-- `refactor(#<ISSUE_NUMBER>): MESSAGE`
+- `refactor(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - refactoring production code, eg. renaming a variable
   - 코드 리팩토링
-- `test(#<ISSUE_NUMBER>): MESSAGE`
+- `test(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - adding missing tests, refactoring tests; no production code change
   - 테스트 코드 작성
-- `chore(#<ISSUE_NUMBER>): MESSAGE`
+- `chore(#<ISSUE_NUMBER>(_$<TO_DO_NUMBER>)?): MESSAGE`
   - updating grunt tasks etc; no production code change
   - 코드변경없음, 빌드업무수정, 패키지 매니저 수정, 환경설정
