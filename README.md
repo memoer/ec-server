@@ -1,5 +1,7 @@
 # End Communiy
 
+- 업무 프로세싱 규칙, 개발일지는 [개인적으로 사용중인 Notion](https://www.notion.so/jnam/End-Community-Project-4fa2a09f5bf94a89942ac88dff27d87c)에 기록했습니다.
+
 ### Running the app
 
 ```bash
