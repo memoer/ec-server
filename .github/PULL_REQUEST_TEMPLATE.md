@@ -1,4 +1,4 @@
-Realtes to
+Resolved #
 
 # Summary
 
