@@ -5,7 +5,7 @@ import { SentryExceptionFilter } from '~/lib/filter/sentryException.filter';
 // withScope testing 하는 방법
 // https://stackoverflow.com/questions/56298972/testing-sentry-with-jest
 jest.mock('@sentry/node');
-describe('AFilter', () => {
+describe('lib/filter/SentryExceptionFilter', () => {
   let sentryExceptionFilter: SentryExceptionFilter;
   beforeEach(async () => {
     jest.clearAllMocks();

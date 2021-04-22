@@ -7,23 +7,23 @@
  */
 export default (
   value: number,
-  type: 'day' | 'hour' | 'minutes' | 'seconds' | 'ms',
+  type: 'day' | 'hour' | 'minute' | 'second' | 'ms',
 ): number => {
   const oneMs = 1000;
-  const oneSeconds = 1 * oneMs;
-  const oneMinues = 60 * oneSeconds;
-  const oneHours = 60 * oneMinues;
-  const oneDay = 24 * oneHours;
+  const oneSecond = 1 * oneMs;
+  const oneMinue = 60 * oneSecond;
+  const oneHour = 60 * oneMinue;
+  const oneDay = 24 * oneHour;
   switch (type) {
     case 'day':
-      return oneDay * value;
+      return value * oneDay;
     case 'hour':
-      return oneHours * value;
-    case 'minutes':
-      return oneMinues * value;
-    case 'seconds':
-      return oneSeconds * value;
+      return value * oneHour;
+    case 'minute':
+      return value * oneMinue;
+    case 'second':
+      return value * oneSecond;
     default:
-      return oneMs * value;
+      return value * oneMs;
   }
 };
