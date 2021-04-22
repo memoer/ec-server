@@ -1,10 +1,29 @@
 #!/bin/sh
-if [ ${1} != "feat" -a ${1} != "fix" -a ${1} != "docs" -a ${1} != "refactor" -a ${1} != "test" -a ${1} != "chore" ]; then
-  echo "first argument must be one of feat, fix, docs, refactor, test, chore"
+read -n1 -p "Select Branch Name( [1]feat [2]fix [3]docs [4]refactor [5]test [6]chore ) >> " branchName
+echo ""
+case ${branchName} in
+  1) branchName="feat" ;;
+  2) branchName="fix" ;;
+  3) branchName="docs" ;;
+  4) branchName="refactor" ;;
+  5) branchName="test" ;;
+  6) branchName="chore" ;;
+  *)
+    echo "first argument must be one of feat, fix, docs, refactor, test, chore"
+    exit 1
+    ;;
+esac
+
+read -n1 -p "Related Issue Number: " issueNumber
+echo ""
+if ! [[ ${issueNumber} =~ ^[0-9]+$ ]]; then
+  echo "related issue number must be number type"
   exit 1
-elif ! [[ "$2" =~ ^[0-9]+$ ]]; then
-  echo "second argument must be number type"
-  exit 1
-else
-  git checkout -b ${1}/\#${2}
 fi
+
+read -p "content: " content
+if ! [ -z "$content" ]; then
+  content="/${content}"
+fi
+
+git checkout -b ${branchName}/\#${issueNumber}${content}

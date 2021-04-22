@@ -3,7 +3,7 @@
 if [ -t 1 ]; then
   exec < /dev/tty
 fi
-read -n1 -p "[1]feat[2]fix[3]docs[4]refactor[5]test[6]chore : " category
+read -n1 -p "[1]feat [2]fix [3]docs [4]refactor [5]test [6]chore >> " category
 echo ""
 read -n1 -p "related to do on the issue : " toDo
 toDoVar=""

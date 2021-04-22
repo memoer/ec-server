@@ -1,11 +1,11 @@
 Resolved #
 
-# Summary
+## Summary
 
-# Changes
+## Changes
 
 -
 
-# To Dos
+## To Do List
 
 - [ ]
