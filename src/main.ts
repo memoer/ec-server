@@ -10,6 +10,7 @@ import { AppModule } from './app.module';
 import isEnv from './lib/isEnv';
 import { SentryExceptionFilter } from './lib/filter/sentryException.filter';
 import getMs from './lib/getMs';
+import { ValidationPipe } from '@nestjs/common';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
@@ -46,6 +47,7 @@ function initSentry(app: NestExpressApplication) {
 
 async function bootstrap() {
   const filters = [];
+  const pipes = [new ValidationPipe()];
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: isEnv('local') || isEnv('dev'),
   });
@@ -76,6 +78,7 @@ async function bootstrap() {
     // sentry
   }
   app.useGlobalFilters(...filters);
+  app.useGlobalPipes(...pipes);
   await app.listen(3001);
 }
 

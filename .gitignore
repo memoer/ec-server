@@ -35,4 +35,9 @@ lerna-debug.log*
 
 # DB
 database/*
-.env.*
+
+# env
+.env.local
+.env.dev
+.env.staging
+.env.prod

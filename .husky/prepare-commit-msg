@@ -5,7 +5,7 @@ if [ -t 1 ]; then
 fi
 read -n1 -p "[1]feat [2]fix [3]docs [4]refactor [5]test [6]chore >> " category
 echo ""
-read -n1 -p "related to do on the to do: " toDo
+read -n1 -p "related to do: " toDo
 toDoVar=""
 if [[ "$toDo" =~ ^[0-9]+$ ]]; then
   toDoVar="_\$${toDo}"
