@@ -1,12 +1,14 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
+      SERVER_PORT: string;
       NODE_ENV: 'test' | 'local' | 'dev' | 'staging' | 'prod';
       JWT_SECRET_KEY: string;
       SENTRY_DSN: string;
+      CORS_ORIGIN: string;
+      CSRF_MAX_AGE: string;
       THROTTLER_TTL: string;
       THROTTLER_LIMIT: string;
-      CORS_ORIGIN: string;
       //
       TYPEORM_HOST: string;
       TYPEORM_USERNAME: string;

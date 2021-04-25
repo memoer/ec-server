@@ -5,11 +5,11 @@ import * as helmet from 'helmet';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as logger from 'morgan';
-import * as csurf from 'csurf';
+// import * as csurf from 'csurf';
+// import getMs from './lib/getMs';
 import { AppModule } from './app.module';
 import isEnv from './lib/isEnv';
 import { SentryExceptionFilter } from './lib/filter/sentryException.filter';
-import getMs from './lib/getMs';
 import { ValidationPipe } from '@nestjs/common';
 
 function initLogger(app: NestExpressApplication) {
@@ -25,7 +25,7 @@ function initLogger(app: NestExpressApplication) {
     app.use(logger(prodFormat));
   } else if (isEnv('local') || isEnv('dev') || isEnv('staging')) {
     // 'dev' -> :method :url :status :response-time ms - :res[content-length]
-    app.use(logger('combined'));
+    app.use(logger('dev'));
   }
 }
 
@@ -58,15 +58,15 @@ async function bootstrap() {
   // path: the path of the cookie -> / (default)
   // httpOnly: flags the cookie to be accessible only by the web server -> false (default)
   // domain: sets the domain the cookie is valid on(defaults to current domain).
-  app.use(
-    csurf({
-      cookie: {
-        maxAge: getMs(1, 'day'),
-        secure: isEnv('prod'),
-        httpOnly: true,
-      },
-    }),
-  );
+  // app.use(
+  //   csurf({
+  //     cookie: {
+  //       maxAge: Number(process.env.CSRF_MAX_AGE),
+  //       secure: isEnv('prod'),
+  //       httpOnly: true,
+  //     },
+  //   }),
+  // );
   if (isEnv('staging') || isEnv('prod')) {
     // https://docs.nestjs.com/techniques/compression
     // For high-traffic websites in production, it is strongly recommended to offload compression from the application server
@@ -79,7 +79,7 @@ async function bootstrap() {
   }
   app.useGlobalFilters(...filters);
   app.useGlobalPipes(...pipes);
-  await app.listen(3001);
+  await app.listen(process.env.SERVER_PORT);
 }
 
 bootstrap();

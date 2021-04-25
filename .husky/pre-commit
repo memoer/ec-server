@@ -3,7 +3,7 @@
 
 local_branch_name="$(git rev-parse --abbrev-ref HEAD)"
 
-valid_branch_regex='^((master|release|develop|feat|fix|chore|refactor|test)(\/#[0-9]+|\/[a-z-]+|\/#[0-9a-z-]+))$'
+valid_branch_regex='^((master|release|develop|feat|fix|chore|refactor|test)(\/#[0-9]+|\/[a-z-]+|\/#[0-9]\/[a-z-]+)?)$'
 
 
 

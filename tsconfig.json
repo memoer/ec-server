@@ -12,6 +12,8 @@
     "baseUrl": "./",
     "incremental": true,
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "paths": {
       "~/*": ["./src/*"]
     }
