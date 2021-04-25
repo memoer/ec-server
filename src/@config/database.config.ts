@@ -1,6 +1,5 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
-import getMs from '~/lib/getMs';
 
 export const databaseValidationSchema = {
   TYPEORM_HOST: Joi.string().required(),
@@ -18,5 +17,5 @@ export default registerAs('CONFIG_DB', () => ({
   TYPEORM_PASSWORD: process.env.TYPEORM_PASSWORD,
   TYPEORM_DATABASE: process.env.TYPEORM_DATABASE,
   TYPEORM_PORT: Number(process.env.TYPEORM_PORT),
-  TYPEORM_CACHE_TTL: getMs(Number(process.env.TYPEORM_CACHE_TTL), 'day'),
+  TYPEORM_CACHE_TTL: Number(process.env.TYPEORM_CACHE_TTL),
 }));
