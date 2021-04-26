@@ -10,7 +10,7 @@ export interface GetMsInput {
 export interface GetValueFromMetaDataInput {
   reflector: Reflector;
   context: ExecutionContext;
-  keyObj: Record<string, string>;
+  metaDataObj: Record<string, string>;
 }
 
 export interface ISharedService {

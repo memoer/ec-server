@@ -79,7 +79,7 @@ async function bootstrap() {
   }
   app.useGlobalFilters(...filters);
   app.useGlobalPipes(...pipes);
-  await app.listen(process.env.SERVER_PORT);
+  await app.listen(+process.env.SERVER_PORT);
 }
 
 bootstrap();

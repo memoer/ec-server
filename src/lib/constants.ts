@@ -1,3 +1,14 @@
+export const META_DATA = {
+  CHECK_DATA_GUARD: {
+    ENTITY: 'CHECK_DATA_GUARD_ENTITY',
+    TYPE: 'CHECK_DATA_GUARD_TYPE',
+    KEY: 'CHECK_DATA_GUARD_KEY',
+  },
+  AT_LEAST_ONE_OF_GUARD: {
+    KEY_LIST: 'KEY_LIST',
+  },
+};
+
 export const DEFAULT_VALUE = {
   PAGE_NUMBER: 1,
   TAKE: 10,

@@ -4,9 +4,9 @@ echo ""
 case ${branchName} in
   1) branchName="feat" ;;
   2) branchName="fix" ;;
-  4) branchName="refactor" ;;
-  5) branchName="test" ;;
-  6) branchName="chore" ;;
+  3) branchName="refactor" ;;
+  4) branchName="test" ;;
+  5) branchName="chore" ;;
   *)
     echo "first argument must be one of feat, fix, refactor, test, chore"
     exit 1

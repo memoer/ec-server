@@ -13,7 +13,7 @@ export class SharedService implements ISharedService {
   getSkip({
     pageNumber = DEFAULT_VALUE.PAGE_NUMBER,
     take = DEFAULT_VALUE.TAKE,
-  }: PaginationInput) {
+  }: PaginationInput = {}) {
     return (pageNumber - 1) * take;
   }
   /**
@@ -46,9 +46,9 @@ export class SharedService implements ISharedService {
   getValueFromMetaData<T, U = any>({
     reflector,
     context,
-    keyObj,
+    metaDataObj,
   }: GetValueFromMetaDataInput) {
-    return Object.keys(keyObj).reduce((obj: Record<string, any>, key) => {
+    return Object.keys(metaDataObj).reduce((obj: Record<string, any>, key) => {
       const value = reflector.get(key, context.getHandler());
       obj[key] = value;
       return obj;

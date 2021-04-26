@@ -9,8 +9,8 @@ import GraphQLModule from './@graphql/graphql.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: Number(process.env.THROTTLER_TTL),
-      limit: Number(process.env.THROTTLER_LIMIT),
+      ttl: +process.env.THROTTLER_TTL,
+      limit: +process.env.THROTTLER_LIMIT,
     }),
     ConfigModule,
     DBModule,

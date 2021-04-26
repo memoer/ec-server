@@ -1,11 +1,11 @@
 version: '3'
 services:
   DB:
-    hostname: ec
+    hostname: nest-template
     image: postgres:13-alpine
-    container_name: ec-DB
+    container_name: template-DB
     networks:
-      - ec-network
+      - template-network
     restart: on-failure
     ports:
       - 5432:5432
@@ -18,14 +18,14 @@ services:
     volumes:
       - ./database:/var/lib/postgresql/data
   redis:
-    hostname: ec
+    hostname: nest-template
     image: redis:6-alpine
-    container_name: ec-redis
+    container_name: template-redis
     networks:
-      - ec-network
+      - template-network
     restart: on-failure
     ports:
       - 6379:6379
 
 networks:
-  ec-network:
+  template-network:
