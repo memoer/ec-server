@@ -12,7 +12,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { getRepository } from 'typeorm';
-import { SharedService } from '~/shared/shared.service';
 import { META_DATA } from '../constants';
 export enum CheckDataGuardType {
   shouldExist,
@@ -20,35 +19,36 @@ export enum CheckDataGuardType {
 }
 @Injectable()
 export class CheckDataGuard implements CanActivate {
-  constructor(
-    private readonly _reflector: Reflector,
-    private readonly _sharedService: SharedService,
-  ) {}
+  constructor(private readonly _reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const { ENTITY, KEY, TYPE } = META_DATA.CHECK_DATA_GUARD;
     const gqlContext = GqlExecutionContext.create(context);
     const { id } = gqlContext.getArgs();
-    const { ENTITY, KEY, TYPE } = this._sharedService.getValueFromMetaData<
-      typeof META_DATA['CHECK_DATA_GUARD']
-    >({
-      reflector: this._reflector,
-      context,
-      metaDataObj: META_DATA.CHECK_DATA_GUARD,
-    });
+    const entity = this._reflector.get(ENTITY, context.getHandler());
+    const key = this._reflector.get<string>(KEY, context.getHandler());
+    const type = this._reflector.get<CheckDataGuardType>(
+      TYPE,
+      context.getHandler(),
+    );
     //
-    const data = await getRepository(ENTITY)
-      .createQueryBuilder(ENTITY.name)
-      .where(`${name}.${KEY} = :${KEY}`, { id })
+    const data = await getRepository(entity)
+      .createQueryBuilder(entity.name)
+      .where(`${entity.name}.${key} = :${key}`, { id })
       .getOne();
-    switch (TYPE) {
+    switch (type) {
       case CheckDataGuardType.shouldExist:
         if (!data) {
-          throw new NotFoundException(`${name}_${id} not found`);
+          throw new NotFoundException(`${entity.name}_${id} not found`);
         }
+        break;
       case CheckDataGuardType.shouldNotExist:
         if (data) {
-          throw new ConflictException(`${name}_${id} is already existed`);
+          throw new ConflictException(
+            `${entity.name}_${id} is already existed`,
+          );
         }
+        break;
     }
     return true;
   }

@@ -8,15 +8,15 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "./dist",
-    "baseUrl": "./",
+    "outDir": "dist",
+    "baseUrl": "src",
     "incremental": true,
+    "allowJs": false,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "~/*": ["./src/*"],
+      "~/*": ["*"],
     }
   }
 }

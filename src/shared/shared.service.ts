@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DEFAULT_VALUE } from '~/lib/constants';
 import { PaginationInput } from './dto/pagination.dto';
-import {
-  GetMsInput,
-  GetValueFromMetaDataInput,
-  ISharedService,
-} from './shared.interface';
+import { GetMsInput, ISharedService } from './shared.interface';
 
 @Injectable()
 export class SharedService implements ISharedService {
@@ -41,17 +37,5 @@ export class SharedService implements ISharedService {
       default:
         return value * oneMs;
     }
-  }
-
-  getValueFromMetaData<T, U = any>({
-    reflector,
-    context,
-    metaDataObj,
-  }: GetValueFromMetaDataInput) {
-    return Object.keys(metaDataObj).reduce((obj: Record<string, any>, key) => {
-      const value = reflector.get(key, context.getHandler());
-      obj[key] = value;
-      return obj;
-    }, {}) as Record<keyof T, U>;
   }
 }

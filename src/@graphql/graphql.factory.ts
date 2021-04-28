@@ -8,7 +8,7 @@ export default (ac: ConfigType<typeof appConfig>): GqlModuleOptions => {
   const options: GqlModuleOptions = {
     playground: !isEnv('prod'),
     debug: !isEnv('prod'),
-    context: ({ req }) => ({ req }),
+    context: ({ req, res }) => ({ req, res }),
     installSubscriptionHandlers: true,
     uploads: {
       maxFileSize: 10000000, // 10 MB

@@ -1,44 +1,48 @@
-import isEnv from './isEnv';
+import isEnv from '~/lib/isEnv';
 
 describe('lib/isEnv', () => {
   afterAll(() => (process.env.NODE_ENV = 'test'));
 
   it('test', () => {
-    // * run
+    // ? run
     const result = isEnv('test');
-    // * test
+    // ? test
     expect(result).toEqual(true);
   });
+
   it('local', () => {
-    // * variables to use & init mock
+    // ? variables to use & init mock
     process.env.NODE_ENV = 'local';
-    // * run
+    // ? run
     const result = isEnv('local');
-    // * test
+    // ? test
     expect(result).toEqual(true);
   });
+
   it('dev', () => {
-    // * variables to use & init mock
+    // ? variables to use & init mock
     process.env.NODE_ENV = 'dev';
-    // * run
+    // ? run
     const result = isEnv('dev');
-    // * test
+    // ? test
     expect(result).toEqual(true);
   });
+
   it('staging', () => {
-    // * variables to use & init mock
+    // ? variables to use & init mock
     process.env.NODE_ENV = 'staging';
-    // * run
+    // ? run
     const result = isEnv('staging');
-    // * test
+    // ? test
     expect(result).toEqual(true);
   });
+
   it('prod', () => {
-    // * variables to use & init mock
+    // ? variables to use & init mock
     process.env.NODE_ENV = 'prod';
-    // * run
+    // ? run
     const result = isEnv('prod');
-    // * test
+    // ? test
     expect(result).toEqual(true);
   });
 });
