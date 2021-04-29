@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SharedService } from '~/shared/shared.service';
+import { UtilService } from '~/util/util.service';
 
 describe('shared/shared.service', () => {
-  let service: SharedService;
+  let service: UtilService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SharedService],
+      providers: [UtilService],
     }).compile();
 
-    service = module.get<SharedService>(SharedService);
+    service = module.get<UtilService>(UtilService);
   });
 
   describe('getSkip', () => {

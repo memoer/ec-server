@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
-import isEnv from '~/lib/isEnv';
+import isEnv from '~/_lib/isEnv';
 
 export const appValidationSchema = {
   SERVER_PORT: Joi.number().required(),

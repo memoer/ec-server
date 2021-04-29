@@ -4,7 +4,7 @@ import { join } from 'path';
 import { LoggerOptions } from 'typeorm';
 import databaseConfig from '~/@config/database.config';
 import redisConfig from '~/@config/redis.config';
-import isEnv from '~/lib/isEnv';
+import isEnv from '~/_lib/isEnv';
 
 export default (
   dbc: ConfigType<typeof databaseConfig>,

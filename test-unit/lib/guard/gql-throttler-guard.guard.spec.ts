@@ -1,4 +1,4 @@
-import { GqlThrottlerGuard } from '~/lib/guard/gql-throttler-guard.guard';
+import { GqlThrottlerGuard } from '~/_lib/guard/gql-throttler-guard.guard';
 import { contextMock, gqlCtxMock, reflectorMock } from '../../_/common';
 import { ThrottlerStorage } from '@nestjs/throttler';
 

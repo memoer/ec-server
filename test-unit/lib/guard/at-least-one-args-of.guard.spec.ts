@@ -1,10 +1,10 @@
 import * as nestCommon from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import { META_DATA } from '~/lib/constants';
+import { META_DATA } from '~/_lib/constants';
 import {
   AtLeastOneArgsOf,
   AtLeastOneArgsOfGuard,
-} from '~/lib/guard/at-least-one-args-of.guard';
+} from '~/_lib/guard/at-least-one-args-of.guard';
 import { TMock } from '../../_/util';
 import { gqlCtxMock, reflectorMock, contextMock } from '../../_';
 jest.mock('@nestjs/common', () => ({

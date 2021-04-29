@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { GqlThrottlerGuard } from './lib/guard/gql-throttler-guard.guard';
+import { GqlThrottlerGuard } from './_lib/guard/gql-throttler-guard.guard';
 import { AppResolver } from './app.resolver';
 import ConfigModule from './@config/config.module';
 import DBModule from './@database/db.module';

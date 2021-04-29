@@ -1,4 +1,4 @@
-import isEnv from '~/lib/isEnv';
+import isEnv from '~/_lib/isEnv';
 
 describe('lib/isEnv', () => {
   afterAll(() => (process.env.NODE_ENV = 'test'));

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DEFAULT_VALUE } from '~/lib/constants';
+import { DEFAULT_VALUE } from '~/_lib/constants';
 import { PaginationInput } from './dto/pagination.dto';
-import { GetMsInput, ISharedService } from './shared.interface';
+import { GetMsInput, IUtilService } from './util.interface';
 
 @Injectable()
-export class SharedService implements ISharedService {
+export class UtilService implements IUtilService {
   //
   getSkip({
     pageNumber = DEFAULT_VALUE.PAGE_NUMBER,

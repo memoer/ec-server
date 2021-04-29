@@ -1,6 +1,6 @@
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { map } from 'rxjs/operators';
-import { PaginationOutputInterceptor } from '~/lib/interceptor/pagination-output.interceptor';
+import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
 import { getCallback, gqlCtxMock, nextCallHandler } from '../../_';
 jest.mock('rxjs/operators', () => ({
   map: jest.fn(),

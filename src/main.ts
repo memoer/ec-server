@@ -8,8 +8,8 @@ import * as logger from 'morgan';
 // import * as csurf from 'csurf';
 // import getMs from './lib/getMs';
 import { AppModule } from './app.module';
-import isEnv from './lib/isEnv';
-import { SentryExceptionFilter } from './lib/filter/sentry-exception.filter';
+import isEnv from './_lib/isEnv';
+import { SentryExceptionFilter } from './_lib/filter/sentry-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 
 function initLogger(app: NestExpressApplication) {

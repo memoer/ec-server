@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import isEnv from '~/lib/isEnv';
+import isEnv from '~/_lib/isEnv';
 import appConfig, { appValidationSchema } from './app.config';
 import databaseConfig, { databaseValidationSchema } from './database.config';
 import redisConfig, { redisValidationSchema } from './redis.config';

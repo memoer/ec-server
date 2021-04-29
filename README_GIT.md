@@ -1,7 +1,8 @@
 # Folder Naming Rules
 
-- @\*\* : Required/Global Modules
-- util : No Module
+- @\*\*: Required/Global Modules
+- \_lib: No Module (filter, interceptor, guard ... )
+- util: Util Module ( commonly used logic )
 
 # Milestones
 

@@ -1,11 +1,11 @@
 import * as nestCommon from '@nestjs/common';
 import { getRepository } from 'typeorm';
-import { META_DATA } from '~/lib/constants';
+import { META_DATA } from '~/_lib/constants';
 import {
   CheckData,
   CheckDataGuard,
   CheckDataGuardType,
-} from '~/lib/guard/check-data.guard';
+} from '~/_lib/guard/check-data.guard';
 import { TMock } from '../../_/util';
 import { reflectorMock, gqlCtxMock, contextMock } from '../../_';
 import { ConflictException, NotFoundException } from '@nestjs/common';

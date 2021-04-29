@@ -5,7 +5,7 @@ export interface GetMsInput {
   type: 'day' | 'hour' | 'minute' | 'second' | 'ms';
 }
 
-export interface ISharedService {
+export interface IUtilService {
   getSkip(opts: PaginationInput): number;
   getMs(opts: GetMsInput): number;
 }

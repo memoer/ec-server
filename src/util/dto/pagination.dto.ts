@@ -6,7 +6,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { DEFAULT_VALUE } from '../../lib/constants';
+import { DEFAULT_VALUE } from '../../_lib/constants';
 
 export function PaginationOuput<T>(classRef: Type<T>): any {
   @ObjectType({ isAbstract: true })
