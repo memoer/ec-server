@@ -31,7 +31,7 @@ export default (
     port: dbc.TYPEORM_PORT,
     logging: logging(),
     synchronize: isEnv('local'), // on sync in local env
-    entities: [join(__dirname, './entities')],
+    entities: [join(__dirname, './entities/*.entity.js')],
     // QueryBuilder methods: getMany, getOne, getRawMany, getRawOne and getCount.
     // Repository methods: find, findAndCount, findByIds, and count.
     cache: {
