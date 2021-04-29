@@ -6,10 +6,10 @@ import databaseConfig from '~/@config/database.config';
 import redisConfig from '~/@config/redis.config';
 import isEnv from '~/_lib/isEnv';
 
-export default (
+export default async (
   dbc: ConfigType<typeof databaseConfig>,
   rc: ConfigType<typeof redisConfig>,
-): TypeOrmModuleOptions => {
+): Promise<TypeOrmModuleOptions> => {
   const logging = (): LoggerOptions => {
     switch (process.env.NODE_ENV) {
       case 'test':

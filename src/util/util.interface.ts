@@ -1,11 +1,10 @@
 import { PaginationInput } from './dto/pagination.dto';
 
-export interface GetMsInput {
-  value: number;
-  type: 'day' | 'hour' | 'minute' | 'second' | 'ms';
+export interface GetMs {
+  args: { value: number; type: 'day' | 'hour' | 'minute' | 'second' | 'ms' };
 }
 
 export interface IUtilService {
-  getSkip(opts: PaginationInput): number;
-  getMs(opts: GetMsInput): number;
+  getSkip(args: PaginationInput): number;
+  getMs(args: GetMs['args']): number;
 }

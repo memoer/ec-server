@@ -5,6 +5,7 @@ import * as helmet from 'helmet';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as logger from 'morgan';
+import * as requestIp from 'request-ip';
 // import * as csurf from 'csurf';
 // import getMs from './lib/getMs';
 import { AppModule } from './app.module';
@@ -54,6 +55,7 @@ async function bootstrap() {
   initLogger(app);
   // for security
   app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(requestIp.mw());
   // key: the name of the cookie to use to store the token secret -> _csrf (default)
   // path: the path of the cookie -> / (default)
   // httpOnly: flags the cookie to be accessible only by the web server -> false (default)

@@ -11,6 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { META_DATA } from '../constants';
+import exceptionTemplate from '../exceptionTemplate';
 
 @Injectable()
 export class AtLeastOneArgsOfGuard implements CanActivate {
@@ -26,7 +27,11 @@ export class AtLeastOneArgsOfGuard implements CanActivate {
       if (value.includes(key)) return true;
     }
     throw new BadRequestException(
-      `should exist at least one of ${value.join(', ')}`,
+      exceptionTemplate({
+        area: 'Guard',
+        name: 'atLeastOneArgsOf',
+        msg: `should exist at least one of ${value.join(', ')}`,
+      }),
     );
   }
 }

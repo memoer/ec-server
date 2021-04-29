@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DEFAULT_VALUE } from '~/_lib/constants';
 import { PaginationInput } from './dto/pagination.dto';
-import { GetMsInput, IUtilService } from './util.interface';
+import { GetMs, IUtilService } from './util.interface';
 
 @Injectable()
 export class UtilService implements IUtilService {
@@ -19,7 +19,7 @@ export class UtilService implements IUtilService {
    * @returns milliseconds good?
    * @description desc
    */
-  getMs({ value, type }: GetMsInput): number {
+  getMs({ value, type }: GetMs['args']): number {
     const oneMs = 1000;
     const oneSecond = 1 * oneMs;
     const oneMinue = 60 * oneSecond;
@@ -37,5 +37,8 @@ export class UtilService implements IUtilService {
       default:
         return value * oneMs;
     }
+  }
+  getRandNum(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min) + min);
   }
 }

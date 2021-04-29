@@ -13,6 +13,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { getRepository } from 'typeorm';
 import { META_DATA } from '../constants';
+import exceptionTemplate from '../exceptionTemplate';
 export enum CheckDataGuardType {
   shouldExist,
   shouldNotExist,
@@ -39,13 +40,23 @@ export class CheckDataGuard implements CanActivate {
     switch (type) {
       case CheckDataGuardType.shouldExist:
         if (!data) {
-          throw new NotFoundException(`${entity.name}_${id} not found`);
+          throw new NotFoundException(
+            exceptionTemplate({
+              area: 'Guard',
+              name: 'checkData',
+              msg: `${entity.name}_${id} not found`,
+            }),
+          );
         }
         break;
       case CheckDataGuardType.shouldNotExist:
         if (data) {
           throw new ConflictException(
-            `${entity.name}_${id} is already existed`,
+            exceptionTemplate({
+              area: 'Guard',
+              name: 'checkData',
+              msg: `${entity.name}_${id} is already existed`,
+            }),
           );
         }
         break;

@@ -4,10 +4,13 @@ import { join } from 'path';
 import appConfig from '~/@config/app.config';
 import isEnv from '~/_lib/isEnv';
 
-export default (ac: ConfigType<typeof appConfig>): GqlModuleOptions => {
+export default async (
+  ac: ConfigType<typeof appConfig>,
+): Promise<GqlModuleOptions> => {
   const options: GqlModuleOptions = {
     playground: !isEnv('prod'),
     debug: !isEnv('prod'),
+    // throttler 사용하려면 res까지 리턴해야 한다.
     context: ({ req, res }) => ({ req, res }),
     installSubscriptionHandlers: true,
     uploads: {
