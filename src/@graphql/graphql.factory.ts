@@ -14,7 +14,7 @@ export default (ac: ConfigType<typeof appConfig>): GqlModuleOptions => {
       maxFileSize: 10000000, // 10 MB
       maxFiles: 5,
     },
-    introspection: !isEnv('prod') || !isEnv('staging'),
+    introspection: isEnv('local') || isEnv('dev'),
     autoSchemaFile: join(__dirname, '..', 'schema.gql'),
     cors: {
       origin: ac.CORS_ORIGIN,
