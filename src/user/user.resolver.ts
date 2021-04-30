@@ -1,6 +1,5 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { UseInterceptors } from '@nestjs/common';
-import { GeoInfo, TGeoInfo } from '~/_lib/decorator/geo-info.decorator';
 import { UserEntity } from '~/@database/entities/user.entity';
 import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
 import { CheckData, CheckDataGuardType } from '~/_lib/guard/check-data.guard';
@@ -22,21 +21,18 @@ export class UserResolver {
     return this.userService.logIn(input);
   }
 
-  @Query(() => Boolean)
+  @Mutation(() => Boolean)
   @AtLeastOneArgsOf<UserEntity>(['oauth', 'password'])
   @CheckData(UserEntity, CheckDataGuardType.shouldNotExist, 'phoneNumber')
-  verifyBeforeCreateUser(
-    @GeoInfo() geoInfo: TGeoInfo,
-    @Args('input') input: verifyBeforeCreateUserInput,
-  ) {
+  verifyBeforeCreateUser(@Args('input') input: verifyBeforeCreateUserInput) {
     // ! oauth,password -> optional ( one of two is required )
     // ! phoneNumber: required
-    return this.userService.verifyBeforeCreateUser(geoInfo, input);
+    return this.userService.verifyBeforeCreateUser(input);
   }
 
   @Mutation(() => UserEntity)
-  verifyAfterCreateUser(@Args('verifyCode') verifyCode: number) {
-    return this.userService.verifyAfterCreateUser(verifyCode);
+  verifyAfterCreateUser(@Args('code') code: number) {
+    return this.userService.verifyAfterCreateUser(String(code));
   }
 
   @Query(() => FindAllOutput)

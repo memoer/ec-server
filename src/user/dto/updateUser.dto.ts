@@ -10,7 +10,7 @@ import { verifyBeforeCreateUserInput } from './verifyBeforeCreateUser.dto';
 
 @InputType()
 export class UpdateUserInput extends IntersectionType(
-  PartialType(OmitType(verifyBeforeCreateUserInput, ['oauth'])),
+  OmitType(PartialType(verifyBeforeCreateUserInput), ['oauth', 'country']),
   PickType(UserEntity, ['id', 'nickname', 'email']),
   InputType,
 ) {}

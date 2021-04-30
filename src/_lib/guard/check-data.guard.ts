@@ -1,10 +1,8 @@
 import {
   applyDecorators,
   CanActivate,
-  ConflictException,
   ExecutionContext,
   Injectable,
-  NotFoundException,
   SetMetadata,
   Type,
   UseGuards,
@@ -13,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { getRepository } from 'typeorm';
 import { META_DATA } from '../constants';
-import exceptionTemplate from '../exceptionTemplate';
+import exception from '../exception';
 export enum CheckDataGuardType {
   shouldExist,
   shouldNotExist,
@@ -25,39 +23,35 @@ export class CheckDataGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const { ENTITY, KEY, TYPE } = META_DATA.CHECK_DATA_GUARD;
     const gqlContext = GqlExecutionContext.create(context);
-    const { id } = gqlContext.getArgs();
     const entity = this._reflector.get(ENTITY, context.getHandler());
     const key = this._reflector.get<string>(KEY, context.getHandler());
     const type = this._reflector.get<CheckDataGuardType>(
       TYPE,
       context.getHandler(),
     );
+    const value = gqlContext.getArgs().input[key];
     //
     const data = await getRepository(entity)
       .createQueryBuilder(entity.name)
-      .where(`${entity.name}.${key} = :${key}`, { id })
+      .where(`${entity.name}.${key} = :${key}`, { [key]: value })
       .getOne();
     switch (type) {
       case CheckDataGuardType.shouldExist:
         if (!data) {
-          throw new NotFoundException(
-            exceptionTemplate({
-              area: 'Guard',
-              name: 'checkData',
-              msg: `${entity.name}_${id} not found`,
-            }),
-          );
+          throw exception({
+            type: 'NotFoundException',
+            name: 'CheckDataGuard/canActive',
+            msg: `${entity.name}_${key}<${value}> not found`,
+          });
         }
         break;
       case CheckDataGuardType.shouldNotExist:
         if (data) {
-          throw new ConflictException(
-            exceptionTemplate({
-              area: 'Guard',
-              name: 'checkData',
-              msg: `${entity.name}_${id} is already existed`,
-            }),
-          );
+          throw exception({
+            type: 'ConflictException',
+            name: 'CheckDataGuard/canActive',
+            msg: `${entity.name}_${key}_${value} is already existed`,
+          });
         }
         break;
     }

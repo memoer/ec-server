@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { GqlThrottlerGuard } from './_lib/guard/gql-throttler-guard.guard';
-import ConfigModule from './@config/config.module';
-import DBModule from './@database/db.module';
-import GraphQLModule from './@graphql/graphql.module';
+import { GqlThrottlerGuard } from '../_lib/guard/gql-throttler-guard.guard';
+import ConfigModule from '../@config/config.module';
+import DBModule from '../@database/db.module';
+import GraphQLModule from '../@graphql/graphql.module';
 import { AppResolver } from './app.resolver';
-import { UserModule } from './user/user.module';
-import { AwsModule } from './aws/aws.module';
-import CacheModule from './@cache/cache.module';
+import { UserModule } from '../user/user.module';
+import { AwsModule } from '../aws/aws.module';
+import CacheModule from '../@cache/cache.module';
 
 @Module({
   imports: [

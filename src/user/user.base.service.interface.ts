@@ -13,15 +13,7 @@ export interface NewUser {
   oauth?: UserOAuth | undefined;
 }
 
-export interface SetVerifyCodeToRedis {
-  args: {
-    code: number;
-    data: NewUser;
-  };
-}
-export interface SendVerifyCode {
-  args: {
-    code: number;
-    PhoneNumber: string;
-  };
+export interface SendCodeNSetToRedis {
+  phoneNumber: string;
+  newUser: NewUser;
 }

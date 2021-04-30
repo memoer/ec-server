@@ -5,9 +5,11 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  Max,
 } from 'class-validator';
 import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import generateHash from '~/_lib/generateHash';
+import { upperCaseMiddleware } from '~/_lib/middleware/graphql.middleware';
 import { CoreEntity } from './core.entity';
 
 export enum UserOAuth {
@@ -44,6 +46,11 @@ export class UserEntity extends CoreEntity {
   @Field(() => String)
   @IsPhoneNumber()
   phoneNumber!: string;
+
+  @Column()
+  @Field(() => String, { middleware: [upperCaseMiddleware] })
+  @Max(3)
+  country!: string;
 
   @Column({ type: 'enum', enum: UserRole })
   @Field(() => UserRole)

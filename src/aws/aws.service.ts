@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { SNS } from 'aws-sdk';
 import awsConfig from '~/@config/aws.config';
-import { IAwsService, SendSMS } from './aws.interface';
+import { SendSMS } from './aws.interface';
 
 @Injectable()
-export class AwsService implements IAwsService {
+export class AwsService {
   private _sns;
   constructor(
     @Inject(awsConfig.KEY)
@@ -17,7 +17,7 @@ export class AwsService implements IAwsService {
     });
   }
   //
-  async sendSMS(args: SendSMS['args']) {
+  async sendSMS(args: SendSMS) {
     return this._sns.publish(args).promise();
   }
 }
