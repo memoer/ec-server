@@ -24,6 +24,17 @@ $ npm run local:docker:down
 - Docker
 - Jest [TDD]
 
+# Folder Naming Rules
+
+- @\*\*: Required/Global Modules
+- \_lib
+  - filter, interceptor, guard ...
+  - service로 뺄 수 없는 전역적으로 사용하는 함수들이 위치하는 곳
+- util
+  - Resolver가 존재하지 않음
+  - Service만 존재
+  - 전역적으로 자주 사용하는 Service
+
 ### Env
 
 - local: 각자 컴퓨터에서 띄운 개발환경 [ 기능추가, 버그수정 등등 수정한 코드 테스트용도 ]

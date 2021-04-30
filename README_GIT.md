@@ -1,9 +1,3 @@
-# Folder Naming Rules
-
-- @\*\*: Required/Global Modules
-- \_lib: No Module (filter, interceptor, guard ... )
-- util: Util Module ( commonly used logic )
-
 # Milestones
 
 - 제일 큰 프로젝트
