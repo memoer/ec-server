@@ -11,6 +11,7 @@ import { AppModule } from './app/app.module';
 import isEnv from './_lib/isEnv';
 import { SentryExceptionFilter } from './_lib/filter/sentry-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
+import { AuthMiddleware } from './_lib/middleware/auth.middleware';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
@@ -78,6 +79,7 @@ async function bootstrap() {
     filters.push(new SentryExceptionFilter());
     // sentry
   }
+  app.use(AuthMiddleware);
   app.useGlobalFilters(...filters);
   app.useGlobalPipes(...pipes);
   await app.listen(+process.env.SERVER_PORT);

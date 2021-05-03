@@ -6,11 +6,19 @@ import {
   IsPhoneNumber,
   IsString,
   Max,
+  ValidateNested,
 } from 'class-validator';
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 import generateHash from '~/_lib/generateHash';
 import { upperCaseMiddleware } from '~/_lib/middleware/graphql.middleware';
-import { CoreEntity } from './core.entity';
+import { Core } from './core.entity';
 
 export enum UserOAuth {
   GOOGLE = 'GOOGLE',
@@ -36,7 +44,7 @@ registerEnumType(UserStatus, {
 
 @Entity()
 @ObjectType()
-export class UserEntity extends CoreEntity {
+export class User extends Core {
   @Column({ unique: true })
   @Field(() => String)
   @IsString()
@@ -85,6 +93,12 @@ export class UserEntity extends CoreEntity {
   @IsEnum(UserOAuth)
   @IsOptional()
   oauth?: UserOAuth;
+
+  @ManyToMany(() => User, (user) => user.id)
+  @JoinTable()
+  @Field(() => [User])
+  @ValidateNested()
+  searchOther!: User[];
 
   @BeforeInsert()
   @BeforeUpdate()

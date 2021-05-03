@@ -13,7 +13,7 @@ describe('lib/generateHash', () => {
     expect(bcrypt.hash).toHaveBeenNthCalledWith(
       1,
       data,
-      +process.env.JWT_SECRET_KEY,
+      +process.env.JWT_PRIVATE_KEY,
     );
     expect(result).toEqual(expect.any(String));
   });

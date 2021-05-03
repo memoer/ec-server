@@ -8,5 +8,5 @@ export const redisValidationSchema = {
 
 export default registerAs('CONFIG_REDIS', () => ({
   REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: Number(process.env.REDIS_PORT),
+  REDIS_PORT: +process.env.REDIS_PORT,
 }));

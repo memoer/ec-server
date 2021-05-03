@@ -3,7 +3,8 @@ declare global {
     interface ProcessEnv {
       SERVER_PORT: string;
       NODE_ENV: 'test' | 'local' | 'dev' | 'staging' | 'prod';
-      JWT_SECRET_KEY: string;
+      JWT_PRIVATE_KEY: string;
+      HASH_SALT_OR_ROUND: string;
       SENTRY_DSN: string;
       CORS_ORIGIN: string;
       CSRF_MAX_AGE: string;

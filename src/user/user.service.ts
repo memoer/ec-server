@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { UpdateResult } from 'typeorm';
 import { UserRole, UserStatus } from '~/@database/entities/user.entity';
 import { PaginationInput } from '~/util/dto/pagination.dto';
+import exception from '~/_lib/exception';
 import { verifyBeforeCreateUserInput } from './dto/verifyBeforeCreateUser.dto';
 import { LogInInput } from './dto/logInUser.dto';
 import { UpdateUserInput } from './dto/updateUser.dto';
 import { UserBaseService } from './user.base.service';
-import { NewUser } from './user.base.service.interface';
-import exception from '~/_lib/exception';
+import { NewUser } from './user.service.interface';
+import { RemoveUserInput } from './dto/removeUser.dto';
+import { RestoreUserInput } from './dto/restoreUser.dto';
 
 @Injectable()
 export class UserService extends UserBaseService {
@@ -40,8 +43,9 @@ export class UserService extends UserBaseService {
     const cache = (this._cacheManager.get(code) as unknown) as NewUser;
     const newUser = this._user.save(this._user.create(cache));
     const delCache = this._cacheManager.del(code);
-    const [result] = await Promise.all([newUser, delCache]);
-    return result;
+    const [data] = await Promise.all([newUser, delCache]);
+    const token = this._jwtService.sign(data.id);
+    return { data, token };
   }
 
   findAllUser({ pageNumber, take }: PaginationInput) {
@@ -60,13 +64,21 @@ export class UserService extends UserBaseService {
     return this._user.update(id, updateUserInput);
   }
 
-  async removeUser(id: number) {
-    // * 탈퇴한 이유
-    return this._user.softDelete(id);
+  async removeUser({ id, reason }: RemoveUserInput) {
+    const promiseArr = [
+      reason && this._userInfo.update({ userId: id }, { reason }),
+      this._user.softDelete(id),
+    ].filter(Boolean) as Promise<UpdateResult>[];
+    const [result] = await Promise.all(promiseArr);
+    return result;
   }
 
-  async restoreUser(id: number) {
-    // * 다시 돌아온 이유
-    return this._user.restore(id);
+  async restoreUser({ id, reason }: RestoreUserInput) {
+    const promiseArr = [
+      reason && this._userInfo.update({ userId: id }, { reason }),
+      this._user.restore(id),
+    ].filter(Boolean) as Promise<UpdateResult>[];
+    const [result] = await Promise.all(promiseArr);
+    return result;
   }
 }
