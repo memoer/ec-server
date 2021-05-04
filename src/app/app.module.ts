@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { GqlThrottlerGuard } from '../_lib/guard/gql-throttler-guard.guard';
@@ -10,6 +10,7 @@ import { AppResolver } from './app.resolver';
 import { AwsModule } from '../aws/aws.module';
 import { JwtService } from '../jwt/jwt.service';
 import { UserModule } from '../user/user.module';
+import { AuthMiddleware } from '~/_lib/middleware/auth.middleware';
 
 @Module({
   imports: [
@@ -33,4 +34,11 @@ import { UserModule } from '../user/user.module';
     AppResolver,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.POST,
+    });
+  }
+}

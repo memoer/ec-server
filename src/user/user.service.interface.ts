@@ -2,7 +2,7 @@ import {
   UserOAuth,
   UserStatus,
   UserRole,
-} from '~/@database/entities/user.entity';
+} from '~/@database/entities/user.info.entity';
 
 export interface NewUser {
   nickname: string;
@@ -16,4 +16,10 @@ export interface NewUser {
 export interface SendCodeNSetToRedis {
   phoneNumber: string;
   newUser: NewUser;
+}
+export interface RemoveOrRestore {
+  type: 'remove' | 'restore';
+  userId: number;
+  nickname: string;
+  reason?: string;
 }

@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as compression from 'compression';
 import * as helmet from 'helmet';
@@ -10,19 +11,15 @@ import * as requestIp from 'request-ip';
 import { AppModule } from './app/app.module';
 import isEnv from './_lib/isEnv';
 import { SentryExceptionFilter } from './_lib/filter/sentry-exception.filter';
-import { ValidationPipe } from '@nestjs/common';
-import { AuthMiddleware } from './_lib/middleware/auth.middleware';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
   const prodFormat =
     ':remote-addr - :remote-user [:date[clf]] HTTP/:http-version :status ":referrer" ":user-agent" :response-time ms :userId';
-
   logger.token('userId', (req): string =>
     String('user' in req ? -1 : (req as any).user.id),
   );
   if (isEnv('prod')) {
-    // production은 당연히 모든 로그를 쌓아야함
     app.use(logger(prodFormat));
   } else if (isEnv('local') || isEnv('dev') || isEnv('staging')) {
     // 'dev' -> :method :url :status :response-time ms - :res[content-length]
@@ -53,7 +50,6 @@ async function bootstrap() {
     logger: isEnv('local') || isEnv('dev'),
   });
   initLogger(app);
-  // for security
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(requestIp.mw());
   // key: the name of the cookie to use to store the token secret -> _csrf (default)
@@ -74,12 +70,9 @@ async function bootstrap() {
     // For high-traffic websites in production, it is strongly recommended to offload compression from the application server
     // typically in a reverse proxy (e.g., Nginx). In that case, you should not use compression middleware.
     app.use(compression());
-    // sentry
     initSentry(app);
     filters.push(new SentryExceptionFilter());
-    // sentry
   }
-  app.use(AuthMiddleware);
   app.useGlobalFilters(...filters);
   app.useGlobalPipes(...pipes);
   await app.listen(+process.env.SERVER_PORT);

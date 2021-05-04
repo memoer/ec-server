@@ -12,14 +12,17 @@ import { map } from 'rxjs/operators';
 export class PaginationOutputInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const gqlContext = GqlExecutionContext.create(context);
-    const { pageNumber, take } = gqlContext.getArgs();
+    const { pageNumber, take } = gqlContext.getArgs().input;
     return next.handle().pipe(
-      map((data) => ({
-        data: data[0],
-        totalCount: data[1],
-        curPage: pageNumber,
-        hasNextPage: Math.ceil(data[1] / take) === pageNumber,
-      })),
+      map((data) => {
+        const totalPage = Math.ceil(data[1] / take);
+        return {
+          data: data[0],
+          totalPage,
+          curPage: pageNumber,
+          hasNextPage: totalPage !== pageNumber,
+        };
+      }),
     );
   }
 }

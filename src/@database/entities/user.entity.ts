@@ -1,104 +1,80 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
+  IsDate,
   IsEmail,
   IsEnum,
   IsOptional,
   IsPhoneNumber,
   IsString,
-  Max,
-  ValidateNested,
+  Length,
 } from 'class-validator';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
-import generateHash from '~/_lib/generateHash';
-import { upperCaseMiddleware } from '~/_lib/middleware/graphql.middleware';
+import exception from '~/_lib/exception';
+import { compareHash, generateHash } from '~/_lib/hash';
 import { Core } from './core.entity';
+import { UserInfo } from './user.info.entity';
 
-export enum UserOAuth {
-  GOOGLE = 'GOOGLE',
-  NAVER = 'NAVER',
+export enum UserSex {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
 }
-registerEnumType(UserOAuth, { name: 'UserOAuth' });
+registerEnumType(UserSex, { name: 'UserSex' });
 
-export enum UserRole {
-  CLIENT = 'CLIENT',
-  SERVER_ADMIN = 'SERVER_ADMIN',
-}
-registerEnumType(UserRole, { name: 'UserRole' });
-
-// 한 달 동안 활동이 1번도 없다면 휴면유저
-export enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  DORMANCY = 'DORMANY',
-}
-registerEnumType(UserStatus, {
-  name: 'UserStatus',
-  description: 'ACTIVE[활동], DORMANCY[휴면]',
-});
-
+// ! 유저 기본 정보
+// ! 유저가 직접적으로 확인 / 볼 수 있는 정보들임
+// ! 유저가 스스로 수정할 수 있는 정보들
 @Entity()
 @ObjectType()
 export class User extends Core {
+  // * required
   @Column({ unique: true })
   @Field(() => String)
   @IsString()
+  @Length(4, 128)
   nickname!: string;
 
-  @Column()
+  @Column({ unique: true })
   @Field(() => String)
   @IsPhoneNumber()
   phoneNumber!: string;
 
+  @Column({ type: 'enum', enum: UserSex })
+  @Field(() => UserSex)
+  @IsEnum(UserSex)
+  sex!: UserSex;
+
   @Column()
-  @Field(() => String, { middleware: [upperCaseMiddleware] })
-  @Max(3)
-  country!: string;
-
-  @Column({ type: 'enum', enum: UserRole })
-  @Field(() => UserRole)
-  @IsEnum(UserRole)
-  role!: UserRole;
-
-  @Column({ type: 'enum', enum: UserStatus })
-  @Field(() => UserStatus)
-  @IsEnum(UserStatus)
-  status!: UserStatus;
-
+  @Field(() => Date)
+  @IsDate()
+  birthDate!: Date;
+  // * optional
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   thumbnail?: string;
 
-  @Column({ select: false, nullable: true })
-  @Field(() => String, { nullable: true })
-  @IsString()
-  @IsOptional()
-  password?: string;
-
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   @Field(() => String, { nullable: true })
   @IsEmail()
   @IsOptional()
   email?: string;
 
-  @Column({ type: 'enum', enum: UserOAuth, nullable: true })
-  @Field(() => UserOAuth, { nullable: true })
-  @IsEnum(UserOAuth)
-  @IsOptional()
-  oauth?: UserOAuth;
+  @Column({ select: false, nullable: true })
+  password?: string;
 
-  @ManyToMany(() => User, (user) => user.id)
-  @JoinTable()
-  @Field(() => [User])
-  @ValidateNested()
-  searchOther!: User[];
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.nickname, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  info!: UserInfo;
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -107,5 +83,16 @@ export class User extends Core {
     if (this.password) {
       this.password = await generateHash(this.password);
     }
+  }
+
+  async verifyPassword(plainPassword: string): Promise<boolean> {
+    if (!this.password) {
+      throw exception({
+        type: 'NotFoundException',
+        name: 'User/verifyPassword',
+        msg: 'this.password is not found',
+      });
+    }
+    return compareHash(plainPassword, this.password);
   }
 }

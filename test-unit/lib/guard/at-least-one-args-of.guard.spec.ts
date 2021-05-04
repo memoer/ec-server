@@ -2,7 +2,7 @@ import * as nestCommon from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { META_DATA } from '~/_lib/constants';
 import {
-  AtLeastOneArgsOf,
+  atLeastOneArgsOfGuard,
   AtLeastOneArgsOfGuard,
 } from '~/_lib/guard/at-least-one-args-of.guard';
 import { TMock } from '../../_/util';
@@ -17,7 +17,7 @@ jest.mock('@nestjs/common', () => ({
 describe('lib/guard/at-least-one-args-of', () => {
   const { KEY_LIST } = META_DATA.AT_LEAST_ONE_OF_GUARD;
 
-  describe('function AtLeastOneArgsOf', () => {
+  describe('function atLeastOneArgsOfGuard', () => {
     const {
       applyDecorators,
       SetMetadata,
@@ -34,7 +34,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       UseGuards.mockReturnValue(returnData.UserGuard);
       const keyList = ['hello', 'good'];
       // ? run
-      AtLeastOneArgsOf(keyList);
+      atLeastOneArgsOfGuard(keyList);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,

@@ -41,7 +41,7 @@ export class CheckDataGuard implements CanActivate {
           throw exception({
             type: 'NotFoundException',
             name: 'CheckDataGuard/canActive',
-            msg: `${entity.name}_${key}<${value}> not found`,
+            msg: `${entity.name}_${key}<${value}> is not found`,
           });
         }
         break;
@@ -59,7 +59,7 @@ export class CheckDataGuard implements CanActivate {
   }
 }
 
-export function CheckData<T, K extends keyof T>(
+export function checkDataGuard<T, K extends keyof T>(
   entity: Type<T>,
   type: CheckDataGuardType,
   key?: K,

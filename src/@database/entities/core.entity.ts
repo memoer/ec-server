@@ -1,5 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
-import { IsDate, IsOptional } from 'class-validator';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import {
   CreateDateColumn,
   DeleteDateColumn,
@@ -11,22 +10,15 @@ import {
 @ObjectType({ isAbstract: true })
 export abstract class Core {
   @PrimaryGeneratedColumn()
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 
   @CreateDateColumn()
-  @Field(() => Date)
-  @IsDate()
   createdAt!: Date;
 
   @UpdateDateColumn()
-  @Field(() => Date)
-  @IsDate()
   updatedAt!: Date;
 
   @DeleteDateColumn({ nullable: true })
-  @Field(() => Date)
-  @IsDate()
-  @IsOptional()
   deletedAt?: Date;
 }

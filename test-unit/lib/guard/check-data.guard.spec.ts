@@ -2,7 +2,7 @@ import * as nestCommon from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { META_DATA } from '~/_lib/constants';
 import {
-  CheckData,
+  checkDataGuard,
   CheckDataGuard,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
@@ -31,7 +31,7 @@ describe('CheckDataGuard', () => {
     expect(checkDataGuard).toBeDefined();
   });
 
-  describe('function CheckData', () => {
+  describe('function checkDataGuard', () => {
     const {
       applyDecorators,
       SetMetadata,
@@ -52,7 +52,7 @@ describe('CheckDataGuard', () => {
       SetMetadata.mockReturnValueOnce(returnData.SetMetadata.KEY);
       UseGuards.mockReturnValue(returnData.UserGuard);
       // ? run
-      CheckData(MockEntity, CheckDataGuardType.shouldExist);
+      checkDataGuard(MockEntity, CheckDataGuardType.shouldExist);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,
@@ -111,7 +111,7 @@ describe('CheckDataGuard', () => {
         switch (type) {
           case CheckDataGuardType.shouldExist:
             expect(error).toMatchObject(
-              new NotFoundException(`${entity.name}_${id} not found`),
+              new NotFoundException(`${entity.name}_${id} is not found`),
             );
             break;
           case CheckDataGuardType.shouldNotExist:

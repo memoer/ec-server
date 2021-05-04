@@ -3,15 +3,21 @@ import { IsString } from 'class-validator';
 import { User } from '~/@database/entities/user.entity';
 
 @InputType()
-export class LogInInput extends PickType(
+export class LogInUserInput extends PickType(
   User,
-  ['nickname', 'phoneNumber', 'password'],
+  ['nickname', 'phoneNumber'],
   InputType,
-) {}
-
-@ObjectType()
-export class LogInOutput {
+) {
   @Field(() => String)
   @IsString()
-  accessToken!: string;
+  password!: string;
+}
+
+@ObjectType()
+export class LogInUserOutput {
+  @Field(() => String)
+  token!: string;
+
+  @Field(() => User)
+  data!: User;
 }

@@ -7,6 +7,7 @@ export const META_DATA = {
   AT_LEAST_ONE_OF_GUARD: {
     KEY_LIST: 'KEY_LIST',
   },
+  ROLES: 'ROLES',
 };
 
 export const DEFAULT_VALUE = {

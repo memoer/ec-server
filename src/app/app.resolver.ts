@@ -8,7 +8,7 @@ import { GetGeoOutput } from './dto/getGeo.dto';
 @Resolver()
 export class AppResolver {
   @Query(() => String)
-  hello() {
+  async hello() {
     return 'hello';
   }
 

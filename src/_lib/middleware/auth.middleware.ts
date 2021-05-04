@@ -1,34 +1,52 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NestMiddleware,
+} from '@nestjs/common';
 import { NextFunction } from 'express';
-import { Repository } from 'typeorm';
-import { User } from '~/@database/entities/user.entity';
-import { GqlCtx } from '~/@graphql/graphql.interface';
+import { GqlCtx, ReqUser } from '~/@graphql/graphql.interface';
 import { JwtService } from '~/jwt/jwt.service';
+import { UserService } from '~/user/user.service';
 import exception from '../exception';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(
     private readonly _jwtService: JwtService,
-    @InjectRepository(User)
-    protected readonly _user: Repository<User>,
+    private readonly _userService: UserService,
   ) {}
   async use(req: GqlCtx['req'], _: GqlCtx['res'], next: NextFunction) {
     if (req.headers['authorization']) {
-      const decoded = this._jwtService.verify(
-        req.headers['authorization'].toString(),
-      );
-      if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-        const user = await this._user.findOne(decoded['id']);
-        if (!user) {
+      const [type, token] = req.headers['authorization'].split(' ');
+      if (type !== 'Bearer') {
+        throw exception({
+          type: 'NotImplementedException',
+          name: 'AuthMiddleware/use',
+          msg: 'authorization header type invalid',
+        });
+      }
+      try {
+        const decoded = this._jwtService.verify(token);
+        if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
+          const user = await this._userService.getUserById(decoded['id']);
+          if (!user) {
+            throw exception({
+              type: 'NotFoundException',
+              name: 'AuthMiddleware',
+              msg: `user of ${decoded['id']} is not found`,
+            });
+          }
+          req.user = (user as unknown) as ReqUser;
+        }
+      } catch (error) {
+        if (error.message === 'invalid signature') {
           throw exception({
-            type: 'NotFoundException',
+            type: 'ForbiddenException',
             name: 'AuthMiddleware',
-            msg: `user of ${decoded['id']} not found`,
+            msg: 'token invalid',
           });
         }
-        req.user = user;
+        throw new InternalServerErrorException(error);
       }
     }
     next();
