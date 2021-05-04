@@ -6,7 +6,7 @@ import { User } from '~/@database/entities/user.entity';
 import { UtilService } from '~/util/util.service';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
-import { nicknameList } from './util';
+import { nicknameList } from './lib';
 import { UserInfo } from '~/@database/entities/user.info.entity';
 import exception from '~/_lib/exception';
 import { RemoveOrRestore } from './user.service.interface';
