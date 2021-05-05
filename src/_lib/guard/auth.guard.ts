@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
   }
 }
 
-export function authGuard(roles?: UserRole[]) {
+export function authGuardFn(roles?: UserRole[]) {
   return applyDecorators(
     SetMetadata(META_DATA.ROLES, roles),
     UseGuards(AuthGuard),

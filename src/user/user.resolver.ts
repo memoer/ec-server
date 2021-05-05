@@ -3,12 +3,12 @@ import { UseInterceptors } from '@nestjs/common';
 import { User } from '~/@database/entities/user.entity';
 import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
 import {
-  checkDataGuard,
+  checkDataGuardFn,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
-import { atLeastOneArgsOfGuard } from '~/_lib/guard/at-least-one-args-of.guard';
+import { atLeastOneArgsOfGuardFn } from '~/_lib/guard/at-least-one-args-of.guard';
 import { PaginationInput } from '~/util/dto/pagination.dto';
-import { authGuard } from '~/_lib/guard/auth.guard';
+import { authGuardFn } from '~/_lib/guard/auth.guard';
 import { CurrentUser } from '~/_lib/decorator/current-user.decorator';
 import { UserService } from './user.service';
 import { CreateUserInput, CreateUserOutput } from './dto/createUser.dto';
@@ -26,13 +26,13 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => User)
-  @authGuard()
+  @authGuardFn()
   me(@CurrentUser() user: User) {
     return user;
   }
 
   @Query(() => String)
-  @atLeastOneArgsOfGuard<User>(['nickname', 'email'])
+  @atLeastOneArgsOfGuardFn<User>(['nickname', 'email'])
   logInUser(@Args('input') input: LogInUserInput) {
     return this.userService.logInUser(input);
   }
@@ -40,7 +40,6 @@ export class UserResolver {
   @Mutation(() => Boolean)
   sendVerifyCode(@Args('input') input: SendVerifyCodeUserInput) {
     // ! oauth,password -> optional ( one of two is required )
-    // ! phoneNumber: required
     return this.userService.sendVerifyCodeUser(input);
   }
 
@@ -50,7 +49,7 @@ export class UserResolver {
   }
 
   @Mutation(() => CreateUserOutput)
-  @checkDataGuard(User, CheckDataGuardType.shouldNotExist, 'email')
+  @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'email')
   createUser(@Args('input') input: CreateUserInput) {
     return this.userService.createUser(input);
   }
@@ -62,19 +61,19 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  @atLeastOneArgsOfGuard<User>(['id', 'nickname', 'email'])
+  @atLeastOneArgsOfGuardFn<User>(['id', 'nickname', 'email'])
   findOneUser(@Args('input') input: FindOneUserInput) {
     return this.userService.findOneUser(input);
   }
 
   @Mutation(() => User)
-  @authGuard()
+  @authGuardFn()
   updateUser(@CurrentUser() user: User, @Args('input') input: UpdateUserInput) {
     return this.userService.updateUser(user, input);
   }
 
   @Mutation(() => Boolean)
-  @authGuard()
+  @authGuardFn()
   removeUser(@CurrentUser() user: User, @Args('input') input: RemoveUserInput) {
     return this.userService.removeUser(user, input);
   }

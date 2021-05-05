@@ -33,7 +33,7 @@ export class AtLeastOneArgsOfGuard implements CanActivate {
     });
   }
 }
-export function atLeastOneArgsOfGuard<T>(keyList: readonly (keyof T)[]) {
+export function atLeastOneArgsOfGuardFn<T>(keyList: readonly (keyof T)[]) {
   const { KEY_LIST } = META_DATA.AT_LEAST_ONE_OF_GUARD;
   return applyDecorators(
     SetMetadata(KEY_LIST, keyList),

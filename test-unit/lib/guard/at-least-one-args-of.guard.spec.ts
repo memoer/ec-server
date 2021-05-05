@@ -2,7 +2,7 @@ import * as nestCommon from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { META_DATA } from '~/_lib/constants';
 import {
-  atLeastOneArgsOfGuard,
+  atLeastOneArgsOfGuardFn,
   AtLeastOneArgsOfGuard,
 } from '~/_lib/guard/at-least-one-args-of.guard';
 import { TMock } from '../../_/util';
@@ -17,7 +17,7 @@ jest.mock('@nestjs/common', () => ({
 describe('lib/guard/at-least-one-args-of', () => {
   const { KEY_LIST } = META_DATA.AT_LEAST_ONE_OF_GUARD;
 
-  describe('function atLeastOneArgsOfGuard', () => {
+  describe('function atLeastOneArgsOfGuardFn', () => {
     const {
       applyDecorators,
       SetMetadata,
@@ -34,7 +34,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       UseGuards.mockReturnValue(returnData.UserGuard);
       const keyList = ['hello', 'good'];
       // ? run
-      atLeastOneArgsOfGuard(keyList);
+      atLeastOneArgsOfGuardFn(keyList);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,
@@ -48,7 +48,7 @@ describe('lib/guard/at-least-one-args-of', () => {
 
   describe('class AtLeastOneArgsOfGuard', () => {
     contextMock.getHandler.mockReturnValue('contextMock');
-    const atLeastOneArgsOfGuard = new AtLeastOneArgsOfGuard(
+    const atLeastOneArgsOfGuardFn = new AtLeastOneArgsOfGuard(
       reflectorMock.reflector,
     );
     const args = {
@@ -56,7 +56,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       password: 'q1w2e3',
     };
     it('should be defined', () => {
-      expect(atLeastOneArgsOfGuard).toBeDefined();
+      expect(atLeastOneArgsOfGuardFn).toBeDefined();
     });
 
     it('if value returned by reflector get method in gqlContext.getArgs() keys, true', () => {
@@ -65,7 +65,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       reflectorMock.get.mockReturnValue(value);
       gqlCtxMock.getArgs.mockReturnValue(args);
       // ? run
-      const result = atLeastOneArgsOfGuard.canActivate(contextMock.context);
+      const result = atLeastOneArgsOfGuardFn.canActivate(contextMock.context);
       // ? test
       expect(gqlCtxMock.create).toHaveBeenNthCalledWith(1, contextMock.context);
       expect(reflectorMock.get).toHaveBeenNthCalledWith(
@@ -89,7 +89,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       });
       try {
         // ? run
-        atLeastOneArgsOfGuard.canActivate(contextMock.context);
+        atLeastOneArgsOfGuardFn.canActivate(contextMock.context);
       } catch (error) {
         // ? test
         expect(gqlCtxMock.create).toHaveBeenNthCalledWith(

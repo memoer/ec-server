@@ -59,7 +59,7 @@ export class CheckDataGuard implements CanActivate {
   }
 }
 
-export function checkDataGuard<T, K extends keyof T>(
+export function checkDataGuardFn<T, K extends keyof T>(
   entity: Type<T>,
   type: CheckDataGuardType,
   key?: K,

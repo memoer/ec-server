@@ -1,12 +1,11 @@
 import { Resolver, Query, Context } from '@nestjs/graphql';
-import * as requestIp from 'request-ip';
-import * as geoIp from 'geoip-lite';
 import { GqlCtx } from '../@graphql/graphql.interface';
-import exception from '../_lib/exception';
+import { AppService } from './app.service';
 import { GetGeoOutput } from './dto/getGeo.dto';
 
 @Resolver()
 export class AppResolver {
+  constructor(private readonly _appService: AppService) {}
   @Query(() => String)
   async hello() {
     return 'hello';
@@ -14,23 +13,6 @@ export class AppResolver {
 
   @Query(() => GetGeoOutput)
   getGeo(@Context() { req }: GqlCtx) {
-    // ! request-ip 를 설치해야 req.clientIp 가 intellisense 적용이 된다.
-    const clientIp = req.clientIp || requestIp.getClientIp(req);
-    if (!clientIp) {
-      throw exception({
-        type: 'NotFoundException',
-        name: 'AppResolver/getGeo',
-        msg: 'no ClientIp',
-      });
-    }
-    const geo = geoIp.lookup(clientIp);
-    if (!geo) {
-      throw exception({
-        type: 'NotFoundException',
-        name: 'AppResolver/getGeo',
-        msg: 'no Geo',
-      });
-    }
-    return geo;
+    return this._appService.getGeo(req);
   }
 }

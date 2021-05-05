@@ -2,8 +2,8 @@ import * as nestCommon from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { META_DATA } from '~/_lib/constants';
 import {
-  checkDataGuard,
   CheckDataGuard,
+  checkDataGuardFn,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
 import { TMock } from '../../_/util';
@@ -24,14 +24,14 @@ describe('CheckDataGuard', () => {
     id!: number;
     name!: string;
   }
-  const checkDataGuard = new CheckDataGuard(reflectorMock.reflector);
+  const checkDataGuardCls = new CheckDataGuard(reflectorMock.reflector);
   const { ENTITY, TYPE, KEY } = META_DATA.CHECK_DATA_GUARD;
 
   it('should be defined', () => {
-    expect(checkDataGuard).toBeDefined();
+    expect(checkDataGuardCls).toBeDefined();
   });
 
-  describe('function checkDataGuard', () => {
+  describe('function checkDataGuardFn', () => {
     const {
       applyDecorators,
       SetMetadata,
@@ -52,7 +52,7 @@ describe('CheckDataGuard', () => {
       SetMetadata.mockReturnValueOnce(returnData.SetMetadata.KEY);
       UseGuards.mockReturnValue(returnData.UserGuard);
       // ? run
-      checkDataGuard(MockEntity, CheckDataGuardType.shouldExist);
+      checkDataGuardFn(MockEntity, CheckDataGuardType.shouldExist);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,
@@ -104,7 +104,7 @@ describe('CheckDataGuard', () => {
       typeormMock.getOne.mockResolvedValue(getOneData);
       try {
         // ? run
-        const result = await checkDataGuard.canActivate(contextMock.context);
+        const result = await checkDataGuardCls.canActivate(contextMock.context);
         // ? test
         expect(result).toEqual(true);
       } catch (error) {
