@@ -3,6 +3,6 @@ import { User } from '~/@database/entities/user.entity';
 
 @InputType()
 export class FindOneUserInput extends PartialType(
-  PickType(User, ['nickname', 'phoneNumber', 'email', 'id']),
+  PickType(User, ['nickname', 'email', 'id']),
   InputType,
 ) {}

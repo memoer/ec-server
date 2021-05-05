@@ -4,7 +4,8 @@ import {
   NestMiddleware,
 } from '@nestjs/common';
 import { NextFunction } from 'express';
-import { GqlCtx, ReqUser } from '~/@graphql/graphql.interface';
+import { User } from '~/@database/entities/user.entity';
+import { GqlCtx } from '~/@graphql/graphql.interface';
 import { JwtService } from '~/jwt/jwt.service';
 import { UserService } from '~/user/user.service';
 import exception from '../exception';
@@ -29,14 +30,7 @@ export class AuthMiddleware implements NestMiddleware {
         const decoded = this._jwtService.verify(token);
         if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
           const user = await this._userService.getUserById(decoded['id']);
-          if (!user) {
-            throw exception({
-              type: 'NotFoundException',
-              name: 'AuthMiddleware',
-              msg: `user of ${decoded['id']} is not found`,
-            });
-          }
-          req.user = (user as unknown) as ReqUser;
+          if (user) req.user = (user as unknown) as User;
         }
       } catch (error) {
         if (error.message === 'invalid signature') {

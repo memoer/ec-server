@@ -12,11 +12,11 @@ import { passwordRegex } from '~/_lib/regex';
 
 @InputType()
 export class CreateUserInput extends IntersectionType(
-  PickType(User, ['phoneNumber', 'sex', 'birthDate']),
+  PickType(User, ['email', 'sex', 'birthDate']),
   PickType(UserInfo, ['country']),
   InputType,
 ) {
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @IsString()
   @Length(4, 32)
   @Matches(passwordRegex, { message: 'password too weak' })

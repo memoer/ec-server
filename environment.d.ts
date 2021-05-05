@@ -22,6 +22,7 @@ declare global {
       AWS_SECRET_ACCESS_KEY: string;
       AWS_SMS_REGION: string;
       AWS_SNS_REGION: string;
+      AWS_SNS_FROM: string;
       //
       REDIS_HOST: string;
       REDIS_PORT: string;

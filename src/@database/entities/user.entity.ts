@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   Length,
 } from 'class-validator';
@@ -34,16 +33,17 @@ registerEnumType(UserSex, { name: 'UserSex' });
 @ObjectType()
 export class User extends Core {
   // * required
-  @Column({ unique: true })
-  @Field(() => String)
-  @IsString()
-  @Length(4, 128)
-  nickname!: string;
+  @Column({ nullable: true, unique: true })
+  @Field(() => String, { nullable: true })
+  @IsEmail()
+  @IsOptional()
+  email!: string;
 
   @Column({ unique: true })
   @Field(() => String)
-  @IsPhoneNumber()
-  phoneNumber!: string;
+  @IsString()
+  @Length(1, 128)
+  nickname!: string;
 
   @Column({ type: 'enum', enum: UserSex })
   @Field(() => UserSex)
@@ -61,17 +61,11 @@ export class User extends Core {
   @IsOptional()
   thumbnail?: string;
 
-  @Column({ nullable: true, unique: true })
-  @Field(() => String, { nullable: true })
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
   @Column({ select: false, nullable: true })
   password?: string;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.nickname, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
   @JoinColumn()
   info!: UserInfo;
@@ -79,6 +73,8 @@ export class User extends Core {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
+    // subscription은 `save` 사용할때만 호출된다.
+    // 정확하게는 `create` 로 만들어진 entitiy를 통해 `save`를 할 때
     // before insert/update using repository/manager save.
     if (this.password) {
       this.password = await generateHash(this.password);

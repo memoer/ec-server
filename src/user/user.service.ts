@@ -10,49 +10,36 @@ import { RestoreUserInput } from './dto/restoreUser.dto';
 import { CheckVerifyCodeUserInput } from './dto/checkVerfiyCodeUser.dto';
 import { SendVerifyCodeUserInput } from './dto/sendVerifyCodeUser.dto';
 import { FindOneUserInput } from './dto/findOneUser.dto';
-import { UpdatePhoneOrEmailUserInput } from './dto/updatePhoneOrEmailUser.dto';
-import { ReqUser } from '~/@graphql/graphql.interface';
+import { User } from '~/@database/entities/user.entity';
 
 @Injectable()
 export class UserService extends UserBaseService {
-  async logInUser({ nickname, phoneNumber, password }: LogInUserInput) {
-    const user = await this._userRepo.findOne({ nickname, phoneNumber });
-    if (!user) {
-      throw exception({
-        type: 'NotFoundException',
-        name: 'UserService/logIn',
-        msg: `user of ${nickname || phoneNumber} is not found`,
-      });
-    } else if (!(await user.verifyPassword(password))) {
+  async logInUser({ password, ...input }: LogInUserInput) {
+    const user = await this._userRepo.findOneOrFail(
+      { ...input },
+      { select: ['id', 'password'] },
+    );
+    if (!(await user.verifyPassword(password))) {
       throw exception({
         type: 'ForbiddenException',
         name: 'UserService/logIn',
         msg: 'password invalid',
       });
     }
-    return { data: user, token: this._jwtService.sign(user.id) };
+    return this._jwtService.sign(user.id);
   }
 
-  async sendVerifyCodeUser({ phoneNumber, email }: SendVerifyCodeUserInput) {
-    const key = (phoneNumber || email)!;
+  async sendVerifyCodeUser({ email }: SendVerifyCodeUserInput) {
     const verifyCode = await this._getVerifyCode();
     const message = `[End Coummnity] 인증번호 [${verifyCode}]를 입력해주세요.`;
-    const ttl = this._utilService.getMs({ value: 3, type: 'minute' }) / 1000;
-    await this._cacheManager.set(key, verifyCode, { ttl });
+    const ttl = this._utilService.getMs({ value: 30, type: 'minute' }) / 1000;
+    await this._cacheManager.set(email, verifyCode, { ttl });
     try {
-      const isEmail = key.includes('@');
-      if (isEmail) {
-        this._awsService.sendEmail({
-          to: key,
-          subject: '[End Coumminty] 이메일 확인',
-          text: message,
-        });
-      } else {
-        this._awsService.sendSMS({
-          Message: message,
-          PhoneNumber: key,
-        });
-      }
+      await this._awsService.sendEmail({
+        to: email,
+        subject: '[End Coumminty] 이메일 확인',
+        text: message,
+      });
     } catch (error) {
       if (this._cacheManager.get(verifyCode)) {
         await this._cacheManager.del(verifyCode);
@@ -62,8 +49,8 @@ export class UserService extends UserBaseService {
     return true;
   }
 
-  async checkVerifyCodeUser({ key, verifyCode }: CheckVerifyCodeUserInput) {
-    const cache = await this._cacheManager.get(key);
+  async checkVerifyCodeUser({ email, verifyCode }: CheckVerifyCodeUserInput) {
+    const cache = await this._cacheManager.get(email);
     if (cache !== verifyCode) {
       throw exception({
         type: 'ForbiddenException',
@@ -72,25 +59,25 @@ export class UserService extends UserBaseService {
       });
     }
     const ttl = this._utilService.getMs({ value: 30, type: 'minute' }) / 1000;
-    await this._cacheManager.set(key, true, { ttl });
+    await this._cacheManager.set(email, true, { ttl });
     return true;
   }
 
   async createUser({
-    phoneNumber,
+    email,
     sex,
     birthDate,
     password,
     country,
   }: CreateUserInput) {
     const nickname = await this._getUniqueNickname();
-    await this._verifyCodeInCacheIsValidThrow(phoneNumber);
+    await this._checkVerifyCodeOrFail(email);
     const newUserInfo = this._userInfoRepo.create({
       country,
       nickname,
     });
     const newUser = this._userRepo.create({
-      phoneNumber,
+      email,
       sex,
       birthDate,
       password,
@@ -104,7 +91,7 @@ export class UserService extends UserBaseService {
         return manager.save(newUser);
       },
     );
-    await this._cacheManager.del(phoneNumber);
+    await this._cacheManager.del(email);
     return { data, token: this._jwtService.sign(data.id) };
   }
 
@@ -116,44 +103,46 @@ export class UserService extends UserBaseService {
   }
 
   async findOneUser(input: FindOneUserInput) {
-    const data = await this._userRepo.findOne({ ...input });
-    if (!data) {
-      throw exception({
-        type: 'NotFoundException',
-        name: 'UserService/findOneUser',
-        msg: 'user is not found',
-      });
+    // EntityNotFound: Could not find any entity of type "User" matching
+    return this._userRepo.findOneOrFail({ ...input });
+  }
+
+  async updateUser(user: User, input: UpdateUserInput) {
+    if (input.email) {
+      await this._checkVerifyCodeOrFail(input.email);
     }
-    return data;
+    const updatedUser = this._userRepo.create({ ...user, ...input });
+    return this._userRepo.save(updatedUser);
   }
 
-  async updateUser(userId: number, input: UpdateUserInput) {
-    return this._userRepo.update(userId, input);
-  }
-
-  async updatePhoneOrEmailUser(
-    userId: number,
-    input: UpdatePhoneOrEmailUserInput,
-  ) {
-    await this._verifyCodeInCacheIsValidThrow(Object.values(input)[0]);
-    return this._userRepo.update(userId, input);
-  }
-
-  async removeUser(user: ReqUser, { reason }: RemoveUserInput) {
-    return this._removeOrRestore({
+  async removeUser(user: User, { reason }: RemoveUserInput) {
+    await this._removeOrRestore({
       type: 'remove',
       userId: user.id,
       nickname: user.nickname,
       reason,
     });
+    return true;
   }
 
-  async restoreUser(user: ReqUser, { reason }: RestoreUserInput) {
-    return this._removeOrRestore({
+  async restoreUser({ reason, email, password }: RestoreUserInput) {
+    const user = await this._userRepo.findOneOrFail(
+      { email },
+      { withDeleted: true, select: ['id', 'nickname', 'password'] },
+    );
+    if (!(await user.verifyPassword(password))) {
+      throw exception({
+        type: 'ForbiddenException',
+        name: 'UserService/restoreUser',
+        msg: 'password invalid',
+      });
+    }
+    await this._removeOrRestore({
       type: 'restore',
       userId: user.id,
       nickname: user.nickname,
       reason,
     });
+    return true;
   }
 }

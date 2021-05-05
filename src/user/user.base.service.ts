@@ -51,9 +51,7 @@ export class UserBaseService {
     }
   }
 
-  protected async _verifyCodeInCacheIsValidThrow(
-    key: string,
-  ): Promise<boolean> {
+  protected async _checkVerifyCodeOrFail(key: string): Promise<boolean> {
     const cache = (await this._cacheManager.get(key)) as boolean;
     if (!cache) {
       throw exception({

@@ -10,18 +10,16 @@ import { atLeastOneArgsOfGuard } from '~/_lib/guard/at-least-one-args-of.guard';
 import { PaginationInput } from '~/util/dto/pagination.dto';
 import { authGuard } from '~/_lib/guard/auth.guard';
 import { CurrentUser } from '~/_lib/decorator/current-user.decorator';
-import { ReqUser } from '~/@graphql/graphql.interface';
 import { UserService } from './user.service';
 import { CreateUserInput, CreateUserOutput } from './dto/createUser.dto';
 import { UpdateUserInput } from './dto/updateUser.dto';
 import { FindAllUserOutput } from './dto/findAllUser.dto';
-import { LogInUserInput, LogInUserOutput } from './dto/logInUser.dto';
+import { LogInUserInput } from './dto/logInUser.dto';
 import { RemoveUserInput } from './dto/removeUser.dto';
 import { RestoreUserInput } from './dto/restoreUser.dto';
 import { CheckVerifyCodeUserInput } from './dto/checkVerfiyCodeUser.dto';
 import { SendVerifyCodeUserInput } from './dto/sendVerifyCodeUser.dto';
 import { FindOneUserInput } from './dto/findOneUser.dto';
-import { UpdatePhoneOrEmailUserInput } from './dto/updatePhoneOrEmailUser.dto';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -29,18 +27,17 @@ export class UserResolver {
 
   @Query(() => User)
   @authGuard()
-  me(@CurrentUser() user: ReqUser) {
+  me(@CurrentUser() user: User) {
     return user;
   }
 
-  @Query(() => LogInUserOutput)
-  @atLeastOneArgsOfGuard<User>(['nickname', 'phoneNumber'])
+  @Query(() => String)
+  @atLeastOneArgsOfGuard<User>(['nickname', 'email'])
   logInUser(@Args('input') input: LogInUserInput) {
     return this.userService.logInUser(input);
   }
 
   @Mutation(() => Boolean)
-  @atLeastOneArgsOfGuard<User>(['phoneNumber', 'email'])
   sendVerifyCode(@Args('input') input: SendVerifyCodeUserInput) {
     // ! oauth,password -> optional ( one of two is required )
     // ! phoneNumber: required
@@ -53,7 +50,7 @@ export class UserResolver {
   }
 
   @Mutation(() => CreateUserOutput)
-  @checkDataGuard(User, CheckDataGuardType.shouldNotExist, 'phoneNumber')
+  @checkDataGuard(User, CheckDataGuardType.shouldNotExist, 'email')
   createUser(@Args('input') input: CreateUserInput) {
     return this.userService.createUser(input);
   }
@@ -65,7 +62,7 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  @atLeastOneArgsOfGuard<User>(['id', 'phoneNumber', 'nickname', 'email'])
+  @atLeastOneArgsOfGuard<User>(['id', 'nickname', 'email'])
   findOneUser(@Args('input') input: FindOneUserInput) {
     return this.userService.findOneUser(input);
   }
@@ -73,34 +70,17 @@ export class UserResolver {
   @Mutation(() => User)
   @authGuard()
   updateUser(@CurrentUser() user: User, @Args('input') input: UpdateUserInput) {
-    return this.userService.updateUser(user.id, input);
+    return this.userService.updateUser(user, input);
   }
 
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   @authGuard()
-  @atLeastOneArgsOfGuard<User>(['phoneNumber', 'email'])
-  updatePhoneOrEmailUser(
-    @CurrentUser() user: User,
-    @Args('input') input: UpdatePhoneOrEmailUserInput,
-  ) {
-    return this.userService.updatePhoneOrEmailUser(user.id, input);
-  }
-
-  @Mutation(() => User)
-  @authGuard()
-  removeUser(
-    @CurrentUser() user: ReqUser,
-    @Args('input') input: RemoveUserInput,
-  ) {
+  removeUser(@CurrentUser() user: User, @Args('input') input: RemoveUserInput) {
     return this.userService.removeUser(user, input);
   }
 
-  @Mutation(() => User)
-  @authGuard()
-  restoreUser(
-    @CurrentUser() user: ReqUser,
-    @Args('id') input: RestoreUserInput,
-  ) {
-    return this.userService.restoreUser(user, input);
+  @Mutation(() => Boolean)
+  restoreUser(@Args('input') input: RestoreUserInput) {
+    return this.userService.restoreUser(input);
   }
 }

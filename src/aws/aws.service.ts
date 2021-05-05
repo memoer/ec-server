@@ -32,7 +32,7 @@ export class AwsService {
 
   async sendEmail(args: SendEmail) {
     return this._transporter.sendMail({
-      from: 'hanjn2842@gmail.com',
+      from: this._awsConfig.AWS_SNS_FROM,
       ...args,
     });
   }
