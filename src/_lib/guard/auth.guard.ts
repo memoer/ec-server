@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { UserRole } from 'aws-sdk/clients/workmail';
 import { Observable } from 'rxjs';
+import { UserRole } from '~/@database/entities/user.info.entity';
 import { META_DATA } from '../constants';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
   }
 }
 
-export function authGuardFn(roles?: UserRole[]) {
+export function authGuardFn(...roles: (keyof typeof UserRole)[]) {
   return applyDecorators(
     SetMetadata(META_DATA.ROLES, roles),
     UseGuards(AuthGuard),

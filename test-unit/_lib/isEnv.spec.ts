@@ -11,7 +11,7 @@ describe('lib/isEnv', () => {
   });
 
   it('local', () => {
-    // ? variables to use & init mock
+    // ? init variables
     process.env.NODE_ENV = 'local';
     // ? run
     const result = isEnv('local');
@@ -20,7 +20,7 @@ describe('lib/isEnv', () => {
   });
 
   it('dev', () => {
-    // ? variables to use & init mock
+    // ? init variables
     process.env.NODE_ENV = 'dev';
     // ? run
     const result = isEnv('dev');
@@ -29,7 +29,7 @@ describe('lib/isEnv', () => {
   });
 
   it('staging', () => {
-    // ? variables to use & init mock
+    // ? init variables
     process.env.NODE_ENV = 'staging';
     // ? run
     const result = isEnv('staging');
@@ -38,7 +38,7 @@ describe('lib/isEnv', () => {
   });
 
   it('prod', () => {
-    // ? variables to use & init mock
+    // ? init variables
     process.env.NODE_ENV = 'prod';
     // ? run
     const result = isEnv('prod');

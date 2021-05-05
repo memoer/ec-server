@@ -50,7 +50,7 @@ export class CheckDataGuard implements CanActivate {
           throw exception({
             type: 'ConflictException',
             name: 'CheckDataGuard/canActive',
-            msg: `${entity.name}_${key}_${value} is already existed`,
+            msg: `${entity.name}_${key}<${value}> is already existed`,
           });
         }
         break;

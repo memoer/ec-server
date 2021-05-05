@@ -1,5 +1,4 @@
 import * as nestCommon from '@nestjs/common';
-import { BadRequestException } from '@nestjs/common';
 import { META_DATA } from '~/_lib/constants';
 import {
   atLeastOneArgsOfGuardFn,
@@ -7,6 +6,7 @@ import {
 } from '~/_lib/guard/at-least-one-args-of.guard';
 import { TMock } from '../../_/util';
 import { gqlCtxMock, reflectorMock, contextMock } from '../../_';
+import exception from '~/_lib/exception';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -18,6 +18,7 @@ describe('lib/guard/at-least-one-args-of', () => {
   const { KEY_LIST } = META_DATA.AT_LEAST_ONE_OF_GUARD;
 
   describe('function atLeastOneArgsOfGuardFn', () => {
+    // ? init variables
     const {
       applyDecorators,
       SetMetadata,
@@ -25,11 +26,12 @@ describe('lib/guard/at-least-one-args-of', () => {
     } = (nestCommon as unknown) as TMock<typeof nestCommon>;
 
     it('applyDecorators, SetMetaData, UseGuards should called with 1', () => {
-      // ? variables to use & init mock
+      // ? init variables
       const returnData = {
         SetMetadata: 'SetMetadata',
         UserGuard: 'UseGuards',
       };
+      // ? init mock
       SetMetadata.mockReturnValue(returnData.SetMetadata);
       UseGuards.mockReturnValue(returnData.UserGuard);
       const keyList = ['hello', 'good'];
@@ -47,7 +49,7 @@ describe('lib/guard/at-least-one-args-of', () => {
   });
 
   describe('class AtLeastOneArgsOfGuard', () => {
-    contextMock.getHandler.mockReturnValue('contextMock');
+    // ? init variables
     const atLeastOneArgsOfGuardFn = new AtLeastOneArgsOfGuard(
       reflectorMock.reflector,
     );
@@ -55,15 +57,19 @@ describe('lib/guard/at-least-one-args-of', () => {
       name: 'jaename',
       password: 'q1w2e3',
     };
+    // ? init mock
+    contextMock.getHandler.mockReturnValue('contextMock');
+
     it('should be defined', () => {
       expect(atLeastOneArgsOfGuardFn).toBeDefined();
     });
 
     it('if value returned by reflector get method in gqlContext.getArgs() keys, true', () => {
-      // ? variables to use & init mock
+      // ? init variables
       const value = ['name'];
+      // ? init mock
       reflectorMock.get.mockReturnValue(value);
-      gqlCtxMock.getArgs.mockReturnValue(args);
+      gqlCtxMock.getArgs.mockReturnValue({ input: args });
       // ? run
       const result = atLeastOneArgsOfGuardFn.canActivate(contextMock.context);
       // ? test
@@ -79,13 +85,16 @@ describe('lib/guard/at-least-one-args-of', () => {
     });
 
     it('if not value returned by reflector get method in gqlContext.getArgs() keys, throw BadRequestException', () => {
-      // ? variables to use & init mock
+      // ? init variables
       const value = ['email'];
+      // ? init mock
       reflectorMock.get.mockReturnValue(value);
       contextMock.getHandler.mockReturnValue('contextMock');
       gqlCtxMock.getArgs.mockReturnValue({
-        name: 'jaename',
-        password: 'q1w2e3',
+        input: {
+          name: 'jaename',
+          password: 'q1w2e3',
+        },
       });
       try {
         // ? run
@@ -104,9 +113,11 @@ describe('lib/guard/at-least-one-args-of', () => {
         expect(contextMock.getHandler).toHaveBeenCalledTimes(1);
         expect(gqlCtxMock.getArgs).toHaveBeenCalledTimes(1);
         expect(error).toMatchObject(
-          new BadRequestException(
-            `should exist at least one of ${value.join(', ')}`,
-          ),
+          exception({
+            type: 'BadRequestException',
+            name: 'AtLeastOneArgsOfGuard/canActive',
+            msg: `should exist at least one of ${value.join(', ')}`,
+          }),
         );
       }
     });

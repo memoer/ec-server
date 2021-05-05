@@ -24,11 +24,12 @@ describe('lib/filter/sentry-exception', () => {
   });
 
   it('if below 500 error, no exceution sentry function', () => {
-    // ? variables to use & init mock
+    // ? init variables
     const exception = new HttpException(
       'status code 400',
       HttpStatus.BAD_REQUEST,
     );
+    // ? init mock
     // ? run
     const result = sentryExceptionFilter.catch(exception);
     // ? test
@@ -38,11 +39,12 @@ describe('lib/filter/sentry-exception', () => {
   });
 
   it('if above 500 error, exceution once sentry function', () => {
-    // ? variables to use & init mock
+    // ? init variables
     const exception = new HttpException(
       'status code 500',
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
+    // ? init mock
     const scope = { setTag: jest.fn() };
     // ? run
     const result = sentryExceptionFilter.catch(exception);

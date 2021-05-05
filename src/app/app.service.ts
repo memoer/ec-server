@@ -13,7 +13,7 @@ export class AppService {
       throw exception({
         type: 'NotFoundException',
         name: 'AppResolver/getGeo',
-        msg: 'no ClientIp',
+        msg: 'no clientIp',
       });
     }
     const geo = geoIp.lookup(clientIp);
@@ -21,7 +21,7 @@ export class AppService {
       throw exception({
         type: 'NotFoundException',
         name: 'AppResolver/getGeo',
-        msg: 'no Geo',
+        msg: 'no geo',
       });
     }
     return geo;

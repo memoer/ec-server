@@ -1,7 +1,6 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsOptional, IsString, Length } from 'class-validator';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { upperCaseMiddleware } from '~/_lib/middleware/graphql.middleware';
 
 export enum UserOAuth {
   GOOGLE = 'GOOGLE',
@@ -36,7 +35,7 @@ export class UserInfo {
   nickname!: string;
 
   @Column()
-  @Field(() => String, { middleware: [upperCaseMiddleware] })
+  @Field(() => String)
   @Length(2)
   country!: string;
 

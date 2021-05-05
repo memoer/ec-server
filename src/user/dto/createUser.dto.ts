@@ -8,8 +8,7 @@ import {
 import { IsString, Length, Matches } from 'class-validator';
 import { User } from '~/@database/entities/user.entity';
 import { UserInfo } from '~/@database/entities/user.info.entity';
-import { passwordRegex } from '~/_lib/regex';
-
+const passwordRegex = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
 @InputType()
 export class CreateUserInput extends IntersectionType(
   PickType(User, ['email', 'sex', 'birthDate']),

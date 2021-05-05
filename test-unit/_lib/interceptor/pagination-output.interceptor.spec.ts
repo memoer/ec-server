@@ -17,9 +17,11 @@ describe('lib/interceptor/pagination-output', () => {
   });
 
   it('should be successfully called', () => {
-    // ? variables to use & init mock
-    gqlCtxMock.getArgs.mockReturnValue({ pageNumber, take });
+    // ? init variables
     const data = [10, 20];
+    const totalPage = Math.ceil(data[1] / take);
+    // ? init mock
+    gqlCtxMock.getArgs.mockReturnValue({ input: { pageNumber, take } });
     // ? run
     interceptor.intercept(context, nextCallHandler);
     const cbResult = getCallback(map)(data);
@@ -31,9 +33,9 @@ describe('lib/interceptor/pagination-output', () => {
     expect(map).toHaveBeenCalledTimes(1);
     expect(cbResult).toEqual({
       data: data[0],
-      totalCount: data[1],
+      totalPage,
       curPage: pageNumber,
-      hasNextPage: Math.ceil(data[1] / take) === pageNumber,
+      hasNextPage: totalPage !== pageNumber,
     });
   });
 });

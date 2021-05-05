@@ -18,8 +18,9 @@ describe('GqlThrottlerGuardGuard', () => {
   });
 
   it('', () => {
-    // ? variables to use & init mock
+    // ? init variables
     const expectResult = { req: 'req', res: 'res' };
+    // ? init mock
     gqlCtxMock.getContext.mockReturnValue(expectResult);
     // ? run
     const result = gqlThrottlerGuard.getRequestResponse(contextMock.context);
