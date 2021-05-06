@@ -1,35 +1,37 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { SentryExceptionFilter } from '~/_lib/filter/sentry-exception.filter';
-import { getCallback } from '@/_';
+import { getCallback } from '@/_/common';
 jest.mock('@sentry/node');
 // withScope testing 하는 방법
 // https://stackoverflow.com/questions/56298972/testing-sentry-with-jest
 
 describe('lib/filter/sentry-exception', () => {
+  // ? init variables
   let sentryExceptionFilter: SentryExceptionFilter;
+  // ? init mocks
+  const scope = { setTag: jest.fn() };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [SentryExceptionFilter],
-    }).compile();
-    sentryExceptionFilter = module.get<SentryExceptionFilter>(
-      SentryExceptionFilter,
-    );
+    sentryExceptionFilter = new SentryExceptionFilter();
+    // const module: TestingModule = await Test.createTestingModule({
+    //   providers: [SentryExceptionFilter],
+    // }).compile();
+    // sentryExceptionFilter = module.get<SentryExceptionFilter>(
+    //   SentryExceptionFilter,
+    // );
   });
 
   it('should be defined', () => {
     expect(sentryExceptionFilter).toBeDefined();
   });
 
-  it('if below 500 error, no exceution sentry function', () => {
+  it('HttpException, 400 error', () => {
     // ? init variables
-    const exception = new HttpException(
-      'status code 400',
-      HttpStatus.BAD_REQUEST,
-    );
-    // ? init mock
+    const exception = new BadRequestException();
     // ? run
     const result = sentryExceptionFilter.catch(exception);
     // ? test
@@ -38,14 +40,9 @@ describe('lib/filter/sentry-exception', () => {
     expect(Sentry.captureException).not.toHaveBeenCalled();
   });
 
-  it('if above 500 error, exceution once sentry function', () => {
+  it('HttpException, 500 error', () => {
     // ? init variables
-    const exception = new HttpException(
-      'status code 500',
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
-    // ? init mock
-    const scope = { setTag: jest.fn() };
+    const exception = new InternalServerErrorException();
     // ? run
     const result = sentryExceptionFilter.catch(exception);
     getCallback(Sentry.withScope)(scope);
@@ -58,5 +55,18 @@ describe('lib/filter/sentry-exception', () => {
       exception.getStatus().toString(),
     );
     expect(Sentry.captureException).toHaveBeenNthCalledWith(1, exception);
+  });
+
+  it('if no HttpException, 500 error', () => {
+    // ? init variables
+    const exception = new Error('test');
+    const expectException = new InternalServerErrorException(exception);
+    // ? run
+    const result = sentryExceptionFilter.catch(exception);
+    getCallback(Sentry.withScope)(scope);
+    // ? test
+    expect(result).toMatchObject(expectException);
+    expect(scope.setTag).toHaveBeenNthCalledWith(1, 'status', '500');
+    expect(Sentry.captureException).toHaveBeenNthCalledWith(1, expectException);
   });
 });

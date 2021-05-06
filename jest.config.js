@@ -13,6 +13,7 @@ module.exports = {
     'src/_lib/**/*.(t|j)s',
     'src/**/lib/*.(t|j)s',
   ],
+  coveragePathIgnorePatterns: ['src/_lib/decorator/*'],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: './coverage',

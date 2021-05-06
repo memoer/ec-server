@@ -7,7 +7,7 @@ const gqlPrototypeCtxMock = {
   getContext: (GqlExecutionContext.prototype.getContext = jest.fn()),
 };
 
-export const gqlCtxMock = {
+export const gqlExecCtxMock = {
   create: (GqlExecutionContext.create = jest
     .fn()
     .mockReturnValue(gqlPrototypeCtxMock)),
@@ -21,3 +21,22 @@ export const reflectorMock = {
   reflector: new Reflector(),
   get: (Reflector.prototype.get = jest.fn()),
 };
+
+export const callHandlerMock = {
+  handle: jest.fn().mockReturnThis(),
+  pipe: jest.fn(),
+};
+
+export const getCallback = (fn: any, number = 0) => fn.mock.calls[0][number];
+
+class UserMock {
+  email = 'test@test.com';
+  nickname = 'testNickname';
+  sex = 'MALE';
+  birthDate = new Date();
+  country = 'kr';
+  role = 'CLIENT';
+  status = 'ACTIVE';
+}
+
+export const userMock = new UserMock();

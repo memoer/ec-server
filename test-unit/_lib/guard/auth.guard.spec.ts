@@ -2,8 +2,8 @@ import * as nestCommon from '@nestjs/common';
 import { UserRole } from '~/@database/entities/user.info.entity';
 import { META_DATA } from '~/_lib/constants';
 import { AuthGuard, authGuardFn } from '~/_lib/guard/auth.guard';
-import { reflectorMock } from '@/_';
-import { TMock } from '@/_/util';
+import { reflectorMock } from '@/_/common';
+import { TMock } from '@/_/type';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -27,20 +27,20 @@ describe('AuthGuard', () => {
       UseGuards,
     } = (nestCommon as unknown) as TMock<typeof nestCommon>;
     const roles: (keyof typeof UserRole)[] = ['CLIENT', 'CLIENT_ADMIN'];
-    const returnData = {
+    const expectData = {
       setMetaData: 'setMetaData',
       UseGuards: 'UseGuards',
     };
     // ? init mock
-    SetMetadata.mockReturnValueOnce(returnData.setMetaData);
-    UseGuards.mockReturnValueOnce(returnData.UseGuards);
+    SetMetadata.mockReturnValueOnce(expectData.setMetaData);
+    UseGuards.mockReturnValueOnce(expectData.UseGuards);
     // ? run
     authGuardFn(...roles);
     // ? test
     expect(applyDecorators).toHaveBeenNthCalledWith(
       1,
-      returnData.setMetaData,
-      returnData.UseGuards,
+      expectData.setMetaData,
+      expectData.UseGuards,
     );
     expect(SetMetadata).toHaveBeenNthCalledWith(1, META_DATA.ROLES, roles);
     expect(UseGuards).toHaveBeenNthCalledWith(1, AuthGuard);

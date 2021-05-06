@@ -5,8 +5,8 @@ import {
   AtLeastOneArgsOfGuard,
 } from '~/_lib/guard/at-least-one-args-of.guard';
 import exception from '~/_lib/exception';
-import { TMock } from '@/_/util';
-import { gqlCtxMock, reflectorMock, contextMock } from '@/_';
+import { TMock } from '@/_/type';
+import { gqlExecCtxMock, reflectorMock, contextMock } from '@/_/common';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -27,21 +27,21 @@ describe('lib/guard/at-least-one-args-of', () => {
 
     it('applyDecorators, SetMetaData, UseGuards should called with 1', () => {
       // ? init variables
-      const returnData = {
+      const expectData = {
         SetMetadata: 'SetMetadata',
         UserGuard: 'UseGuards',
       };
       // ? init mock
-      SetMetadata.mockReturnValue(returnData.SetMetadata);
-      UseGuards.mockReturnValue(returnData.UserGuard);
+      SetMetadata.mockReturnValue(expectData.SetMetadata);
+      UseGuards.mockReturnValue(expectData.UserGuard);
       const keyList = ['hello', 'good'];
       // ? run
       atLeastOneArgsOfGuardFn(keyList);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,
-        returnData.SetMetadata,
-        returnData.UserGuard,
+        expectData.SetMetadata,
+        expectData.UserGuard,
       );
       expect(SetMetadata).toHaveBeenNthCalledWith(1, KEY_LIST, keyList);
       expect(UseGuards).toHaveBeenNthCalledWith(1, AtLeastOneArgsOfGuard);
@@ -69,18 +69,21 @@ describe('lib/guard/at-least-one-args-of', () => {
       const value = ['name'];
       // ? init mock
       reflectorMock.get.mockReturnValue(value);
-      gqlCtxMock.getArgs.mockReturnValue({ input: args });
+      gqlExecCtxMock.getArgs.mockReturnValue({ input: args });
       // ? run
       const result = atLeastOneArgsOfGuardFn.canActivate(contextMock.context);
       // ? test
-      expect(gqlCtxMock.create).toHaveBeenNthCalledWith(1, contextMock.context);
+      expect(gqlExecCtxMock.create).toHaveBeenNthCalledWith(
+        1,
+        contextMock.context,
+      );
       expect(reflectorMock.get).toHaveBeenNthCalledWith(
         1,
         KEY_LIST,
         'contextMock',
       );
       expect(contextMock.getHandler).toHaveBeenCalledTimes(1);
-      expect(gqlCtxMock.getArgs).toHaveBeenCalledTimes(1);
+      expect(gqlExecCtxMock.getArgs).toHaveBeenCalledTimes(1);
       expect(result).toEqual(true);
     });
 
@@ -90,7 +93,7 @@ describe('lib/guard/at-least-one-args-of', () => {
       // ? init mock
       reflectorMock.get.mockReturnValue(value);
       contextMock.getHandler.mockReturnValue('contextMock');
-      gqlCtxMock.getArgs.mockReturnValue({
+      gqlExecCtxMock.getArgs.mockReturnValue({
         input: {
           name: 'jaename',
           password: 'q1w2e3',
@@ -101,7 +104,7 @@ describe('lib/guard/at-least-one-args-of', () => {
         atLeastOneArgsOfGuardFn.canActivate(contextMock.context);
       } catch (error) {
         // ? test
-        expect(gqlCtxMock.create).toHaveBeenNthCalledWith(
+        expect(gqlExecCtxMock.create).toHaveBeenNthCalledWith(
           1,
           contextMock.context,
         );
@@ -111,7 +114,7 @@ describe('lib/guard/at-least-one-args-of', () => {
           'contextMock',
         );
         expect(contextMock.getHandler).toHaveBeenCalledTimes(1);
-        expect(gqlCtxMock.getArgs).toHaveBeenCalledTimes(1);
+        expect(gqlExecCtxMock.getArgs).toHaveBeenCalledTimes(1);
         expect(error).toMatchObject(
           exception({
             type: 'BadRequestException',

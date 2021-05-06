@@ -6,11 +6,10 @@ import { User } from '~/@database/entities/user.entity';
 import { UtilService } from '~/util/util.service';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
-import { nicknameList } from './lib';
+import nicknameList from './lib/nicknameList.json';
 import { UserInfo } from '~/@database/entities/user.info.entity';
 import exception from '~/_lib/exception';
 import { RemoveOrRestore } from './user.service.interface';
-
 export class UserBaseService {
   constructor(
     @InjectRepository(User)
@@ -24,10 +23,6 @@ export class UserBaseService {
     protected readonly _awsService: AwsService,
     protected readonly _jwtService: JwtService,
   ) {}
-
-  public getUserById(id: number) {
-    return this._userRepo.findOne(id);
-  }
 
   protected async _getUniqueNickname() {
     const randIdx = this._utilService.getRandNum(0, nicknameList.length);
