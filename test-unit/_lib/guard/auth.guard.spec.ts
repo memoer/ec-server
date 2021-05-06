@@ -2,8 +2,8 @@ import * as nestCommon from '@nestjs/common';
 import { UserRole } from '~/@database/entities/user.info.entity';
 import { META_DATA } from '~/_lib/constants';
 import { AuthGuard, authGuardFn } from '~/_lib/guard/auth.guard';
-import { reflectorMock } from '../../_';
-import { TMock } from '../../_/util';
+import { reflectorMock } from '@/_';
+import { TMock } from '@/_/util';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),

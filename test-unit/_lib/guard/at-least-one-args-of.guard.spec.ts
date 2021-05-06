@@ -4,9 +4,9 @@ import {
   atLeastOneArgsOfGuardFn,
   AtLeastOneArgsOfGuard,
 } from '~/_lib/guard/at-least-one-args-of.guard';
-import { TMock } from '../../_/util';
-import { gqlCtxMock, reflectorMock, contextMock } from '../../_';
 import exception from '~/_lib/exception';
+import { TMock } from '@/_/util';
+import { gqlCtxMock, reflectorMock, contextMock } from '@/_';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),

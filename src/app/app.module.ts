@@ -7,10 +7,10 @@ import CacheModule from '../@cache/cache.module';
 import ConfigModule from '../@config/config.module';
 import DBModule from '../@database/db.module';
 import GraphQLModule from '../@graphql/graphql.module';
-import { AppResolver } from './app.resolver';
 import { AwsModule } from '../aws/aws.module';
 import { JwtService } from '../jwt/jwt.service';
 import { UserModule } from '../user/user.module';
+import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 
 @Module({

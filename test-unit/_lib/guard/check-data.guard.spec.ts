@@ -1,15 +1,15 @@
 import * as nestCommon from '@nestjs/common';
 import { getRepository } from 'typeorm';
+import { ConflictException } from '@nestjs/common';
+import exception from '~/_lib/exception';
 import { META_DATA } from '~/_lib/constants';
 import {
   CheckDataGuard,
   checkDataGuardFn,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
-import { TMock } from '../../_/util';
-import { reflectorMock, gqlCtxMock, contextMock } from '../../_';
-import { ConflictException } from '@nestjs/common';
-import exception from '~/_lib/exception';
+import { TMock } from '@/_/util';
+import { reflectorMock, gqlCtxMock, contextMock } from '@/_';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),

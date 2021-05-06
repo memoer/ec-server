@@ -20,6 +20,7 @@ import { RestoreUserInput } from './dto/restoreUser.dto';
 import { CheckVerifyCodeUserInput } from './dto/checkVerfiyCodeUser.dto';
 import { SendVerifyCodeUserInput } from './dto/sendVerifyCodeUser.dto';
 import { FindOneUserInput } from './dto/findOneUser.dto';
+import { ReqUesr } from '~/@graphql/graphql.interface';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -27,7 +28,7 @@ export class UserResolver {
 
   @Query(() => User)
   @authGuardFn()
-  me(@CurrentUser() user: User) {
+  me(@CurrentUser() user: ReqUesr) {
     return user;
   }
 

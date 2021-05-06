@@ -8,7 +8,11 @@ module.exports = {
   clearMocks: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ['src/**/*.service.(t|j)s', 'src/_lib/**/*.(t|j)s'],
+  collectCoverageFrom: [
+    'src/**/*.service.(t|j)s',
+    'src/_lib/**/*.(t|j)s',
+    'src/**/lib/*.(t|j)s',
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: './coverage',
@@ -32,6 +36,7 @@ module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/test-unit/$1',
   },
 
   // The root directory that Jest should scan for tests and modules within

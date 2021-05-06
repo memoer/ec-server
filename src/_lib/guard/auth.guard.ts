@@ -10,6 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { UserRole } from '~/@database/entities/user.info.entity';
+import { GqlCtx } from '~/@graphql/graphql.interface';
 import { META_DATA } from '../constants';
 
 @Injectable()
@@ -21,12 +22,14 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const {
       req: { user },
-    } = GqlExecutionContext.create(context).getContext();
+    } = GqlExecutionContext.create(context).getContext() as GqlCtx;
     const roles = this._reflector.getAllAndOverride<UserRole[]>(
       META_DATA.ROLES,
       [context.getHandler(), context.getClass()],
     );
-    return !roles ? !!user : roles.some((r) => user.role.includes(r));
+    return roles.length === 0
+      ? !!user
+      : roles.some((r) => user.info.role.includes(r));
   }
 }
 

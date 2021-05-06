@@ -17,11 +17,12 @@ export class UserBaseService {
     protected readonly _userRepo: Repository<User>,
     @InjectRepository(UserInfo)
     protected readonly _userInfoRepo: Repository<UserInfo>,
+    @Inject(CACHE_MANAGER)
+    protected readonly _cacheManager: Cache,
+    protected readonly _dbConn: Connection,
     protected readonly _utilService: UtilService,
-    @Inject(CACHE_MANAGER) protected readonly _cacheManager: Cache,
     protected readonly _awsService: AwsService,
     protected readonly _jwtService: JwtService,
-    protected readonly _dbConn: Connection,
   ) {}
 
   public getUserById(id: number) {

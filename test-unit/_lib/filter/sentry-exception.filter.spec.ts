@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as Sentry from '@sentry/node';
 import { SentryExceptionFilter } from '~/_lib/filter/sentry-exception.filter';
-import { getCallback } from '../../_';
+import { getCallback } from '@/_';
 jest.mock('@sentry/node');
 // withScope testing 하는 방법
 // https://stackoverflow.com/questions/56298972/testing-sentry-with-jest

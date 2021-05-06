@@ -11,6 +11,7 @@ import * as requestIp from 'request-ip';
 import { AppModule } from './app/app.module';
 import isEnv from './_lib/isEnv';
 import { SentryExceptionFilter } from './_lib/filter/sentry-exception.filter';
+import { LogExceptionFilter } from './_lib/filter/log-exception.filter';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
@@ -44,7 +45,10 @@ function initSentry(app: NestExpressApplication) {
 }
 
 async function bootstrap() {
-  const filters = [];
+  const filters = [
+    (isEnv('local') || isEnv('dev')) && new LogExceptionFilter(),
+    (isEnv('staging') || isEnv('prod')) && new SentryExceptionFilter(),
+  ].filter(Boolean) as (LogExceptionFilter | SentryExceptionFilter)[];
   const pipes = [new ValidationPipe()];
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: isEnv('local') || isEnv('dev'),
@@ -71,7 +75,6 @@ async function bootstrap() {
     // typically in a reverse proxy (e.g., Nginx). In that case, you should not use compression middleware.
     app.use(compression());
     initSentry(app);
-    filters.push(new SentryExceptionFilter());
   }
   app.useGlobalFilters(...filters);
   app.useGlobalPipes(...pipes);

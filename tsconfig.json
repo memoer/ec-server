@@ -16,7 +16,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "paths": {
-      "~/*": ["*"],
+      "~/*": [
+        "*"
+      ],
+      "@/*": [
+        "../test-unit/*"
+      ],
     }
   }
 }
