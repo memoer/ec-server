@@ -8,9 +8,8 @@ import {
   checkDataGuardFn,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
-import { TMock } from '@/_/type';
-import { reflectorMock, gqlExecCtxMock, contextMock } from '@/_/common';
-
+import { TMock } from '@/type';
+import { reflectorMock, gqlExecCtxMock, contextMock } from '@/common';
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -22,10 +21,6 @@ jest.mock('typeorm', () => ({
 }));
 
 describe('CheckDataGuard', () => {
-  class MockEntity {
-    id!: number;
-    name!: string;
-  }
   const checkDataGuardCls = new CheckDataGuard(reflectorMock.reflector);
   const { ENTITY, TYPE, KEY } = META_DATA.CHECK_DATA_GUARD;
 
@@ -43,7 +38,11 @@ describe('CheckDataGuard', () => {
 
     it('applyDecorators with 1, SetMetaData with 3, UseGuards with 1 should called', () => {
       // ? init variables
-      const expectData = {
+      class MockEntity {
+        id!: number;
+        name!: string;
+      }
+      const returnData = {
         SetMetadata: {
           ENTITY: 'entity',
           TYPE: 'type',
@@ -52,19 +51,19 @@ describe('CheckDataGuard', () => {
         UserGuard: 'UseGuards',
       } as const;
       // ? init mock
-      SetMetadata.mockReturnValueOnce(expectData.SetMetadata.ENTITY);
-      SetMetadata.mockReturnValueOnce(expectData.SetMetadata.TYPE);
-      SetMetadata.mockReturnValueOnce(expectData.SetMetadata.KEY);
-      UseGuards.mockReturnValue(expectData.UserGuard);
+      SetMetadata.mockReturnValueOnce(returnData.SetMetadata.ENTITY);
+      SetMetadata.mockReturnValueOnce(returnData.SetMetadata.TYPE);
+      SetMetadata.mockReturnValueOnce(returnData.SetMetadata.KEY);
+      UseGuards.mockReturnValue(returnData.UserGuard);
       // ? run
       checkDataGuardFn(MockEntity, CheckDataGuardType.shouldExist);
       // ? test
       expect(applyDecorators).toHaveBeenNthCalledWith(
         1,
-        expectData.SetMetadata.ENTITY,
-        expectData.SetMetadata.TYPE,
-        expectData.SetMetadata.KEY,
-        expectData.UserGuard,
+        returnData.SetMetadata.ENTITY,
+        returnData.SetMetadata.TYPE,
+        returnData.SetMetadata.KEY,
+        returnData.UserGuard,
       );
       expect(SetMetadata).toHaveBeenNthCalledWith(1, ENTITY, MockEntity);
       expect(SetMetadata).toHaveBeenNthCalledWith(
@@ -96,13 +95,20 @@ describe('CheckDataGuard', () => {
     ].forEach(({ getOneData, type }) =>
       it(`getOneData, type is ${getOneData}, ${type}`, async () => {
         // ? variables to use
-        const id = '1';
-        const entity = { name: 'entity' };
-        const key = 'id';
+        const returnData = {
+          gqlExecCtxMock: {
+            getArgs: { input: { id: '1' } },
+          },
+          reflectorMock: {
+            get: [{ name: 'entity' }, 'id'],
+          },
+        };
         // ? init mock
-        gqlExecCtxMock.getArgs.mockReturnValue({ input: { id } });
-        reflectorMock.get.mockReturnValueOnce(entity);
-        reflectorMock.get.mockReturnValueOnce(key);
+        gqlExecCtxMock.getArgs.mockReturnValue(
+          returnData.gqlExecCtxMock.getArgs,
+        );
+        reflectorMock.get.mockReturnValueOnce(returnData.reflectorMock.get[0]);
+        reflectorMock.get.mockReturnValueOnce(returnData.reflectorMock.get[1]);
         reflectorMock.get.mockReturnValueOnce(type);
         typeormMock.getOne.mockResolvedValue(getOneData);
         try {
@@ -119,7 +125,11 @@ describe('CheckDataGuard', () => {
                 exception({
                   type: 'NotFoundException',
                   name: 'CheckDataGuard/canActive',
-                  msg: `${entity.name}_${key}<${id}> is not found`,
+                  msg: `${(returnData.reflectorMock.get[0] as any).name}_${
+                    returnData.reflectorMock.get[1]
+                  }<${
+                    returnData.gqlExecCtxMock.getArgs.input.id
+                  }> is not found`,
                 }),
               );
               break;
@@ -129,7 +139,11 @@ describe('CheckDataGuard', () => {
                   exception({
                     type: 'ConflictException',
                     name: 'CheckDataGuard/canActive',
-                    msg: `${entity.name}_${key}<${id}> is already existed`,
+                    msg: `${(returnData.reflectorMock.get[0] as any).name}_${
+                      returnData.reflectorMock.get[1]
+                    }<${
+                      returnData.gqlExecCtxMock.getArgs.input.id
+                    }> is already existed`,
                   }),
                 ),
               );
@@ -156,15 +170,20 @@ describe('CheckDataGuard', () => {
             TYPE,
             'contextMock',
           );
-          expect(getRepository).toHaveBeenNthCalledWith(1, entity);
+          expect(getRepository).toHaveBeenNthCalledWith(
+            1,
+            returnData.reflectorMock.get[0],
+          );
           expect(typeormMock.createQueryBuilder).toHaveBeenNthCalledWith(
             1,
-            entity.name,
+            (returnData.reflectorMock.get[0] as any).name,
           );
           expect(typeormMock.where).toHaveBeenNthCalledWith(
             1,
-            `${entity.name}.${key} = :${key}`,
-            { id },
+            `${(returnData.reflectorMock.get[0] as any).name}.${
+              returnData.reflectorMock.get[1]
+            } = :${returnData.reflectorMock.get[1]}`,
+            { id: returnData.gqlExecCtxMock.getArgs.input.id },
           );
           expect(typeormMock.getOne).toHaveBeenCalledTimes(1);
         }

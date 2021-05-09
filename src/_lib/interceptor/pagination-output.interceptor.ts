@@ -20,13 +20,19 @@ export class PaginationOutputInterceptor implements NestInterceptor {
           throw exception({
             type: 'InternalServerErrorException',
             name: 'PaginationOutputInterceptor.map',
-            msg: 'data format must be [data, count]',
+            msg: 'data type must be [object, number]',
+          });
+        } else if (typeof data[0] !== 'object') {
+          throw exception({
+            type: 'InternalServerErrorException',
+            name: 'PaginationOutputInterceptor.map',
+            msg: 'data[0] type must be object',
           });
         } else if (typeof data[1] !== 'number') {
           throw exception({
             type: 'InternalServerErrorException',
             name: 'PaginationOutputInterceptor.map',
-            msg: 'data[1] type is not number',
+            msg: 'data[1] type must be number',
           });
         }
         const totalPage = Math.ceil(data[1] / take);

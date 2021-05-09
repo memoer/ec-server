@@ -1,6 +1,6 @@
 import { ThrottlerStorage } from '@nestjs/throttler';
 import { GqlThrottlerGuard } from '~/_lib/guard/gql-throttler-guard.guard';
-import { contextMock, gqlExecCtxMock, reflectorMock } from '@/_/common';
+import { contextMock, gqlExecCtxMock, reflectorMock } from '@/common';
 
 describe('GqlThrottlerGuardGuard', () => {
   const throttlerStorageMock: ThrottlerStorage = {
@@ -19,9 +19,9 @@ describe('GqlThrottlerGuardGuard', () => {
 
   it('', () => {
     // ? init variables
-    const expectResult = { req: 'req', res: 'res' };
+    const returnData = { req: 'req', res: 'res' };
     // ? init mock
-    gqlExecCtxMock.getContext.mockReturnValue(expectResult);
+    gqlExecCtxMock.getContext.mockReturnValue(returnData);
     // ? run
     const result = gqlThrottlerGuard.getRequestResponse(contextMock.context);
     // ? test
@@ -30,6 +30,6 @@ describe('GqlThrottlerGuardGuard', () => {
       contextMock.context,
     );
     expect(gqlExecCtxMock.getContext).toHaveBeenCalledTimes(1);
-    expect(result).toEqual(expectResult);
+    expect(result).toEqual(returnData);
   });
 });

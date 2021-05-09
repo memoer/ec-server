@@ -20,22 +20,15 @@ export class UtilService {
    * @description desc
    */
   getMs({ value, type }: GetMs): number {
-    const oneMs = 1000;
-    const oneSecond = 1 * oneMs;
-    const oneMinue = 60 * oneSecond;
-    const oneHour = 60 * oneMinue;
-    const oneDay = 24 * oneHour;
     switch (type) {
       case 'day':
-        return value * oneDay;
+        return value * 24 * 60 * 60 * 1000;
       case 'hour':
-        return value * oneHour;
+        return value * 60 * 60 * 1000;
       case 'minute':
-        return value * oneMinue;
+        return value * 60 * 1000;
       case 'second':
-        return value * oneSecond;
-      default:
-        return value * oneMs;
+        return value * 1000;
     }
   }
 
@@ -47,11 +40,11 @@ export class UtilService {
    * @description typeORM에서 conditions에 사용하기 위함
    * @example findOne에서 conditions가 {nickanme:"12", phoneNumber:undefined}일 경우,
    * 결과가 올바르게 나오지 않음
-   * undefined || null 인 데이터를 없앰 -> removeNoDataOf()
+   * undefined || null 인 데이터를 없앰 -> removeUndefinedOf()
    */
-  removeNoDataOf(obj: Record<string, any>) {
+  removeUndefinedOf(obj: Record<string, any>) {
     return Object.keys(obj).reduce<Record<string, any>>((o, key) => {
-      if (obj[key]) o[key] = obj[key];
+      if (obj[key] !== undefined) o[key] = obj[key];
       return o;
     }, {});
   }

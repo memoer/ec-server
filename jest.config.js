@@ -37,7 +37,7 @@ module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',
-    '^@/(.*)$': '<rootDir>/test-unit/$1',
+    '^@/(.*)$': '<rootDir>/test-unit/_/$1',
   },
 
   // The root directory that Jest should scan for tests and modules within

@@ -57,7 +57,13 @@ export class UserBaseService {
     }
     return cache;
   }
-  async _removeOrRestore({ userId, nickname, type, reason }: RemoveOrRestore) {
+
+  protected async _removeOrRestore({
+    userId,
+    nickname,
+    type,
+    reason,
+  }: RemoveOrRestore) {
     const title = type === 'restore' ? '복귀' : '탈퇴';
     const promiseArr = [
       reason &&

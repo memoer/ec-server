@@ -17,7 +17,7 @@ import { Like } from 'typeorm';
 export class UserService extends UserBaseService {
   async logInUser({ password, nickname, phoneNumber }: LogInUserInput) {
     const user = await this._userRepo.findOneOrFail(
-      this._utilService.removeNoDataOf({ nickname, phoneNumber }),
+      this._utilService.removeUndefinedOf({ nickname, phoneNumber }),
       { select: ['id', 'password'] },
     );
     if (!(await user.verifyPassword(password))) {
@@ -43,16 +43,16 @@ export class UserService extends UserBaseService {
       1000;
     await this._cacheManager.set(key, verifyCode, { ttl });
     try {
-      if (isEmail) {
-        this._awsService.sendEmail({
+      if (!isEmail) {
+        await this._awsService.sendSMS({
+          Message: message,
+          PhoneNumber: key,
+        });
+      } else {
+        await this._awsService.sendEmail({
           to: key,
           subject: '[End Coumminty] 이메일 확인',
           text: message,
-        });
-      } else {
-        this._awsService.sendSMS({
-          Message: message,
-          PhoneNumber: key,
         });
       }
     } catch (error) {
@@ -130,7 +130,7 @@ export class UserService extends UserBaseService {
   async findOneUser({ nickname, email, id }: FindOneUserInput) {
     // EntityNotFound: Could not find any entity of type "User" matching
     return this._userRepo.findOneOrFail(
-      this._utilService.removeNoDataOf({ nickname, email, id }),
+      this._utilService.removeUndefinedOf({ nickname, email, id }),
     );
   }
 
@@ -178,7 +178,7 @@ export class UserService extends UserBaseService {
     password,
   }: RestoreUserInput) {
     const user = await this._userRepo.findOneOrFail(
-      this._utilService.removeNoDataOf({ nickname, phoneNumber }),
+      this._utilService.removeUndefinedOf({ nickname, phoneNumber }),
       { withDeleted: true, select: ['id', 'nickname', 'password'] },
     );
     if (!(await user.verifyPassword(password))) {

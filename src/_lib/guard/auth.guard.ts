@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     );
     return roles.length === 0
       ? !!user
-      : roles.some((r) => user.info.role.includes(r));
+      : roles.some((r) => user.info.role === r);
   }
 }
 

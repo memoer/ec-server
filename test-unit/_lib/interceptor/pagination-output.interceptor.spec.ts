@@ -1,7 +1,8 @@
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { map } from 'rxjs/operators';
 import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
-import { getCallback, gqlExecCtxMock, callHandlerMock } from '@/_/common';
+import { getCallback, gqlExecCtxMock, callHandlerMock } from '@/common';
+import exception from '~/_lib/exception';
 jest.mock('rxjs/operators', () => ({
   map: jest.fn(),
 }));
@@ -16,9 +17,94 @@ describe('lib/interceptor/pagination-output', () => {
     expect(interceptor).toBeDefined();
   });
 
+  it('data type must be [object, number]', () => {
+    // ? init variables
+    const returnData = {
+      gqlExecCtxMock: {
+        getArgs: { input: { pageNumber, take } },
+      },
+    };
+    const args = {
+      mapCallback: [{}],
+    };
+    // ? init mock
+    gqlExecCtxMock.getArgs.mockReturnValue(returnData.gqlExecCtxMock.getArgs);
+    // ? run
+    try {
+      interceptor.intercept(context, callHandlerMock);
+      getCallback(map)(args.mapCallback);
+    } catch (error) {
+      // ? test
+      expect(gqlExecCtxMock.create).toHaveBeenNthCalledWith(1, context);
+      expect(gqlExecCtxMock.getArgs).toHaveBeenCalledTimes(1);
+      expect(error).toMatchObject(
+        exception({
+          type: 'InternalServerErrorException',
+          name: 'PaginationOutputInterceptor.map',
+          msg: 'data type must be [object, number]',
+        }),
+      );
+    }
+  });
+
+  it('data[0] type must be object', () => {
+    // ? init variables
+    const args = {
+      mapCallback: [10, 20],
+    };
+    // ? init mock
+    gqlExecCtxMock.getArgs.mockReturnValue({ input: { pageNumber, take } });
+    // ? run
+    try {
+      interceptor.intercept(context, callHandlerMock);
+      getCallback(map)(args.mapCallback);
+    } catch (error) {
+      // ? test
+      expect(gqlExecCtxMock.create).toHaveBeenNthCalledWith(1, context);
+      expect(gqlExecCtxMock.getArgs).toHaveBeenCalledTimes(1);
+      expect(error).toMatchObject(
+        exception({
+          type: 'InternalServerErrorException',
+          name: 'PaginationOutputInterceptor.map',
+          msg: 'data[0] type must be object',
+        }),
+      );
+    }
+  });
+
+  it('data[1] type must be number', () => {
+    // ? init variables
+    const returnData = {
+      gqlExecCtxMock: {
+        getArgs: { input: { pageNumber, take } },
+      },
+    };
+    const args = {
+      mapCallback: [{}, '1'],
+    };
+    // ? init mock
+    gqlExecCtxMock.getArgs.mockReturnValue(returnData.gqlExecCtxMock.getArgs);
+    // ? run
+    try {
+      interceptor.intercept(context, callHandlerMock);
+      getCallback(map)(args.mapCallback);
+    } catch (error) {
+      // ? test
+      expect(gqlExecCtxMock.create).toHaveBeenNthCalledWith(1, context);
+      expect(gqlExecCtxMock.getArgs).toHaveBeenCalledTimes(1);
+      expect(error).toMatchObject(
+        exception({
+          type: 'InternalServerErrorException',
+          name: 'PaginationOutputInterceptor.map',
+          msg: 'data[1] type must be number',
+        }),
+      );
+    }
+  });
+
   it('should be successfully called', () => {
     // ? init variables
-    const data = [10, 20];
+    const data: [Record<string, any>, number] = [{}, 20];
     const totalPage = Math.ceil(data[1] / take);
     // ? init mock
     gqlExecCtxMock.getArgs.mockReturnValue({ input: { pageNumber, take } });

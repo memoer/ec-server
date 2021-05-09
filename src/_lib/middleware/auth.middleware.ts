@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NestMiddleware,
-} from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction } from 'express';
 import { getRepository } from 'typeorm';
 import { User } from '~/user/entity';
@@ -25,23 +21,12 @@ export class AuthMiddleware implements NestMiddleware {
           msg: 'authorization header type invalid',
         });
       }
-      try {
-        const decoded = this._jwtService.verify(token);
-        if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-          const user = await getRepository(User).findOne(decoded['id'], {
-            relations: [UserRelation.info],
-          });
-          if (user) req.user = user as ReqUesr;
-        }
-      } catch (error) {
-        if (error.message === 'invalid signature') {
-          throw exception({
-            type: 'ForbiddenException',
-            name: 'AuthMiddleware/me',
-            msg: 'token invalid',
-          });
-        }
-        throw new InternalServerErrorException(error);
+      const decoded = this._jwtService.verify(token);
+      if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
+        const user = await getRepository(User).findOne(decoded['id'], {
+          relations: [UserRelation.info],
+        });
+        if (user) req.user = user as ReqUesr;
       }
     }
     next();
