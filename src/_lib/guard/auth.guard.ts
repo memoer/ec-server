@@ -9,7 +9,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
-import { UserRole } from '~/@database/entities/user.info.entity';
+import { UserRole } from '~/user/entity/user.info.entity';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 import { META_DATA } from '../constants';
 

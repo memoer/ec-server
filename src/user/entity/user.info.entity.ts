@@ -1,6 +1,7 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsOptional, IsString, Length } from 'class-validator';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { User } from '.';
 
 export enum UserOAuth {
   GOOGLE = 'GOOGLE',
@@ -25,14 +26,18 @@ registerEnumType(UserStatus, {
   description: 'ACTIVE[활동], DORMANCY[휴면]',
 });
 
+export enum UserInfoRelation {
+  user = 'user',
+}
 // ! 유저가 보는 정보들이 아님
 // ! 개발자 / DBA 들이 보는 정보들
 // ! 유저가 스스로 수정할 수 없는 정보들
 @Entity()
 @ObjectType()
-export class UserInfo {
+export default class UserInfo {
   @PrimaryColumn()
-  nickname!: string;
+  @Field(() => Int)
+  userId!: number;
 
   @Column()
   @Field(() => String)
@@ -53,4 +58,10 @@ export class UserInfo {
   @IsString()
   @IsOptional()
   reason?: string;
+
+  @OneToOne(() => User, (user) => user.id, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  [UserInfoRelation.user]!: User;
 }

@@ -4,21 +4,15 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   Length,
 } from 'class-validator';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-} from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
 import exception from '~/_lib/exception';
 import { compareHash, generateHash } from '~/_lib/hash';
-import { Core } from './core.entity';
-import { UserInfo } from './user.info.entity';
+import { Core } from '~/@database/entity/core.entity';
+import UserInfo from './user.info.entity';
 
 export enum UserSex {
   MALE = 'MALE',
@@ -26,18 +20,20 @@ export enum UserSex {
 }
 registerEnumType(UserSex, { name: 'UserSex' });
 
+export enum UserRelation {
+  info = 'info',
+}
 // ! 유저 기본 정보
 // ! 유저가 직접적으로 확인 / 볼 수 있는 정보들임
 // ! 유저가 스스로 수정할 수 있는 정보들
 @Entity()
 @ObjectType()
-export class User extends Core {
+export default class User extends Core {
   // * required
-  @Column({ nullable: true, unique: true })
-  @Field(() => String, { nullable: true })
-  @IsEmail()
-  @IsOptional()
-  email!: string;
+  @Column({ unique: true })
+  @Field(() => String)
+  @IsPhoneNumber()
+  phoneNumber!: string;
 
   @Column({ unique: true })
   @Field(() => String)
@@ -55,6 +51,12 @@ export class User extends Core {
   @IsDate()
   birthDate!: Date;
   // * optional
+  @Column({ nullable: true, unique: true })
+  @Field(() => String, { nullable: true })
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
   @IsString()
@@ -64,11 +66,8 @@ export class User extends Core {
   @Column({ select: false, nullable: true })
   password?: string;
 
-  @OneToOne(() => UserInfo, (userInfo) => userInfo.nickname, {
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn()
-  info!: UserInfo;
+  @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
+  [UserRelation.info]!: UserInfo;
 
   @BeforeInsert()
   @BeforeUpdate()

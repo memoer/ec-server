@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { NextFunction } from 'express';
 import { getRepository } from 'typeorm';
-import { User } from '~/@database/entities/user.entity';
+import { User } from '~/user/entity';
 import { GqlCtx, ReqUesr } from '~/@graphql/graphql.interface';
 import { JwtService } from '~/jwt/jwt.service';
 import exception from '../exception';
+import { UserRelation } from '~/user/entity/user.entity';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -28,7 +29,7 @@ export class AuthMiddleware implements NestMiddleware {
         const decoded = this._jwtService.verify(token);
         if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
           const user = await getRepository(User).findOne(decoded['id'], {
-            relations: ['info'],
+            relations: [UserRelation.info],
           });
           if (user) req.user = user as ReqUesr;
         }

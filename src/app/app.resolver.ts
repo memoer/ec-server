@@ -1,5 +1,5 @@
 import { Resolver, Query, Context } from '@nestjs/graphql';
-import { GqlCtx } from '../@graphql/graphql.interface';
+import { GqlCtx } from '~/@graphql/graphql.interface';
 import { AppService } from './app.service';
 import { GetGeoOutput } from './dto/getGeo.dto';
 

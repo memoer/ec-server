@@ -2,12 +2,11 @@ import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Like, Repository, UpdateResult } from 'typeorm';
 import { Cache } from 'cache-manager';
-import { User } from '~/@database/entities/user.entity';
+import { User, UserInfo } from '~/user/entity';
 import { UtilService } from '~/util/util.service';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
-import nicknameList from './lib/nicknameList.json';
-import { UserInfo } from '~/@database/entities/user.info.entity';
+import * as nicknameList from './lib/nicknameList.json';
 import exception from '~/_lib/exception';
 import { RemoveOrRestore } from './user.service.interface';
 export class UserBaseService {
@@ -69,7 +68,7 @@ export class UserBaseService {
         ? this._userRepo.restore(userId)
         : this._userRepo.softDelete(userId),
     ].filter(Boolean) as Promise<UpdateResult>[];
-    const [result] = await Promise.all(promiseArr);
-    return result;
+    await Promise.all(promiseArr);
+    return true;
   }
 }

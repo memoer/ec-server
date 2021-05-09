@@ -1,5 +1,5 @@
 import { InputType, PartialType, PickType } from '@nestjs/graphql';
-import { User } from '~/@database/entities/user.entity';
+import { User } from '~/user/entity';
 
 @InputType()
 export class FindOneUserInput extends PartialType(

@@ -1,19 +1,18 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UseInterceptors } from '@nestjs/common';
-import { User } from '~/@database/entities/user.entity';
+import { User } from '~/user/entity';
 import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
 import {
   checkDataGuardFn,
   CheckDataGuardType,
 } from '~/_lib/guard/check-data.guard';
 import { atLeastOneArgsOfGuardFn } from '~/_lib/guard/at-least-one-args-of.guard';
-import { PaginationInput } from '~/util/dto/pagination.dto';
 import { authGuardFn } from '~/_lib/guard/auth.guard';
 import { CurrentUser } from '~/_lib/decorator/current-user.decorator';
 import { UserService } from './user.service';
 import { CreateUserInput, CreateUserOutput } from './dto/createUser.dto';
 import { UpdateUserInput } from './dto/updateUser.dto';
-import { FindAllUserOutput } from './dto/findAllUser.dto';
+import { FindAllUserInput, FindAllUserOutput } from './dto/findAllUser.dto';
 import { LogInUserInput } from './dto/logInUser.dto';
 import { RemoveUserInput } from './dto/removeUser.dto';
 import { RestoreUserInput } from './dto/restoreUser.dto';
@@ -33,36 +32,37 @@ export class UserResolver {
   }
 
   @Query(() => String)
-  @atLeastOneArgsOfGuardFn<User>(['nickname', 'email'])
+  @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'nickname'])
   logInUser(@Args('input') input: LogInUserInput) {
     return this.userService.logInUser(input);
   }
 
   @Mutation(() => Boolean)
-  sendVerifyCode(@Args('input') input: SendVerifyCodeUserInput) {
-    // ! oauth,password -> optional ( one of two is required )
+  @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'email'])
+  sendVerifyCodeUser(@Args('input') input: SendVerifyCodeUserInput) {
     return this.userService.sendVerifyCodeUser(input);
   }
 
   @Mutation(() => Boolean)
-  checkVerifyCode(@Args('input') input: CheckVerifyCodeUserInput) {
+  @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'email'])
+  checkVerifyCodeUser(@Args('input') input: CheckVerifyCodeUserInput) {
     return this.userService.checkVerifyCodeUser(input);
   }
 
   @Mutation(() => CreateUserOutput)
-  @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'email')
+  @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'phoneNumber')
   createUser(@Args('input') input: CreateUserInput) {
     return this.userService.createUser(input);
   }
 
   @Query(() => FindAllUserOutput)
   @UseInterceptors(PaginationOutputInterceptor)
-  findAllUser(@Args('input') input: PaginationInput) {
+  findAllUser(@Args('input') input: FindAllUserInput) {
     return this.userService.findAllUser(input);
   }
 
   @Query(() => User)
-  @atLeastOneArgsOfGuardFn<User>(['id', 'nickname', 'email'])
+  @atLeastOneArgsOfGuardFn<User>(['id', 'phoneNumber', 'nickname'])
   findOneUser(@Args('input') input: FindOneUserInput) {
     return this.userService.findOneUser(input);
   }
@@ -80,6 +80,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
+  @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'nickname'])
   restoreUser(@Args('input') input: RestoreUserInput) {
     return this.userService.restoreUser(input);
   }

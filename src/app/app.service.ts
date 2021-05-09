@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as requestIp from 'request-ip';
 import * as geoIp from 'geoip-lite';
-import exception from '../_lib/exception';
+import exception from '~/_lib/exception';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 
 @Injectable()

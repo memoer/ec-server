@@ -6,12 +6,11 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { IsString, Length, Matches } from 'class-validator';
-import { User } from '~/@database/entities/user.entity';
-import { UserInfo } from '~/@database/entities/user.info.entity';
+import { User, UserInfo } from '~/user/entity';
 import { passwordRegex } from '~/_lib/regex';
 @InputType()
 export class CreateUserInput extends IntersectionType(
-  PickType(User, ['email', 'sex', 'birthDate']),
+  PickType(User, ['phoneNumber', 'sex', 'birthDate']),
   PickType(UserInfo, ['country']),
   InputType,
 ) {

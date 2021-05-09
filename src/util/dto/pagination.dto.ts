@@ -6,7 +6,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { DEFAULT_VALUE } from '../../_lib/constants';
+import { DEFAULT_VALUE } from '~/_lib/constants';
 
 export function PaginationOuput<T>(classRef: Type<T>): any {
   @ObjectType({ isAbstract: true })
@@ -31,7 +31,7 @@ export function PaginationOuput<T>(classRef: Type<T>): any {
 }
 
 @InputType()
-export class PaginationInput {
+export class PaginationInputBySkip {
   @Field(() => Int, { nullable: true, defaultValue: DEFAULT_VALUE.PAGE_NUMBER })
   @IsNumber()
   @IsOptional()
@@ -42,3 +42,8 @@ export class PaginationInput {
   @IsOptional()
   take?: number;
 }
+
+// @Field(() => Int, { nullable: true })
+//   @IsNumber()
+//   @IsOptional()
+//   lastId?: number;

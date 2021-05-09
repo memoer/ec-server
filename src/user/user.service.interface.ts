@@ -2,7 +2,7 @@ import {
   UserOAuth,
   UserStatus,
   UserRole,
-} from '~/@database/entities/user.info.entity';
+} from '~/user/entity/user.info.entity';
 
 export interface NewUser {
   nickname: string;
