@@ -1,40 +1,32 @@
 import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
+import { Connection, Like } from 'typeorm';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
 import { LogInUserInput } from '~/user/dto/logInUser.dto';
 import { User, UserInfo } from '~/user/entity';
 import { UserService } from '~/user/user.service';
 import { UtilService } from '~/util/util.service';
+import * as nicknameList from '~/user/lib/nicknameList.json';
 import exception from '~/_lib/exception';
-// import {
-//   cacheManagerMock,
-//   dbConnMock,
-//   utilServiceMock,
-//   awsServiceMock,
-//   jwtServiceMock,
-// } from '@/common';
+import {
+  cacheManagerMock,
+  dbConnMock,
+  utilServiceMock,
+  awsServiceMock,
+  jwtServiceMock,
+  repositoryMock,
+  getCallback,
+} from '@/common';
 import { SendVerifyCodeUserInput } from '~/user/dto/sendVerifyCodeUser.dto';
+import { CheckVerifyCodeUserInput } from '~/user/dto/checkVerfiyCodeUser.dto';
+import { CreateUserInput } from '~/user/dto/createUser.dto';
+import { UserSex } from '~/user/entity/user.entity';
+import { FindAllUserInput } from '~/user/dto/findAllUser.dto';
+import { FindOneUserInput } from '~/user/dto/findOneUser.dto';
 
 describe('UserService', () => {
-  const cacheManagerMock = {
-    get: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
-  };
-  const dbConnMock = {};
-  const utilServiceMock = {
-    removeUndefinedOf: jest.fn(),
-    getMs: jest.fn(),
-  };
-  const awsServiceMock = {
-    sendEmail: jest.fn(),
-    sendSMS: jest.fn(),
-  };
-  const jwtServiceMock = { sign: jest.fn() };
-
   let userService: UserService;
   let userRepo: ReturnType<typeof repositoryMock>;
   let userInfoRepo: ReturnType<typeof repositoryMock>;
@@ -43,10 +35,6 @@ describe('UserService', () => {
   let utilService: typeof utilServiceMock;
   let awsService: typeof awsServiceMock;
   let jwtService: typeof jwtServiceMock;
-
-  const repositoryMock = () => ({
-    findOneOrFail: jest.fn(),
-  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -175,7 +163,7 @@ describe('UserService', () => {
       cacheManager.get.mockResolvedValue(sharedReturnData.cacheManager.get);
       utilService.getMs.mockReturnValue(sharedReturnData.utilService.getMs);
     };
-    it('phoeNumber', async () => {
+    it('phoneNumber', async () => {
       // ? init variables
       const returnData = {
         result: true,
@@ -258,5 +246,258 @@ describe('UserService', () => {
         expect(error).toMatchObject(returnException.awsService.sendEmail);
       }
     });
+  });
+
+  describe('checkVerifyCodeUser', () => {
+    it('verifyCode invalid, throw exception', async () => {
+      // ? init variables
+      const args: CheckVerifyCodeUserInput = {
+        phoneNumber: 'phoneNumber',
+        verifyCode: 'verifyCode',
+      };
+      const returnData = {
+        cacheManager: { get: 'cache' },
+      };
+      // ? init mock
+      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
+      try {
+        // ? run
+        await userService.checkVerifyCodeUser(args);
+      } catch (error) {
+        // ? test
+        expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
+        expect(error).toMatchObject(
+          exception({
+            type: 'ForbiddenException',
+            name: 'UserService/createUser',
+            msg: 'served verifyCode invalid',
+          }),
+        );
+      }
+    });
+
+    it('verifyCode valid, return true', async () => {
+      // ? init variables
+      const args: CheckVerifyCodeUserInput = {
+        email: 'email',
+        verifyCode: 'verifyCode',
+      };
+      const returnData = {
+        cacheManager: { get: 'verifyCode' },
+        utilService: { getMs: 3000 },
+        result: true,
+      };
+      // ? init mock
+      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
+      utilService.getMs.mockReturnValue(returnData.utilService.getMs);
+      // ? run
+      const result = await userService.checkVerifyCodeUser(args);
+      // ? test
+      expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.email);
+      expect(utilService.getMs).toHaveBeenNthCalledWith(1, {
+        value: 30,
+        type: 'minute',
+      });
+      expect(cacheManager.set).toHaveBeenNthCalledWith(1, args.email, true, {
+        ttl: returnData.utilService.getMs / 1000,
+      });
+      expect(result).toEqual(returnData.result);
+    });
+  });
+
+  describe('createUser', () => {
+    const args: CreateUserInput = {
+      phoneNumber: 'phoneNumber',
+      sex: UserSex.FEMALE,
+      birthDate: new Date(),
+      password: 'Qwesdwd1234@',
+      country: 'kr',
+    };
+
+    it('cache invalid, throw exception', async () => {
+      // ? init variables
+      const returnData = {
+        utilService: { getRandNum: 0 },
+        userRepo: { find: [{ nickname: nicknameList[0] }] },
+        cacheManager: { get: false },
+      };
+      // ? init mock
+      utilService.getRandNum.mockReturnValue(returnData.utilService.getRandNum);
+      userRepo.find.mockResolvedValue(returnData.userRepo.find);
+      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
+      try {
+        // ? run
+        await userService.createUser(args);
+      } catch (error) {
+        // ? test
+        expect(utilService.getRandNum).toHaveBeenNthCalledWith(
+          1,
+          0,
+          nicknameList.length,
+        );
+        expect(userRepo.find).toHaveBeenNthCalledWith(1, {
+          select: ['nickname'],
+          where: {
+            nickname: Like(
+              `${nicknameList[returnData.utilService.getRandNum]}%`,
+            ),
+          },
+          take: 1,
+          order: { nickname: 'DESC' },
+        });
+        expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
+        expect(error).toMatchObject(
+          exception({
+            type: 'ForbiddenException',
+            name: 'UserService/createUser',
+            msg: 'verifyCode stored cache must be checked',
+          }),
+        );
+      }
+    });
+
+    it('cache invalid, throw exception', async () => {
+      // ? init variables
+      const returnData = {
+        utilService: { getRandNum: 0 },
+        userRepo: {
+          find: [{ nickname: nicknameList[0] }],
+          create: 'newUserEntity',
+        },
+        userInfoRepo: {
+          create: { name: 'newUserInfoEntity' },
+        },
+        cacheManager: { get: true },
+        dbConn: { transaction: { id: '1' } },
+        dbManagerMock: { save: ['newUser'] },
+        jwtService: { sign: 'token' },
+      };
+      // ? init mock
+      const dbManagerMock = {
+        save: jest.fn(),
+      };
+      utilService.getRandNum.mockReturnValue(returnData.utilService.getRandNum);
+      userRepo.find.mockResolvedValue(returnData.userRepo.find);
+      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
+      userRepo.create.mockReturnValue(returnData.userRepo.create);
+      userInfoRepo.create.mockReturnValue(returnData.userInfoRepo.create);
+      dbConn.transaction.mockResolvedValue(returnData.dbConn.transaction);
+      dbManagerMock.save.mockResolvedValueOnce(
+        returnData.dbManagerMock.save[0],
+      );
+      jwtService.sign.mockReturnValue(returnData.jwtService.sign);
+      // ? run
+      const result = await userService.createUser(args);
+      await getCallback(dbConn.transaction, 1)(dbManagerMock);
+      // ? test
+      expect(utilService.getRandNum).toHaveBeenNthCalledWith(
+        1,
+        0,
+        nicknameList.length,
+      );
+      expect(userRepo.find).toHaveBeenNthCalledWith(1, {
+        select: ['nickname'],
+        where: {
+          nickname: Like(`${nicknameList[returnData.utilService.getRandNum]}%`),
+        },
+        take: 1,
+        order: { nickname: 'DESC' },
+      });
+      expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
+      expect(userRepo.create).toHaveBeenNthCalledWith(1, {
+        phoneNumber: args.phoneNumber,
+        sex: args.sex,
+        birthDate: args.birthDate,
+        password: args.password,
+        nickname: `${nicknameList[0]}1`,
+      });
+      expect(userInfoRepo.create).toHaveBeenNthCalledWith(1, {
+        country: args.country,
+      });
+      expect(dbConn.transaction).toHaveBeenNthCalledWith(
+        1,
+        'SERIALIZABLE',
+        expect.any(Function),
+      );
+      expect(dbManagerMock.save).toHaveBeenNthCalledWith(
+        1,
+        returnData.userRepo.create,
+      );
+      expect(dbManagerMock.save).toHaveBeenNthCalledWith(2, {
+        ...returnData.userInfoRepo.create,
+        user: returnData.dbManagerMock.save[0],
+      });
+      expect(cacheManager.del).toHaveBeenNthCalledWith(1, args.phoneNumber);
+      expect(jwtService.sign).toHaveBeenNthCalledWith(
+        1,
+        returnData.dbConn.transaction.id,
+      );
+      expect(result).toEqual({
+        data: returnData.dbConn.transaction,
+        token: returnData.jwtService.sign,
+      });
+    });
+  });
+
+  it('findAllUser', async () => {
+    // ? init variables
+    const args: FindAllUserInput = {
+      pageNumber: 1,
+      take: 1,
+      email: 'test@naver.com',
+      nickname: 'nickname',
+      sex: UserSex.FEMALE,
+    };
+    const returnData = {
+      userRepo: { findAndCount: ['good', 1] },
+      utilService: { getSkip: 1 },
+    };
+    // ? init mock
+    userRepo.findAndCount.mockResolvedValue(returnData.userRepo.findAndCount);
+    utilService.getSkip.mockReturnValue(returnData.utilService.getSkip);
+    // ? run
+    const result = await userService.findAllUser(args);
+    // ? test
+    expect(utilService.getSkip).toHaveBeenNthCalledWith(1, {
+      pageNumber: args.pageNumber,
+      take: args.take,
+    });
+    expect(userRepo.findAndCount).toHaveBeenNthCalledWith(1, {
+      take: args.take,
+      skip: returnData.utilService.getSkip,
+      where: {
+        email: Like(`%${args.email}%`),
+        nickname: Like(`%${args.nickname}%`),
+        sex: args.sex,
+      },
+    });
+    expect(result).toEqual(returnData.userRepo.findAndCount);
+  });
+
+  it('findOneUser', async () => {
+    // ? init variables
+    const args: FindOneUserInput = {
+      nickname: 'nickname',
+      email: 'email',
+      id: 1,
+    };
+    const returnData = {
+      userRepo: { findOneOrFail: 'findOneOrFail' },
+      utilService: { removeUndefinedOf: 'removeUndefinedOf' },
+    };
+    // ? init mock
+    userRepo.findOneOrFail.mockResolvedValue(returnData.userRepo.findOneOrFail);
+    utilService.removeUndefinedOf.mockReturnValue(
+      returnData.utilService.removeUndefinedOf,
+    );
+    // ? run
+    const result = await userService.findOneUser(args);
+    // ? test
+    expect(userRepo.findOneOrFail).toHaveBeenNthCalledWith(
+      1,
+      returnData.utilService.removeUndefinedOf,
+    );
+    expect(utilService.removeUndefinedOf).toHaveBeenNthCalledWith(1, args);
+    expect(result).toEqual(returnData.userRepo.findOneOrFail);
   });
 });

@@ -37,13 +37,23 @@ export const cacheManagerMock = {
   set: jest.fn(),
   del: jest.fn(),
 };
-export const dbConnMock = {};
+export const dbConnMock = {
+  transaction: jest.fn(),
+};
 export const utilServiceMock = {
   removeUndefinedOf: jest.fn(),
   getMs: jest.fn(),
+  getRandNum: jest.fn(),
+  getSkip: jest.fn(),
 };
 export const awsServiceMock = {
   sendEmail: jest.fn(),
   sendSMS: jest.fn(),
 };
 export const jwtServiceMock = { sign: jest.fn() };
+export const repositoryMock = () => ({
+  findOneOrFail: jest.fn(),
+  find: jest.fn(),
+  create: jest.fn(),
+  findAndCount: jest.fn(),
+});
