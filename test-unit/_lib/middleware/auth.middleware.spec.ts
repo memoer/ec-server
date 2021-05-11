@@ -85,7 +85,6 @@ describe('AuthMiddleware', () => {
       (({
         getRepository: getRepositoryMock,
       } as unknown) as Connection);
-
     jwtServiceMock.verify.mockReturnValue(returnData.jwtServiceMock.verify);
     // ? run
     authMiddleware.use(gqlCtxMock.req, gqlCtxMock.res, nextMock);

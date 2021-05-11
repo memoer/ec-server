@@ -56,4 +56,8 @@ export const repositoryMock = () => ({
   find: jest.fn(),
   create: jest.fn(),
   findAndCount: jest.fn(),
+  save: jest.fn(),
+  update: jest.fn(),
+  restore: jest.fn(),
+  softDelete: jest.fn(),
 });
