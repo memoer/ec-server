@@ -3,7 +3,7 @@ import * as requestIp from 'request-ip';
 import * as geoIp from 'geoip-lite';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 import { AppService } from '~/app/app.service';
-import exception from '~/_lib/exception';
+import { exception } from '~/_lib';
 
 describe('AppService', () => {
   let appService: AppService;
@@ -39,7 +39,7 @@ describe('AppService', () => {
       expect(error).toMatchObject(
         exception({
           type: 'NotFoundException',
-          name: 'AppResolver/getGeo',
+          loc: 'AppResolver.getGeo',
           msg: 'no clientIp',
         }),
       );
@@ -66,7 +66,7 @@ describe('AppService', () => {
       expect(error).toMatchObject(
         exception({
           type: 'NotFoundException',
-          name: 'AppResolver/getGeo',
+          loc: 'AppResolver.getGeo',
           msg: 'no clientIp',
         }),
       );

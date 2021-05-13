@@ -1,0 +1,127 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Int!
+  phoneNumber: String!
+  nickname: String!
+  sex: UserSex!
+  birthDate: DateTime!
+  email: String
+  thumbnail: String
+}
+
+enum UserSex {
+  MALE
+  FEMALE
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CreateUserOutput {
+  data: User!
+  token: String!
+}
+
+type FindAllUserOutput {
+  data: [User!]
+  curPage: Int!
+  totalPage: Int!
+  hasNextPage: Boolean!
+}
+
+type GetGeoOutput {
+  range: [Int!]!
+  country: String!
+  region: String!
+  eu: String!
+  timezone: String!
+  city: String!
+  ll: [Int!]!
+  metro: Int!
+  area: Int!
+}
+
+type Query {
+  hello: String!
+  getGeo: GetGeoOutput!
+  me: User!
+  logInUser(input: LogInUserInput!): String!
+  findAllUser(input: FindAllUserInput!): FindAllUserOutput!
+  findOneUser(input: FindOneUserInput!): User!
+}
+
+input LogInUserInput {
+  phoneNumber: String
+  nickname: String
+  password: String!
+}
+
+input FindAllUserInput {
+  pageNumber: Int = 1
+  take: Int = 10
+  nickname: String
+  sex: UserSex
+  email: String
+}
+
+input FindOneUserInput {
+  id: Int
+  nickname: String
+  email: String
+}
+
+type Mutation {
+  sendVerifyCodeUser(input: SendVerifyCodeUserInput!): Boolean!
+  checkVerifyCodeUser(input: CheckVerifyCodeUserInput!): Boolean!
+  createUser(input: CreateUserInput!): CreateUserOutput!
+  updateUser(input: UpdateUserInput!): User!
+  removeUser(input: RemoveUserInput!): Boolean!
+  restoreUser(input: RestoreUserInput!): Boolean!
+}
+
+input SendVerifyCodeUserInput {
+  phoneNumber: String
+  email: String
+}
+
+input CheckVerifyCodeUserInput {
+  phoneNumber: String
+  email: String
+  verifyCode: String!
+}
+
+input CreateUserInput {
+  phoneNumber: String!
+  sex: UserSex!
+  birthDate: DateTime!
+  country: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  sex: UserSex
+  birthDate: DateTime
+  password: String
+  phoneNumber: String
+  nickname: String
+  email: String
+  thumbnail: String
+}
+
+input RemoveUserInput {
+  """회원탈퇴/복구 이유"""
+  reason: String
+}
+
+input RestoreUserInput {
+  """회원탈퇴/복구 이유"""
+  reason: String
+  phoneNumber: String
+  nickname: String
+  password: String!
+}

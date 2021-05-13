@@ -1,5 +1,5 @@
 import * as nestCommon from '@nestjs/common';
-import { META_DATA } from '~/_lib/constants';
+import { META_DATA } from '~/_lib/constant';
 import {
   atLeastOneArgsOfGuardFn,
   AtLeastOneArgsOfGuard,
@@ -7,6 +7,7 @@ import {
 import exception from '~/_lib/exception';
 import { TMock } from '@/type';
 import { gqlExecCtxMock, reflectorMock, contextMock } from '@/common';
+
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -125,7 +126,7 @@ describe('lib/guard/at-least-one-args-of', () => {
         expect(error).toMatchObject(
           exception({
             type: 'BadRequestException',
-            name: 'AtLeastOneArgsOfGuard/canActive',
+            loc: 'AtLeastOneArgsOfGuard.canActive',
             msg: `should exist at least one of ${returnData.reflectorMock.get.join(
               ', ',
             )}`,

@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import appConfig from '~/@config/app.config';
+import { appConfig } from '~/@config/register';
 import { JwtService } from './jwt.service';
 
 @Global()

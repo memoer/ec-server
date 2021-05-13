@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import awsConfig from '~/@config/aws.config';
+import { awsConfig } from '~/@config/register';
 import { AwsService } from '~/aws/aws.service';
 import * as aws from 'aws-sdk';
 import * as nodemailer from 'nodemailer';
+
 const snsMock = { publish: jest.fn().mockReturnThis(), promise: jest.fn() };
 const sesMock = {};
 const createTransportMock = { sendMail: jest.fn() };

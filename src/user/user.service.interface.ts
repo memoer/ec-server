@@ -1,8 +1,4 @@
-import {
-  UserOAuth,
-  UserStatus,
-  UserRole,
-} from '~/user/entity/user.info.entity';
+import { UserOAuth, UserStatus, UserRole } from './entity';
 
 export interface NewUser {
   nickname: string;

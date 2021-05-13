@@ -23,7 +23,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./e2e-test/jest-e2e.json",
+    "test:e2e": "jest --config ./test-e2e/jest-e2e.json",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -49,6 +49,7 @@
     "geoip-lite": "^1.4.2",
     "graphql": "^15.5.0",
     "graphql-tools": "^7.0.4",
+    "graphql-upload": "^11.0.0",
     "helmet": "^4.5.0",
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
@@ -74,6 +75,7 @@
     "@types/compression": "^1.7.0",
     "@types/express": "^4.17.11",
     "@types/geoip-lite": "^1.4.1",
+    "@types/graphql-upload": "^8.0.4",
     "@types/jest": "^26.0.22",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/morgan": "^1.9.2",

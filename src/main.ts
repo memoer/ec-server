@@ -9,9 +9,11 @@ import * as logger from 'morgan';
 import * as requestIp from 'request-ip';
 // import * as csurf from 'csurf';
 import { AppModule } from './app/app.module';
-import isEnv from './_lib/isEnv';
-import { SentryExceptionFilter } from './_lib/filter/sentry-exception.filter';
-import { LogExceptionFilter } from './_lib/filter/log-exception.filter';
+import {
+  isEnv,
+  GlobalExceptionFilter,
+  EntityNotFoundExceptionFilter,
+} from './_lib';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
@@ -46,9 +48,10 @@ function initSentry(app: NestExpressApplication) {
 
 async function bootstrap() {
   const filters = [
-    (isEnv('local') || isEnv('dev')) && new LogExceptionFilter(),
-    (isEnv('staging') || isEnv('prod')) && new SentryExceptionFilter(),
-  ].filter(Boolean) as (LogExceptionFilter | SentryExceptionFilter)[];
+    new GlobalExceptionFilter(),
+    new EntityNotFoundExceptionFilter(),
+  ];
+  // 맨 뒤의 Filter 가 첫 번째 우선순위 ( 제일 먼저 잡힘 )
   const pipes = [new ValidationPipe()];
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: isEnv('local') || isEnv('dev'),

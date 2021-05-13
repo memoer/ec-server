@@ -1,7 +1,7 @@
 import { redisStore } from 'cache-manager-redis-store';
 import { CacheModuleOptions } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import redisConfig from '~/@config/redis.config';
+import { redisConfig } from '~/@config/register';
 
 export default async (
   rc: ConfigType<typeof redisConfig>,

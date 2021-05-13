@@ -2,7 +2,7 @@ import * as nestCommon from '@nestjs/common';
 import { getRepository } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
 import exception from '~/_lib/exception';
-import { META_DATA } from '~/_lib/constants';
+import { META_DATA } from '~/_lib/constant';
 import {
   CheckDataGuard,
   checkDataGuardFn,
@@ -10,6 +10,7 @@ import {
 } from '~/_lib/guard/check-data.guard';
 import { TMock } from '@/type';
 import { reflectorMock, gqlExecCtxMock, contextMock } from '@/common';
+
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
   applyDecorators: jest.fn(),
@@ -124,7 +125,7 @@ describe('CheckDataGuard', () => {
               expect(error).toMatchObject(
                 exception({
                   type: 'NotFoundException',
-                  name: 'CheckDataGuard/canActive',
+                  loc: 'CheckDataGuard.canActive',
                   msg: `${(returnData.reflectorMock.get[0] as any).name}_${
                     returnData.reflectorMock.get[1]
                   }<${
@@ -138,7 +139,7 @@ describe('CheckDataGuard', () => {
                 new ConflictException(
                   exception({
                     type: 'ConflictException',
-                    name: 'CheckDataGuard/canActive',
+                    loc: 'CheckDataGuard.canActive',
                     msg: `${(returnData.reflectorMock.get[0] as any).name}_${
                       returnData.reflectorMock.get[1]
                     }<${

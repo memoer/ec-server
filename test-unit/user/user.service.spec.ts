@@ -4,20 +4,22 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, Like } from 'typeorm';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
-import { LogInUserInput } from '~/user/dto/logInUser.dto';
-import { User, UserInfo } from '~/user/entity';
 import { UserService } from '~/user/user.service';
 import { UtilService } from '~/util/util.service';
+import { User, UserInfo, UserSex } from '~/user/entity';
 import * as nicknameList from '~/user/lib/nicknameList.json';
-import exception from '~/_lib/exception';
-import { SendVerifyCodeUserInput } from '~/user/dto/sendVerifyCodeUser.dto';
-import { CheckVerifyCodeUserInput } from '~/user/dto/checkVerfiyCodeUser.dto';
-import { CreateUserInput } from '~/user/dto/createUser.dto';
-import { UserSex } from '~/user/entity/user.entity';
-import { FindAllUserInput } from '~/user/dto/findAllUser.dto';
-import { FindOneUserInput } from '~/user/dto/findOneUser.dto';
-import { UpdateUserInput } from '~/user/dto/updateUser.dto';
-import { RemoveUserInput } from '~/user/dto/removeUser.dto';
+import { exception } from '~/_lib';
+import {
+  CreateUserInput,
+  LogInUserInput,
+  SendVerifyCodeUserInput,
+  CheckVerifyCodeUserInput,
+  FindAllUserInput,
+  FindOneUserInput,
+  UpdateUserInput,
+  RemoveUserInput,
+  RestoreUserInput,
+} from '~/user/dto';
 import {
   cacheManagerMock,
   dbConnMock,
@@ -28,7 +30,6 @@ import {
   getCallback,
 } from '@/common';
 import getUserMock from '@/getUserMock';
-import { RestoreUserInput } from '~/user/dto/restoreUser.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -120,8 +121,8 @@ describe('UserService', () => {
         ).toHaveBeenNthCalledWith(1, args.password);
         expect(error).toMatchObject(
           exception({
-            type: 'ForbiddenException',
-            name: 'UserService/logIn',
+            type: 'UnauthorizedException',
+            loc: 'UserService.logIn',
             msg: 'password invalid',
           }),
         );
@@ -273,8 +274,8 @@ describe('UserService', () => {
         expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
         expect(error).toMatchObject(
           exception({
-            type: 'ForbiddenException',
-            name: 'UserService/createUser',
+            type: 'UnauthorizedException',
+            loc: 'UserService.createUser',
             msg: 'served verifyCode invalid',
           }),
         );
@@ -353,8 +354,8 @@ describe('UserService', () => {
         expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
         expect(error).toMatchObject(
           exception({
-            type: 'ForbiddenException',
-            name: 'UserService/createUser',
+            type: 'UnauthorizedException',
+            loc: 'UserService.createUser',
             msg: 'verifyCode stored cache must be checked',
           }),
         );
@@ -530,8 +531,8 @@ describe('UserService', () => {
         expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.email);
         expect(error).toMatchObject(
           exception({
-            type: 'ForbiddenException',
-            name: 'UserService/createUser',
+            type: 'UnauthorizedException',
+            loc: 'UserService.createUser',
             msg: 'verifyCode stored cache must be checked',
           }),
         );
@@ -638,8 +639,8 @@ describe('UserService', () => {
         ).toHaveBeenNthCalledWith(1, args.password);
         expect(error).toMatchObject(
           exception({
-            type: 'ForbiddenException',
-            name: 'UserService/restoreUser',
+            type: 'UnauthorizedException',
+            loc: 'UserService.restoreUser',
             msg: 'password invalid',
           }),
         );

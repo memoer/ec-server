@@ -1,8 +1,8 @@
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { map } from 'rxjs/operators';
-import { PaginationOutputInterceptor } from '~/_lib/interceptor/pagination-output.interceptor';
+import { PaginationOutputInterceptor, exception } from '~/_lib';
 import { getCallback, gqlExecCtxMock, callHandlerMock } from '@/common';
-import exception from '~/_lib/exception';
+
 jest.mock('rxjs/operators', () => ({
   map: jest.fn(),
 }));
@@ -40,7 +40,7 @@ describe('lib/interceptor/pagination-output', () => {
       expect(error).toMatchObject(
         exception({
           type: 'InternalServerErrorException',
-          name: 'PaginationOutputInterceptor.map',
+          loc: 'PaginationOutputInterceptor.map',
           msg: 'data type must be [object, number]',
         }),
       );
@@ -65,7 +65,7 @@ describe('lib/interceptor/pagination-output', () => {
       expect(error).toMatchObject(
         exception({
           type: 'InternalServerErrorException',
-          name: 'PaginationOutputInterceptor.map',
+          loc: 'PaginationOutputInterceptor.map',
           msg: 'data[0] type must be object',
         }),
       );
@@ -95,7 +95,7 @@ describe('lib/interceptor/pagination-output', () => {
       expect(error).toMatchObject(
         exception({
           type: 'InternalServerErrorException',
-          name: 'PaginationOutputInterceptor.map',
+          loc: 'PaginationOutputInterceptor.map',
           msg: 'data[1] type must be number',
         }),
       );

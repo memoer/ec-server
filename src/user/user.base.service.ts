@@ -2,12 +2,12 @@ import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Like, Repository, UpdateResult } from 'typeorm';
 import { Cache } from 'cache-manager';
-import { User, UserInfo } from '~/user/entity';
 import { UtilService } from '~/util/util.service';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
+import { exception } from '~/_lib';
 import * as nicknameList from './lib/nicknameList.json';
-import exception from '~/_lib/exception';
+import { User, UserInfo } from './entity';
 import { RemoveOrRestore } from './user.service.interface';
 export class UserBaseService {
   constructor(
@@ -50,8 +50,8 @@ export class UserBaseService {
     const cache = (await this._cacheManager.get(key)) as boolean;
     if (!cache) {
       throw exception({
-        type: 'ForbiddenException',
-        name: 'UserService/createUser',
+        type: 'UnauthorizedException',
+        loc: 'UserService.createUser',
         msg: 'verifyCode stored cache must be checked',
       });
     }

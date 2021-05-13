@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
-import { SentryExceptionFilter } from '~/_lib/filter/sentry-exception.filter';
+import { GlobalExceptionFilter } from '~/_lib';
 import { getCallback } from '@/common';
 
 jest.mock('@sentry/node');
@@ -12,29 +12,29 @@ jest.mock('@sentry/node');
 
 describe('lib/filter/sentry-exception', () => {
   // ? init variables
-  let sentryExceptionFilter: SentryExceptionFilter;
+  let globalExceptionFilter: GlobalExceptionFilter;
   // ? init mocks
   const scope = { setTag: jest.fn() };
 
   beforeEach(async () => {
-    sentryExceptionFilter = new SentryExceptionFilter();
+    globalExceptionFilter = new GlobalExceptionFilter();
     // const module: TestingModule = await Test.createTestingModule({
-    //   providers: [SentryExceptionFilter],
+    //   providers: [GlobalExceptionFilter],
     // }).compile();
-    // sentryExceptionFilter = module.get<SentryExceptionFilter>(
-    //   SentryExceptionFilter,
+    // globalExceptionFilter = module.get<GlobalExceptionFilter>(
+    //   GlobalExceptionFilter,
     // );
   });
 
   it('should be defined', () => {
-    expect(sentryExceptionFilter).toBeDefined();
+    expect(globalExceptionFilter).toBeDefined();
   });
 
   it('HttpException, 400 error', () => {
     // ? init variables
     const arg = new BadRequestException();
     // ? run
-    const result = sentryExceptionFilter.catch(arg);
+    const result = globalExceptionFilter.catch(arg);
     // ? test
     expect(result).toBe(arg);
     expect(Sentry.withScope).not.toHaveBeenCalled();
@@ -45,7 +45,7 @@ describe('lib/filter/sentry-exception', () => {
     // ? init variables
     const arg = new InternalServerErrorException();
     // ? run
-    const result = sentryExceptionFilter.catch(arg);
+    const result = globalExceptionFilter.catch(arg);
     getCallback(Sentry.withScope)(scope);
     // ? test
     expect(result).toBe(arg);
@@ -63,7 +63,7 @@ describe('lib/filter/sentry-exception', () => {
     const arg = new Error('test');
     const returnException = new InternalServerErrorException(arg);
     // ? run
-    const result = sentryExceptionFilter.catch(arg);
+    const result = globalExceptionFilter.catch(arg);
     getCallback(Sentry.withScope)(scope);
     // ? test
     expect(result).toMatchObject(returnException);

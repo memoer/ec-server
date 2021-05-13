@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as jwt from 'jsonwebtoken';
-import appConfig from '~/@config/app.config';
+import { appConfig } from '~/@config/register';
 import { JwtService } from '~/jwt/jwt.service';
+
 const TOKEN = 'TOKEN';
 const USER_ID = 1;
 jest.mock('jsonwebtoken', () => ({

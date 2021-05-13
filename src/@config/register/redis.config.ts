@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
 
-export const redisValidationSchema = {
+export const redisConfigSchema = {
   REDIS_HOST: Joi.string().required(),
   REDIS_PORT: Joi.number().required(),
 };

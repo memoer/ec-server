@@ -4,10 +4,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NextFunction } from 'express';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 import { JwtService } from '~/jwt/jwt.service';
-import { User } from '~/user/entity';
-import exception from '~/_lib/exception';
-import { AuthMiddleware } from '~/_lib/middleware/auth.middleware';
-import { UserRelation } from '~/user/entity/user.entity';
+import { User, UserRelation } from '~/user/entity';
+import { exception, AuthMiddleware } from '~/_lib';
 
 describe('AuthMiddleware', () => {
   // ? init variables
@@ -57,7 +55,7 @@ describe('AuthMiddleware', () => {
       expect(error).toMatchObject(
         exception({
           type: 'NotImplementedException',
-          name: 'AuthMiddleware/use',
+          loc: 'AuthMiddleware.use',
           msg: 'authorization header type invalid',
         }),
       );

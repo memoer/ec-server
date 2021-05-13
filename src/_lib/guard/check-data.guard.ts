@@ -10,7 +10,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { getRepository } from 'typeorm';
-import { META_DATA } from '../constants';
+import { META_DATA } from '../constant';
 import exception from '../exception';
 
 export enum CheckDataGuardType {
@@ -41,7 +41,7 @@ export class CheckDataGuard implements CanActivate {
         if (!data) {
           throw exception({
             type: 'NotFoundException',
-            name: 'CheckDataGuard/canActive',
+            loc: 'CheckDataGuard.canActive',
             msg: `${entity.name}_${key}<${value}> is not found`,
           });
         }
@@ -50,7 +50,7 @@ export class CheckDataGuard implements CanActivate {
         if (data) {
           throw exception({
             type: 'ConflictException',
-            name: 'CheckDataGuard/canActive',
+            loc: 'CheckDataGuard.canActive',
             msg: `${entity.name}_${key}<${value}> is already existed`,
           });
         }

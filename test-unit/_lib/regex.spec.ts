@@ -1,4 +1,4 @@
-import { passwordRegex } from '~/_lib/regex';
+import { passwordRegex } from '~/_lib';
 
 describe('regex', () => {
   it('password regex test', () => {

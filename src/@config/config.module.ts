@@ -1,19 +1,27 @@
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule as ConfigM } from '@nestjs/config';
 import * as Joi from 'joi';
 import isEnv from '~/_lib/isEnv';
-import appConfig, { appValidationSchema } from './app.config';
-import databaseConfig, { databaseValidationSchema } from './database.config';
-import redisConfig, { redisValidationSchema } from './redis.config';
+import {
+  appConfig,
+  awsConfig,
+  dbConfig,
+  redisConfig,
+  appConfigSchema,
+  awsConfigSchema,
+  dbConfigSchema,
+  redisConfigSchema,
+} from './register';
 
-export default ConfigModule.forRoot({
+export const ConfigModule = ConfigM.forRoot({
   isGlobal: true,
   envFilePath: `.env.${process.env.NODE_ENV}`,
   ignoreEnvFile: isEnv('staging') || isEnv('prod'),
-  load: [appConfig, databaseConfig, redisConfig],
+  load: [appConfig, awsConfig, dbConfig, redisConfig],
   validationSchema: Joi.object({
-    ...appValidationSchema,
-    ...databaseValidationSchema,
-    ...redisValidationSchema,
+    ...appConfigSchema,
+    ...awsConfigSchema,
+    ...dbConfigSchema,
+    ...redisConfigSchema,
   }),
   validationOptions: {
     // 환경 변수의 값이 unknown인 변수들을 허용할 것인가?

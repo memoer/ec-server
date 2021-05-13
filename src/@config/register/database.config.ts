@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
 
-export const databaseValidationSchema = {
+export const dbConfigSchema = {
   TYPEORM_HOST: Joi.string().required(),
   TYPEORM_USERNAME: Joi.string().required(),
   TYPEORM_PASSWORD: Joi.string().required(),

@@ -9,9 +9,8 @@ import {
   Length,
 } from 'class-validator';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToOne } from 'typeorm';
-import exception from '~/_lib/exception';
-import { compareHash, generateHash } from '~/_lib/hash';
-import { Core } from '~/@database/entity/core.entity';
+import { exception, compareHash, generateHash } from '~/_lib';
+import { Core } from '~/@database/entity';
 import UserInfo from './user.info.entity';
 
 export enum UserSex {
@@ -84,7 +83,7 @@ export default class User extends Core {
     if (!this.password) {
       throw exception({
         type: 'NotFoundException',
-        name: 'User/verifyPassword',
+        loc: 'User.verifyPassword',
         msg: 'this.password is not found',
       });
     }

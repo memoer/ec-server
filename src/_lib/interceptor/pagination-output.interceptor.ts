@@ -19,19 +19,19 @@ export class PaginationOutputInterceptor implements NestInterceptor {
         if (data.length !== 2) {
           throw exception({
             type: 'InternalServerErrorException',
-            name: 'PaginationOutputInterceptor.map',
+            loc: 'PaginationOutputInterceptor.map',
             msg: 'data type must be [object, number]',
           });
         } else if (typeof data[0] !== 'object') {
           throw exception({
             type: 'InternalServerErrorException',
-            name: 'PaginationOutputInterceptor.map',
+            loc: 'PaginationOutputInterceptor.map',
             msg: 'data[0] type must be object',
           });
         } else if (typeof data[1] !== 'number') {
           throw exception({
             type: 'InternalServerErrorException',
-            name: 'PaginationOutputInterceptor.map',
+            loc: 'PaginationOutputInterceptor.map',
             msg: 'data[1] type must be number',
           });
         }
