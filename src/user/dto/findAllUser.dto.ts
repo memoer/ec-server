@@ -6,13 +6,10 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { User } from '~/user/entity';
-import {
-  PaginationInputBySkip,
-  PaginationOuput,
-} from '~/util/dto/pagination.dto';
+import { PaginationInputBySkip, PaginationOutput } from '~/_lib/dto';
 
 @ObjectType()
-export class FindAllUserOutput extends PaginationOuput(User) {}
+export class FindAllUserOutput extends PaginationOutput(User) {}
 
 @InputType()
 export class FindAllUserInput extends IntersectionType(

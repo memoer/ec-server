@@ -2,12 +2,11 @@ import { ConfigType } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
 import { LoggerOptions } from 'typeorm';
-import databaseConfig from '~/@config/database.config';
-import redisConfig from '~/@config/redis.config';
-import isEnv from '~/_lib/isEnv';
+import { dbConfig, redisConfig } from '~/@config/register';
+import { isEnv } from '~/_lib';
 
 export default async (
-  dbc: ConfigType<typeof databaseConfig>,
+  dbc: ConfigType<typeof dbConfig>,
   rc: ConfigType<typeof redisConfig>,
 ): Promise<TypeOrmModuleOptions> => {
   const logging = (): LoggerOptions => {
@@ -31,7 +30,7 @@ export default async (
     port: dbc.TYPEORM_PORT,
     logging: logging(),
     synchronize: isEnv('local'), // on sync in local env
-    entities: [join(__dirname, '../**/entity/*.entity.js')],
+    entities: [join(__dirname, '../**/entity/*.entity{.ts,.js}')],
     // QueryBuilder methods: getMany, getOne, getRawMany, getRawOne and getCount.
     // Repository methods: find, findAndCount, findByIds, and count.
     cache: {

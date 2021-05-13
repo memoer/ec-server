@@ -1,2 +1,8 @@
-export { default as User } from './user.entity';
-export { default as UserInfo } from './user.info.entity';
+export { default as User, UserSex, UserRelation } from './user.entity';
+export {
+  default as UserInfo,
+  UserOAuth,
+  UserRole,
+  UserStatus,
+  UserInfoRelation,
+} from './user.info.entity';

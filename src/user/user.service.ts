@@ -1,17 +1,19 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import exception from '~/_lib/exception';
-import { User } from '~/user/entity';
-import { CreateUserInput } from './dto/createUser.dto';
-import { LogInUserInput } from './dto/logInUser.dto';
-import { UpdateUserInput } from './dto/updateUser.dto';
-import { UserBaseService } from './user.base.service';
-import { RemoveUserInput } from './dto/removeUser.dto';
-import { RestoreUserInput } from './dto/restoreUser.dto';
-import { CheckVerifyCodeUserInput } from './dto/checkVerfiyCodeUser.dto';
-import { SendVerifyCodeUserInput } from './dto/sendVerifyCodeUser.dto';
-import { FindOneUserInput } from './dto/findOneUser.dto';
-import { FindAllUserInput } from './dto/findAllUser.dto';
 import { Like } from 'typeorm';
+import { exception, DEFAULT_VALUE } from '~/_lib';
+import { User } from './entity';
+import { UserBaseService } from './user.base.service';
+import {
+  CreateUserInput,
+  LogInUserInput,
+  UpdateUserInput,
+  RemoveUserInput,
+  RestoreUserInput,
+  CheckVerifyCodeUserInput,
+  SendVerifyCodeUserInput,
+  FindOneUserInput,
+  FindAllUserInput,
+} from './dto';
 
 @Injectable()
 export class UserService extends UserBaseService {
@@ -22,8 +24,8 @@ export class UserService extends UserBaseService {
     );
     if (!(await user.verifyPassword(password))) {
       throw exception({
-        type: 'ForbiddenException',
-        name: 'UserService/logIn',
+        type: 'UnauthorizedException',
+        loc: 'UserService.logIn',
         msg: 'password invalid',
       });
     }
@@ -73,8 +75,8 @@ export class UserService extends UserBaseService {
     const cache = await this._cacheManager.get(key);
     if (cache !== verifyCode) {
       throw exception({
-        type: 'ForbiddenException',
-        name: 'UserService/createUser',
+        type: 'UnauthorizedException',
+        loc: 'UserService.createUser',
         msg: 'served verifyCode invalid',
       });
     }
@@ -115,7 +117,13 @@ export class UserService extends UserBaseService {
     return { data: newUser, token: this._jwtService.sign(newUser.id) };
   }
 
-  findAllUser({ pageNumber, take, email, nickname, sex }: FindAllUserInput) {
+  findAllUser({
+    pageNumber = DEFAULT_VALUE.PAGE_NUMBER,
+    take = DEFAULT_VALUE.TAKE,
+    email,
+    nickname,
+    sex,
+  }: FindAllUserInput) {
     return this._userRepo.findAndCount({
       take,
       skip: this._utilService.getSkip({ pageNumber, take }),
@@ -183,8 +191,8 @@ export class UserService extends UserBaseService {
     );
     if (!(await user.verifyPassword(password))) {
       throw exception({
-        type: 'ForbiddenException',
-        name: 'UserService/restoreUser',
+        type: 'UnauthorizedException',
+        loc: 'UserService.restoreUser',
         msg: 'password invalid',
       });
     }

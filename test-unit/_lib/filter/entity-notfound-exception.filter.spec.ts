@@ -2,11 +2,11 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { LogExceptionFilter } from '~/_lib/filter/log-exception.filter';
+import { EntityNotFoundExceptionFilter } from '~/_lib';
 
 describe('LogExceptionFilter', () => {
   // ? init variables
-  const logExceptionFilter = new LogExceptionFilter();
+  const logExceptionFilter = new EntityNotFoundExceptionFilter();
   // ? init mocks
   it('should be defined', () => {
     expect(logExceptionFilter).toBeDefined();

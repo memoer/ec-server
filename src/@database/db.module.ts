@@ -1,9 +1,8 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import databaseConfig from '~/@config/database.config';
-import redisConfig from '~/@config/redis.config';
+import { dbConfig, redisConfig } from '~/@config/register';
 import DatabaseFactory from './db.factory';
 
-export default TypeOrmModule.forRootAsync({
+export const DBModule = TypeOrmModule.forRootAsync({
   useFactory: DatabaseFactory,
-  inject: [databaseConfig.KEY, redisConfig.KEY],
+  inject: [dbConfig.KEY, redisConfig.KEY],
 });

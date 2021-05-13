@@ -6,9 +6,9 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { DEFAULT_VALUE } from '~/_lib/constants';
+import { DEFAULT_VALUE } from '~/_lib/constant';
 
-export function PaginationOuput<T>(classRef: Type<T>): any {
+export function PaginationOutput<T>(classRef: Type<T>): any {
   @ObjectType({ isAbstract: true })
   abstract class U {
     @Field(() => [classRef], { nullable: true })

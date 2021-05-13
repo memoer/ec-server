@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import awsConfig from '~/@config/aws.config';
+import { awsConfig } from '~/@config/register';
 import { AwsService } from './aws.service';
 
 @Module({

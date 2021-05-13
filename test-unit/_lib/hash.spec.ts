@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { generateHash, compareHash } from '~/_lib/hash';
+import { generateHash, compareHash } from '~/_lib';
 
 describe('lib/generateHash', () => {
   jest.spyOn(bcrypt, 'hash');

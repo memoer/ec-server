@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
-import exception from '~/_lib/exception';
+import { exception } from '~/_lib';
 
 describe('lib/exception', () => {
   it('should return string type data', () => {
     // ? init variables
-    const args = { name: 'name', msg: 'msg', error: { data: 'data' } };
+    const args = { loc: 'loc', msg: 'msg', error: { data: 'data' } };
     try {
       // ? run
       throw exception({ type: 'BadRequestException', ...args });

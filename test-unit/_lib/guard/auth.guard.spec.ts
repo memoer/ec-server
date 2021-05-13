@@ -1,6 +1,6 @@
 import * as nestCommon from '@nestjs/common';
 import { UserRole } from '~/user/entity/user.info.entity';
-import { META_DATA } from '~/_lib/constants';
+import { META_DATA } from '~/_lib/constant';
 import { AuthGuard, authGuardFn } from '~/_lib/guard/auth.guard';
 import { contextMock, gqlExecCtxMock, reflectorMock } from '@/common';
 import { TMock } from '@/type';
@@ -14,7 +14,11 @@ jest.mock('@nestjs/common', () => ({
 
 describe('AuthGuard', () => {
   // ? init variables
-  const authGuard = new AuthGuard(reflectorMock.reflector);
+  let authGuard: AuthGuard;
+
+  beforeEach(async () => {
+    authGuard = new AuthGuard(reflectorMock.reflector);
+  });
 
   it('should be defined', () => {
     expect(authGuard).toBeDefined();

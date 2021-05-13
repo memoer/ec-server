@@ -1,8 +1,8 @@
-import { CacheModule } from '@nestjs/common';
-import redisConfig from '~/@config/redis.config';
+import { CacheModule as CacheM } from '@nestjs/common';
+import { redisConfig } from '~/@config/register';
 import cacheFactory from './cache.factory';
 
-export default CacheModule.registerAsync({
+export const CacheModule = CacheM.registerAsync({
   useFactory: cacheFactory,
   inject: [redisConfig.KEY],
 });

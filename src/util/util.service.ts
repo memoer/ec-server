@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DEFAULT_VALUE } from '~/_lib/constants';
-import { PaginationInputBySkip } from './dto/pagination.dto';
+import { DEFAULT_VALUE } from '~/_lib';
+import { PaginationInputBySkip } from '../_lib/dto';
 import { GetMs } from './util.interface';
 
 @Injectable()

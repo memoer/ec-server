@@ -1,8 +1,8 @@
 import { ConfigType } from '@nestjs/config';
 import { GqlModuleOptions } from '@nestjs/graphql';
 import { join } from 'path';
-import appConfig from '~/@config/app.config';
-import isEnv from '~/_lib/isEnv';
+import { appConfig } from '~/@config/register';
+import { isEnv } from '~/_lib';
 
 export default async (
   ac: ConfigType<typeof appConfig>,

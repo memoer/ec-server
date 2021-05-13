@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as requestIp from 'request-ip';
 import * as geoIp from 'geoip-lite';
-import exception from '~/_lib/exception';
+import { exception } from '~/_lib';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class AppService {
     if (!clientIp) {
       throw exception({
         type: 'NotFoundException',
-        name: 'AppResolver/getGeo',
+        loc: 'AppResolver.getGeo',
         msg: 'no clientIp',
       });
     }
@@ -20,7 +20,7 @@ export class AppService {
     if (!geo) {
       throw exception({
         type: 'NotFoundException',
-        name: 'AppResolver/getGeo',
+        loc: 'AppResolver.getGeo',
         msg: 'no geo',
       });
     }
