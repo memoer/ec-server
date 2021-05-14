@@ -18,9 +18,9 @@ export function GqlFileInterceptor(
   class MixinInterceptor implements NestInterceptor {
     constructor(private readonly _awsService: AwsService) {}
 
-    async upload(fieldName: string, ctx: GqlExecutionContext) {
-      const { uploadedFiles } = ctx.getContext().res.locals;
-      const files = await ctx.getArgs()[fieldName];
+    async upload(fieldName: string, gqlCtx: GqlExecutionContext) {
+      const { uploadedFiles } = gqlCtx.getContext().res.locals;
+      const files = await gqlCtx.getArgs()[fieldName];
       return Promise.all(
         (Array.isArray(files) ? files : [files]).map(
           async ({
@@ -38,10 +38,10 @@ export function GqlFileInterceptor(
                 .slice(0, -1)
                 .join('.')}`,
             });
-            if (!uploadedFiles.fieldName) {
-              uploadedFiles.fieldName = [result.Location];
+            if (!uploadedFiles[fieldName]) {
+              uploadedFiles[fieldName] = [result.Location];
             } else {
-              uploadedFiles.fieldName.push(result.Location);
+              uploadedFiles[fieldName].push(result.Location);
             }
           },
         ),
@@ -49,14 +49,15 @@ export function GqlFileInterceptor(
     }
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
-      const ctx = GqlExecutionContext.create(context);
-      (<GqlCtx['res']>ctx.getContext().res).locals.uploadedFiles = {};
+      const gqlCtx = GqlExecutionContext.create(context);
+      (<GqlCtx['res']>gqlCtx.getContext().res).locals = {
+        uploadedFiles: {},
+      };
       await Promise.all(
-        fieldNameList.map((fieldName) => this.upload(fieldName, ctx)),
+        fieldNameList.map((fieldName) => this.upload(fieldName, gqlCtx)),
       );
       return next.handle();
     }
   }
-  const interceptor = mixin(MixinInterceptor);
-  return interceptor;
+  return mixin(MixinInterceptor);
 }

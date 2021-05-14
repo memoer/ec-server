@@ -2,7 +2,7 @@ import { Reflector } from '@nestjs/core';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-const gqlPrototypeCtxMock = {
+export const createdGqlCtxMock = {
   getArgs: (GqlExecutionContext.prototype.getArgs = jest.fn()),
   getContext: (GqlExecutionContext.prototype.getContext = jest.fn()),
 };
@@ -10,8 +10,8 @@ const gqlPrototypeCtxMock = {
 export const gqlExecCtxMock = {
   create: (GqlExecutionContext.create = jest
     .fn()
-    .mockReturnValue(gqlPrototypeCtxMock)),
-  ...gqlPrototypeCtxMock,
+    .mockReturnValue(createdGqlCtxMock)),
+  ...createdGqlCtxMock,
 };
 export const contextMock = {
   context: new ExecutionContextHost(['test']),
@@ -49,6 +49,7 @@ export const utilServiceMock = {
 export const awsServiceMock = {
   sendEmail: jest.fn(),
   sendSMS: jest.fn(),
+  uploadToS3: jest.fn(),
 };
 export const jwtServiceMock = { sign: jest.fn() };
 export const repositoryMock = () => ({
