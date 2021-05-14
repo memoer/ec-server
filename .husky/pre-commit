@@ -4,8 +4,8 @@
 local_branch_name="$(git rev-parse --abbrev-ref HEAD)"
 
 regex_1="\/#[0-9]+"
-regex_2="\/[a-zA-Z0-9&-]+"
-regex_3="\/#[0-9]\/[a-zA-Z0-9&-]+"
+regex_2="\/[a-zA-Z0-9-]+"
+regex_3="\/#[0-9]\/[a-zA-Z0-9-]+"
 valid_branch_regex="^((master|release|develop|feat|fix|chore|refactor|test)(${regex_1}|${regex_2}|${regex_3})?)$"
 
 
