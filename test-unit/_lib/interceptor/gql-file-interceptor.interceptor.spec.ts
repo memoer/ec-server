@@ -55,12 +55,16 @@ describe('GqlFileInterceptor', () => {
   it('mixinInterceptor class, intercept function', async () => {
     // ? init variables
     const returnData = {
-      gqlExecCtxMock: { getContext: { res: { locals: undefined } } },
+      gqlExecCtxMock: {
+        getContext: { res: { locals: undefined } },
+        getArgs: { input: { [closure.fieldNameList[0]]: 'temp' } },
+      },
     };
     // ? init mock
     gqlExecCtxMock.getContext.mockReturnValue(
       returnData.gqlExecCtxMock.getContext,
     );
+    gqlExecCtxMock.getArgs.mockReturnValue(returnData.gqlExecCtxMock.getArgs);
     const o = mixinInterceptor.upload;
     mixinInterceptor.upload = jest.fn();
     // ? run
@@ -105,7 +109,7 @@ describe('GqlFileInterceptor', () => {
     const gqlCtx = {
       getContext: jest.fn().mockReturnValue(returnData.gqlCtx.getContext),
       getArgs: jest.fn().mockReturnValue({
-        [fieldName]: returnData.gqlCtx.getArgs,
+        input: { [fieldName]: returnData.gqlCtx.getArgs },
       }),
     };
     awsServiceMock.uploadToS3.mockResolvedValue(
@@ -121,6 +125,7 @@ describe('GqlFileInterceptor', () => {
       ContentEncoding: returnData.gqlCtx.getArgs.encoding,
       Body: returnData.gqlCtx.getArgs.createReadStream(),
       Key: expect.any(String),
+      ACL: 'public-read',
     });
     expect(returnData.gqlCtx.getContext.res.locals.uploadedFiles).toEqual({
       [fieldName]: [returnData.awsServiceMock.uploadToS3.Location],
@@ -150,7 +155,7 @@ describe('GqlFileInterceptor', () => {
     const gqlCtx = {
       getContext: jest.fn().mockReturnValue(returnData.gqlCtx.getContext),
       getArgs: jest.fn().mockReturnValue({
-        [fieldName]: returnData.gqlCtx.getArgs,
+        input: { [fieldName]: returnData.gqlCtx.getArgs },
       }),
     };
     awsServiceMock.uploadToS3.mockResolvedValue(
