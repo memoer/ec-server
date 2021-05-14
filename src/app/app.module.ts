@@ -1,7 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { AuthMiddleware, GqlThrottlerGuard } from '~/_lib';
+import { AuthMiddleware } from '~/_lib';
 import { CacheModule } from '~/@cache/cache.module';
 import { ConfigModule } from '~/@config/config.module';
 import { DBModule } from '~/@database/db.module';
@@ -11,13 +9,10 @@ import { JwtService } from '~/jwt/jwt.service';
 import { UserModule } from '~/user/user.module';
 import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
+import { AuthModule } from '~/auth/auth.module';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      ttl: +process.env.THROTTLER_TTL,
-      limit: +process.env.THROTTLER_LIMIT,
-    }),
     CacheModule,
     ConfigModule,
     DBModule,
@@ -25,15 +20,9 @@ import { AppService } from './app.service';
     AwsModule,
     JwtService,
     UserModule,
+    AuthModule,
   ],
-  providers: [
-    AppResolver,
-    AppService,
-    {
-      provide: APP_GUARD,
-      useClass: GqlThrottlerGuard,
-    },
-  ],
+  providers: [AppResolver, AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
