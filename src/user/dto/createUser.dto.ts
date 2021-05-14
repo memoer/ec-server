@@ -9,12 +9,12 @@ import { IsString, Length, Matches } from 'class-validator';
 import { User, UserInfo } from '~/user/entity';
 import { passwordRegex } from '~/_lib';
 
-// ? sex, birthDate -> to be served data from client
-// ? nickname, thumbnail -> for oauth
+// ? sex, birthDate, locale -> 클라이언트에서 넘겨야할 값들
+// ? nickname, thumbnail, email, oauthId, locale -> auth 회원가입 시, 넘길 수 있는 값들
 @InputType()
 export class CreateUserInput extends IntersectionType(
-  PickType(User, ['sex', 'nickname', 'birthDate', 'thumbnail']),
-  PickType(UserInfo, ['oauthId']),
+  PickType(User, ['sex', 'birthDate', 'nickname', 'thumbnail', 'email']),
+  PickType(UserInfo, ['oauthId', 'locale']),
   InputType,
 ) {
   @Field(() => String)

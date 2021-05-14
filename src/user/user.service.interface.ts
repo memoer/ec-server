@@ -1,4 +1,4 @@
-import { UserOAuth, UserStatus, UserRole } from './entity';
+import { UserProvider, UserStatus, UserRole } from './entity';
 
 export interface NewUser {
   nickname: string;
@@ -6,7 +6,7 @@ export interface NewUser {
   status: UserStatus;
   phoneNumber: string;
   password?: string | undefined;
-  oauth?: UserOAuth | undefined;
+  oauth?: UserProvider | undefined;
 }
 
 export interface SendCodeNSetToRedis {

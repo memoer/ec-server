@@ -1,7 +1,7 @@
 export { default as User, UserSex, UserRelation } from './user.entity';
 export {
   default as UserInfo,
-  UserOAuth,
+  UserProvider,
   UserRole,
   UserStatus,
   UserInfoRelation,
