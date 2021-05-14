@@ -1,11 +1,13 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '.';
 
 export enum UserOAuth {
   GOOGLE = 'GOOGLE',
-  NAVER = 'NAVER',
+  KAKAO = 'KAKAO',
+  TWITTER = 'TWITTER',
+  FACEBOOK = 'FACEBOOK',
 }
 registerEnumType(UserOAuth, { name: 'UserOAuth' });
 
@@ -37,21 +39,26 @@ export enum UserInfoRelation {
 export default class UserInfo {
   @PrimaryColumn()
   @Field(() => Int)
+  @IsNumber()
   userId!: number;
 
-  @Column()
-  @Field(() => String)
-  @Length(2)
-  country!: string;
-
   @Column({ type: 'enum', enum: UserRole, default: UserRole.CLIENT })
+  @IsEnum(UserRole)
   role!: UserRole;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
+  @IsEnum(UserStatus)
   status!: UserStatus;
 
   @Column({ type: 'enum', enum: UserOAuth, nullable: true })
+  @IsEnum(UserOAuth)
+  @IsOptional()
   oauth?: UserOAuth;
+
+  @Column({ nullable: true })
+  @IsString()
+  @IsOptional()
+  oauthId?: string;
 
   @Column({ nullable: true })
   @Field(() => String, { nullable: true, description: '회원탈퇴/복구 이유' })

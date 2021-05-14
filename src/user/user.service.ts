@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
 import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
-import { User } from './entity';
+import { User, UserOAuth } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
   CreateUserInput,
@@ -33,10 +33,19 @@ export class UserService extends UserBaseService {
   }
 
   async sendVerifyCodeUser({ phoneNumber, email }: SendVerifyCodeUserInput) {
+    const key = phoneNumber ? 'phoeNumber' : 'email';
     // ? 마지막 '' 넣은 이유는 key 타입에서 `undefined`를 제거하기 위함
     // ? 어차피 `sendVerifyCodeUser`가 호출되기 전,
     // ? resolver에서 phoeNumber, email 중 하나라도 넣지 않으면 여기로 들어오지도 않음
-    const key = phoneNumber || email || '';
+    const value = phoneNumber || email || '';
+    const user = await this._userRepo.findOne({ where: { [key]: value } });
+    if (user) {
+      throw exception({
+        type: 'ConflictException',
+        loc: 'UserService.sendVerifyCodeUser',
+        msg: `user with ${key}:${value} is already existed`,
+      });
+    }
     const isEmail = key.includes('@');
     const verifyCode = await this._getVerifyCode();
     const message = `[End Coummnity] 인증번호 [${verifyCode}]를 입력해주세요.`;
@@ -85,24 +94,29 @@ export class UserService extends UserBaseService {
     return true;
   }
 
-  async createUser({
-    phoneNumber,
-    sex,
-    birthDate,
-    password,
-    country,
-  }: CreateUserInput) {
-    const nickname = await this._getUniqueNickname();
-    await this._checkVerifyCodeOrFail(phoneNumber);
+  // ? create local user
+  async createUser(
+    {
+      sex,
+      birthDate,
+      nickname: _nickname,
+      password,
+      thumbnail,
+      oauthId,
+    }: CreateUserInput,
+    oauth: undefined | UserOAuth = undefined,
+  ) {
+    const nickname = _nickname || (await this._getUniqueNickname());
     const newUserEntity = this._userRepo.create({
-      phoneNumber,
       sex,
       birthDate,
       password,
       nickname,
+      thumbnail,
     });
     const newUserInfoEntity = this._userInfoRepo.create({
-      country,
+      oauth,
+      oauthId,
     });
     const newUser = await this._dbConn.transaction(
       'SERIALIZABLE',
@@ -113,7 +127,6 @@ export class UserService extends UserBaseService {
         return newUser;
       },
     );
-    await this._cacheManager.del(phoneNumber);
     return { data: newUser, token: this._jwtService.sign(newUser.id) };
   }
 
@@ -144,7 +157,7 @@ export class UserService extends UserBaseService {
 
   async updateUser(
     user: User,
-    { sex, birthDate, password, nickname, email, phoneNumber }: UpdateUserInput,
+    { nickname, phoneNumber, email, password, birthDate, sex }: UpdateUserInput,
     { thumbnail }: UploadedFilesInput<'thumbnail'>,
   ) {
     await Promise.all(
@@ -154,10 +167,10 @@ export class UserService extends UserBaseService {
     );
     const updatedUser = this._userRepo.create({
       ...user,
-      sex,
-      birthDate,
-      password,
       nickname,
+      password,
+      birthDate,
+      sex,
       thumbnail: thumbnail?.[0],
     });
     return this._userRepo.save(updatedUser);
