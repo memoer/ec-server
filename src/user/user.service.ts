@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
-import { exception, DEFAULT_VALUE } from '~/_lib';
+import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
 import { User } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
@@ -144,15 +144,8 @@ export class UserService extends UserBaseService {
 
   async updateUser(
     user: User,
-    {
-      sex,
-      birthDate,
-      password,
-      nickname,
-      thumbnail,
-      email,
-      phoneNumber,
-    }: UpdateUserInput,
+    { sex, birthDate, password, nickname, email, phoneNumber }: UpdateUserInput,
+    { thumbnail }: UploadedFilesInput<'thumbnail'>,
   ) {
     await Promise.all(
       (<string[]>[email, phoneNumber].filter(Boolean)).map((key) =>
@@ -165,7 +158,7 @@ export class UserService extends UserBaseService {
       birthDate,
       password,
       nickname,
-      thumbnail,
+      thumbnail: thumbnail?.[0],
     });
     return this._userRepo.save(updatedUser);
   }

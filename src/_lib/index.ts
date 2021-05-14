@@ -5,7 +5,8 @@ export { generateHash } from './hash';
 export { compareHash } from './hash';
 export { default as isEnv } from './isEnv';
 export { passwordRegex } from './regex';
-export { CurrentUser } from './decorator/current-user.decorator';
+export { LoggedInUser } from './decorator/current-user.decorator';
+export { UploadedFiles } from './decorator/uploaded-files.decorator';
 export { EntityNotFoundExceptionFilter } from './filter/entity-notfound-exception.filter';
 export { GlobalExceptionFilter } from './filter/global-exception.filter';
 export {
@@ -20,5 +21,11 @@ export {
 } from './guard/check-data.guard';
 export { GqlThrottlerGuard } from './guard/gql-throttler-guard.guard';
 export { PaginationOutputInterceptor } from './interceptor/pagination-output.interceptor';
-export { AuthMiddleware } from './middleware/auth.middleware';
 export { GqlFileInterceptor } from './interceptor/gql-file.interceptor';
+export { AuthMiddleware } from './middleware/auth.middleware';
+export { PaginationOutput, PaginationInputBySkip } from './dto/pagination.dto';
+export {
+  GraphQLUpload,
+  FileUploadInput,
+  UploadedFilesInput,
+} from './dto/fileUpload.dto';

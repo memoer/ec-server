@@ -1,14 +1,16 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UseInterceptors } from '@nestjs/common';
 import { ReqUesr } from '~/@graphql/graphql.interface';
-import { User } from './entity';
 import {
   authGuardFn,
-  CurrentUser,
+  LoggedInUser,
   atLeastOneArgsOfGuardFn,
   checkDataGuardFn,
   CheckDataGuardType,
   PaginationOutputInterceptor,
+  GqlFileInterceptor,
+  UploadedFilesInput,
+  UploadedFiles,
 } from '~/_lib';
 import {
   CreateUserInput,
@@ -23,6 +25,7 @@ import {
   SendVerifyCodeUserInput,
   FindOneUserInput,
 } from './dto';
+import { User } from './entity';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
@@ -31,7 +34,7 @@ export class UserResolver {
 
   @Query(() => User)
   @authGuardFn()
-  me(@CurrentUser() user: ReqUesr) {
+  me(@LoggedInUser() user: ReqUesr) {
     return user;
   }
 
@@ -73,13 +76,21 @@ export class UserResolver {
 
   @Mutation(() => User)
   @authGuardFn()
-  updateUser(@CurrentUser() user: User, @Args('input') input: UpdateUserInput) {
-    return this.userService.updateUser(user, input);
+  @UseInterceptors(GqlFileInterceptor('user', ['thumbnail']))
+  updateUser(
+    @LoggedInUser() user: User,
+    @Args('input') input: UpdateUserInput,
+    @UploadedFiles() files: UploadedFilesInput<'thumbnail'>,
+  ) {
+    return this.userService.updateUser(user, input, files);
   }
 
   @Mutation(() => Boolean)
   @authGuardFn()
-  removeUser(@CurrentUser() user: User, @Args('input') input: RemoveUserInput) {
+  removeUser(
+    @LoggedInUser() user: User,
+    @Args('input') input: RemoveUserInput,
+  ) {
     return this.userService.removeUser(user, input);
   }
 
