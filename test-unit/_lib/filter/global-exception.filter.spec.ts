@@ -18,56 +18,72 @@ describe('lib/filter/sentry-exception', () => {
 
   beforeEach(async () => {
     globalExceptionFilter = new GlobalExceptionFilter();
-    // const module: TestingModule = await Test.createTestingModule({
-    //   providers: [GlobalExceptionFilter],
-    // }).compile();
-    // globalExceptionFilter = module.get<GlobalExceptionFilter>(
-    //   GlobalExceptionFilter,
-    // );
   });
 
   it('should be defined', () => {
     expect(globalExceptionFilter).toBeDefined();
   });
 
-  it('HttpException, 400 error', () => {
+  it('if httpException code below 500 throw, return httpException', () => {
     // ? init variables
-    const arg = new BadRequestException();
+    const exception = new BadRequestException();
     // ? run
-    const result = globalExceptionFilter.catch(arg);
+    const result = globalExceptionFilter.catch(exception);
     // ? test
-    expect(result).toBe(arg);
-    expect(Sentry.withScope).not.toHaveBeenCalled();
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(result).toEqual(exception);
   });
 
-  it('HttpException, 500 error', () => {
+  it('if not httpException throw, return InternalServerException', () => {
     // ? init variables
-    const arg = new InternalServerErrorException();
+    const exception = new Error();
+    const returnData = {
+      result: new InternalServerErrorException(
+        exception.message,
+        exception.name,
+      ),
+    };
     // ? run
-    const result = globalExceptionFilter.catch(arg);
-    getCallback(Sentry.withScope)(scope);
+    const result = globalExceptionFilter.catch(exception);
     // ? test
-    expect(result).toBe(arg);
-    expect(Sentry.withScope).toHaveBeenCalledTimes(1);
-    expect(scope.setTag).toHaveBeenNthCalledWith(
+    expect(result).toEqual(returnData.result);
+  });
+
+  it('if httpException code above 500 In loca&dev, log', () => {
+    // ? init variables
+    process.env.NODE_ENV = 'local';
+    const exception = new InternalServerErrorException();
+    // ? init mocks
+    const consoleMock = {
+      info: jest.spyOn(console, 'info').mockImplementation(() => null),
+      error: jest.spyOn(console, 'error').mockImplementation(() => null),
+    };
+    // ? run
+    const result = globalExceptionFilter.catch(exception);
+    // ? test
+    expect(consoleMock.info).toHaveBeenNthCalledWith(
       1,
-      'status',
-      arg.getStatus().toString(),
+      `isHttpException: ${true}`,
     );
-    expect(Sentry.captureException).toHaveBeenNthCalledWith(1, arg);
+    expect(consoleMock.error).toHaveBeenNthCalledWith(1, exception);
+    expect(result).toEqual(exception);
   });
 
-  it('if no HttpException, 500 error', () => {
+  it('if httpException code above 500 In staging&prod, catpure', () => {
     // ? init variables
-    const arg = new Error('test');
-    const returnException = new InternalServerErrorException(arg);
+    process.env.NODE_ENV = 'prod';
+    const exception = new InternalServerErrorException();
     // ? run
-    const result = globalExceptionFilter.catch(arg);
+    const result = globalExceptionFilter.catch(exception);
     getCallback(Sentry.withScope)(scope);
     // ? test
-    expect(result).toMatchObject(returnException);
-    expect(scope.setTag).toHaveBeenNthCalledWith(1, 'status', '500');
-    expect(Sentry.captureException).toHaveBeenNthCalledWith(1, returnException);
+    expect(Sentry.withScope).toHaveBeenCalledTimes(1);
+    expect(scope.setTag).toHaveBeenNthCalledWith(1, 'status', 500);
+    expect(scope.setTag).toHaveBeenNthCalledWith(2, 'isHttpException', true);
+    expect(Sentry.captureException).toHaveBeenNthCalledWith(1, exception);
+    expect(result).toEqual(exception);
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = 'test';
   });
 });

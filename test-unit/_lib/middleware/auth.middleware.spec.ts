@@ -62,7 +62,7 @@ describe('AuthMiddleware', () => {
     }
   });
 
-  it('', () => {
+  it('success', () => {
     // ? init variables
     const token = 'token';
     const returnData = {
