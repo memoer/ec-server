@@ -4,12 +4,12 @@ import { AuthController } from './auth.controller';
 import { GoogleStrategy } from './strategy';
 import { authConfig } from '~/@config/register';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserInfo } from '~/user/entity';
+import { User } from '~/user/entity';
 import { UserModule } from '~/user/user.module';
 import { JwtModule } from '~/jwt/jwt.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserInfo]), UserModule, JwtModule],
+  imports: [TypeOrmModule.forFeature([User]), UserModule, JwtModule],
   controllers: [AuthController],
   providers: [
     { provide: authConfig.KEY, useFactory: authConfig },

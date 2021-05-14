@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
 import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
-import { User, UserOAuth } from './entity';
+import { User, UserProvider } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
   CreateUserInput,
@@ -100,23 +100,27 @@ export class UserService extends UserBaseService {
       sex,
       birthDate,
       nickname: _nickname,
-      password,
       thumbnail,
+      email,
       oauthId,
+      locale,
+      password,
     }: CreateUserInput,
-    oauth: undefined | UserOAuth = undefined,
+    provider: UserProvider,
   ) {
     const nickname = _nickname || (await this._getUniqueNickname());
     const newUserEntity = this._userRepo.create({
       sex,
       birthDate,
-      password,
       nickname,
       thumbnail,
+      email,
+      password,
     });
     const newUserInfoEntity = this._userInfoRepo.create({
-      oauth,
+      provider,
       oauthId,
+      locale,
     });
     const newUser = await this._dbConn.transaction(
       'SERIALIZABLE',

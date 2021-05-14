@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '~/jwt/jwt.service';
-import { UserInfo, UserInfoRelation, UserOAuth } from '~/user/entity';
+import { User, UserProvider } from '~/user/entity';
 import { UserService } from '~/user/user.service';
 import { exception } from '~/_lib';
 import { GoogleUser } from './strategy';
@@ -10,8 +10,8 @@ import { GoogleUser } from './strategy';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UserInfo)
-    private readonly _userInfoRepo: Repository<UserInfo>,
+    @InjectRepository(User)
+    private readonly _userRepo: Repository<User>,
     private readonly _userService: UserService,
     private readonly _jwtService: JwtService,
   ) {}
@@ -24,25 +24,26 @@ export class AuthService {
         msg: 'user not found',
       });
     }
-    const { email, nickname, thumbnail } = user as GoogleUser;
-    const userFromDB = await this._userInfoRepo.findOne({
-      where: { oauthId: email },
-      relations: [UserInfoRelation.user],
+    const { nickname, thumbnail, email, oauthId, locale } = user as GoogleUser;
+    const userFromDB = await this._userRepo.findOne({
+      where: { email },
     });
     if (!userFromDB) {
       return this._userService.createUser(
         {
           nickname,
-          password: '',
           thumbnail,
-          oauthId: email,
+          email,
+          oauthId,
+          locale,
+          password: '',
         },
-        UserOAuth.GOOGLE,
+        UserProvider.GOOGLE,
       );
     }
     return {
-      data: userFromDB[UserInfoRelation.user],
-      token: this._jwtService.sign(userFromDB[UserInfoRelation.user].id),
+      data: userFromDB,
+      token: this._jwtService.sign(userFromDB.id),
     };
   }
 }

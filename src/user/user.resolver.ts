@@ -25,7 +25,7 @@ import {
   SendVerifyCodeUserInput,
   FindOneUserInput,
 } from './dto';
-import { User } from './entity';
+import { User, UserProvider } from './entity';
 import { UserService } from './user.service';
 
 @Resolver(() => User)
@@ -59,7 +59,7 @@ export class UserResolver {
   @Mutation(() => CreateUserOutput)
   @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'phoneNumber')
   createUser(@Args('input') input: CreateUserInput) {
-    return this.userService.createUser(input);
+    return this.userService.createUser(input, UserProvider.LOCAL);
   }
 
   @Query(() => FindAllUserOutput)

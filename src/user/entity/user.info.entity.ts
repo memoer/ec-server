@@ -1,15 +1,22 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '.';
 
-export enum UserOAuth {
+export enum UserProvider {
+  LOCAL = 'LOCAL',
   GOOGLE = 'GOOGLE',
   KAKAO = 'KAKAO',
   TWITTER = 'TWITTER',
   FACEBOOK = 'FACEBOOK',
 }
-registerEnumType(UserOAuth, { name: 'UserOAuth' });
+registerEnumType(UserProvider, { name: 'UserProvider' });
 
 export enum UserRole {
   CLIENT = 'CLIENT',
@@ -50,10 +57,9 @@ export default class UserInfo {
   @IsEnum(UserStatus)
   status!: UserStatus;
 
-  @Column({ type: 'enum', enum: UserOAuth, nullable: true })
-  @IsEnum(UserOAuth)
-  @IsOptional()
-  oauth?: UserOAuth;
+  @Column({ type: 'enum', enum: UserProvider })
+  @IsEnum(UserProvider)
+  provider!: UserProvider;
 
   @Column({ nullable: true })
   @IsString()
@@ -65,6 +71,11 @@ export default class UserInfo {
   @IsString()
   @IsOptional()
   reason?: string;
+
+  @Column()
+  @Field(() => String)
+  @Length(2)
+  locale?: string;
 
   @OneToOne(() => User, (user) => user.id, {
     onDelete: 'CASCADE',
