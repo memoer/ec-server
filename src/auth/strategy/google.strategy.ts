@@ -4,6 +4,13 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { ConfigType } from '@nestjs/config';
 import { authConfig } from '~/@config/register';
 
+export interface GoogleUser {
+  email: string;
+  nickname: string;
+  thumbnail: string;
+  accessToken: string;
+}
+
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(readonly _authConfig: ConfigType<typeof authConfig>) {
@@ -21,6 +28,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): any {
+    console.log(profile);
     const { name, emails, photos } = profile;
     const user = {
       email: emails[0].value,

@@ -31,25 +31,16 @@ export default class User extends Core {
   // * required
   @Column({ unique: true })
   @Field(() => String)
-  @IsPhoneNumber()
-  phoneNumber!: string;
-
-  @Column({ unique: true })
-  @Field(() => String)
   @IsString()
   @Length(1, 128)
   nickname!: string;
 
-  @Column({ type: 'enum', enum: UserSex })
-  @Field(() => UserSex)
-  @IsEnum(UserSex)
-  sex!: UserSex;
-
-  @Column()
-  @Field(() => Date)
-  @IsDate()
-  birthDate!: Date;
   // * optional
+  @Column({ nullable: true, unique: true })
+  @Field(() => String, { nullable: true })
+  @IsPhoneNumber()
+  phoneNumber?: string;
+
   @Column({ nullable: true, unique: true })
   @Field(() => String, { nullable: true })
   @IsEmail()
@@ -64,6 +55,16 @@ export default class User extends Core {
 
   @Column({ select: false, nullable: true })
   password?: string;
+
+  @Column({ nullable: true })
+  @Field(() => Date)
+  @IsDate()
+  birthDate?: Date;
+
+  @Column({ type: 'enum', enum: UserSex, nullable: true })
+  @Field(() => UserSex, { nullable: true })
+  @IsEnum(UserSex)
+  sex?: UserSex;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
   [UserRelation.info]!: UserInfo;

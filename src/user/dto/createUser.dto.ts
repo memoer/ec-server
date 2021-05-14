@@ -8,10 +8,13 @@ import {
 import { IsString, Length, Matches } from 'class-validator';
 import { User, UserInfo } from '~/user/entity';
 import { passwordRegex } from '~/_lib';
+
+// ? sex, birthDate -> to be served data from client
+// ? nickname, thumbnail -> for oauth
 @InputType()
 export class CreateUserInput extends IntersectionType(
-  PickType(User, ['phoneNumber', 'sex', 'birthDate']),
-  PickType(UserInfo, ['country']),
+  PickType(User, ['sex', 'nickname', 'birthDate', 'thumbnail']),
+  PickType(UserInfo, ['oauthId']),
   InputType,
 ) {
   @Field(() => String)

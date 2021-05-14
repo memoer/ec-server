@@ -320,49 +320,49 @@ describe('UserService', () => {
       country: 'kr',
     };
 
-    it('cache invalid, throw exception', async () => {
-      // ? init variables
-      const returnData = {
-        utilService: { getRandNum: 0 },
-        userRepo: { find: [{ nickname: nicknameList[0] }] },
-        cacheManager: { get: false },
-      };
-      // ? init mock
-      utilService.getRandNum.mockReturnValue(returnData.utilService.getRandNum);
-      userRepo.find.mockResolvedValue(returnData.userRepo.find);
-      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
-      try {
-        // ? run
-        await userService.createUser(args);
-      } catch (error) {
-        // ? test
-        expect(utilService.getRandNum).toHaveBeenNthCalledWith(
-          1,
-          0,
-          nicknameList.length,
-        );
-        expect(userRepo.find).toHaveBeenNthCalledWith(1, {
-          select: ['nickname'],
-          where: {
-            nickname: Like(
-              `${nicknameList[returnData.utilService.getRandNum]}%`,
-            ),
-          },
-          take: 1,
-          order: { nickname: 'DESC' },
-        });
-        expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
-        expect(error).toMatchObject(
-          exception({
-            type: 'UnauthorizedException',
-            loc: 'UserService.createUser',
-            msg: 'verifyCode stored cache must be checked',
-          }),
-        );
-      }
-    });
+    // it('cache invalid, throw exception', async () => {
+    //   // ? init variables
+    //   const returnData = {
+    //     utilService: { getRandNum: 0 },
+    //     userRepo: { find: [{ nickname: nicknameList[0] }] },
+    //     cacheManager: { get: false },
+    //   };
+    //   // ? init mock
+    //   utilService.getRandNum.mockReturnValue(returnData.utilService.getRandNum);
+    //   userRepo.find.mockResolvedValue(returnData.userRepo.find);
+    //   cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
+    //   try {
+    //     // ? run
+    //     await userService.createUser(args);
+    //   } catch (error) {
+    //     // ? test
+    //     expect(utilService.getRandNum).toHaveBeenNthCalledWith(
+    //       1,
+    //       0,
+    //       nicknameList.length,
+    //     );
+    //     expect(userRepo.find).toHaveBeenNthCalledWith(1, {
+    //       select: ['nickname'],
+    //       where: {
+    //         nickname: Like(
+    //           `${nicknameList[returnData.utilService.getRandNum]}%`,
+    //         ),
+    //       },
+    //       take: 1,
+    //       order: { nickname: 'DESC' },
+    //     });
+    //     expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
+    //     expect(error).toMatchObject(
+    //       exception({
+    //         type: 'UnauthorizedException',
+    //         loc: 'UserService.createUser',
+    //         msg: 'verifyCode stored cache must be checked',
+    //       }),
+    //     );
+    //   }
+    // });
 
-    it('cache invalid, throw exception', async () => {
+    it('successfully createUser', async () => {
       // ? init variables
       const returnData = {
         utilService: { getRandNum: 0 },
@@ -373,7 +373,6 @@ describe('UserService', () => {
         userInfoRepo: {
           create: { name: 'newUserInfoEntity' },
         },
-        cacheManager: { get: true },
         dbConn: { transaction: { id: '1' } },
         dbManagerMock: { save: ['newUser'] },
         jwtService: { sign: 'token' },
@@ -384,7 +383,6 @@ describe('UserService', () => {
       };
       utilService.getRandNum.mockReturnValue(returnData.utilService.getRandNum);
       userRepo.find.mockResolvedValue(returnData.userRepo.find);
-      cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
       userRepo.create.mockReturnValue(returnData.userRepo.create);
       userInfoRepo.create.mockReturnValue(returnData.userInfoRepo.create);
       dbConn.transaction.mockResolvedValue(returnData.dbConn.transaction);
@@ -409,7 +407,6 @@ describe('UserService', () => {
         take: 1,
         order: { nickname: 'DESC' },
       });
-      expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
       expect(userRepo.create).toHaveBeenNthCalledWith(1, {
         phoneNumber: args.phoneNumber,
         sex: args.sex,
@@ -433,7 +430,6 @@ describe('UserService', () => {
         ...returnData.userInfoRepo.create,
         user: returnData.dbManagerMock.save[0],
       });
-      expect(cacheManager.del).toHaveBeenNthCalledWith(1, args.phoneNumber);
       expect(jwtService.sign).toHaveBeenNthCalledWith(
         1,
         returnData.dbConn.transaction.id,
