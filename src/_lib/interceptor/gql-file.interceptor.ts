@@ -8,7 +8,7 @@ import {
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 import { AwsService } from '~/aws/aws.service';
-import { FileUpload } from '../dto/fileUpload.dto';
+import { FileUploadInput } from '../dto/fileUpload.dto';
 
 export function GqlFileInterceptor(
   loc: 'user' | 'post',
@@ -20,7 +20,7 @@ export function GqlFileInterceptor(
 
     async upload(fieldName: string, gqlCtx: GqlExecutionContext) {
       const { uploadedFiles } = gqlCtx.getContext().res.locals;
-      const files = await gqlCtx.getArgs()[fieldName];
+      const files = await gqlCtx.getArgs().input[fieldName];
       return Promise.all(
         (Array.isArray(files) ? files : [files]).map(
           async ({
@@ -28,7 +28,7 @@ export function GqlFileInterceptor(
             encoding,
             createReadStream,
             filename,
-          }: FileUpload) => {
+          }: FileUploadInput) => {
             const result = await this._awsService.uploadToS3({
               ContentType: mimetype,
               ContentEncoding: encoding,
@@ -37,6 +37,7 @@ export function GqlFileInterceptor(
                 .split('.')
                 .slice(0, -1)
                 .join('.')}`,
+              ACL: 'public-read',
             });
             if (!uploadedFiles[fieldName]) {
               uploadedFiles[fieldName] = [result.Location];
@@ -50,12 +51,17 @@ export function GqlFileInterceptor(
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
       const gqlCtx = GqlExecutionContext.create(context);
-      (<GqlCtx['res']>gqlCtx.getContext().res).locals = {
-        uploadedFiles: {},
-      };
-      await Promise.all(
-        fieldNameList.map((fieldName) => this.upload(fieldName, gqlCtx)),
+      const existFieldNameInArgs = fieldNameList.some((fieldName) =>
+        Object.keys(gqlCtx.getArgs().input).includes(fieldName),
       );
+      if (existFieldNameInArgs) {
+        (<GqlCtx['res']>gqlCtx.getContext().res).locals = {
+          uploadedFiles: {},
+        };
+        await Promise.all(
+          fieldNameList.map((fieldName) => this.upload(fieldName, gqlCtx)),
+        );
+      }
       return next.handle();
     }
   }
