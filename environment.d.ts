@@ -28,6 +28,10 @@ declare global {
       //
       REDIS_HOST: string;
       REDIS_PORT: string;
+      //
+      GOOGLE_CLIENT_ID: string;
+      GOOGLE_SECRET_KEY: string;
+      GOOGLE_CALLBACK: string;
     }
   }
 }

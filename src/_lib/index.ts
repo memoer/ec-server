@@ -19,7 +19,6 @@ export {
   checkDataGuardFn,
   CheckDataGuardType,
 } from './guard/check-data.guard';
-export { GqlThrottlerGuard } from './guard/gql-throttler-guard.guard';
 export { PaginationOutputInterceptor } from './interceptor/pagination-output.interceptor';
 export { GqlFileInterceptor } from './interceptor/gql-file.interceptor';
 export { AuthMiddleware } from './middleware/auth.middleware';
