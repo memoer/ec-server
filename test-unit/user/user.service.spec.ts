@@ -515,9 +515,9 @@ describe('UserService', () => {
         birthDate: new Date(),
         password: '',
         nickname: '',
-        thumbnail: '',
         email: '',
       };
+      const thumbnail = { thumbnail: ['123'] };
       const returnData = {
         cacheManager: { get: false },
       };
@@ -525,7 +525,7 @@ describe('UserService', () => {
       cacheManager.get.mockResolvedValue(returnData.cacheManager.get);
       try {
         // ? run
-        await userService.updateUser(userMock, args);
+        await userService.updateUser(userMock, args, thumbnail);
       } catch (error) {
         // ? test
         expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.email);
@@ -546,9 +546,9 @@ describe('UserService', () => {
         birthDate: new Date(),
         password: 'password',
         nickname: 'nickname',
-        thumbnail: 'thumbnail',
         phoneNumber: 'phoneNumber',
       };
+      const files = { thumbnail: ['123'] };
       const returnData = {
         cacheManager: { get: true },
         userRepo: { create: 'userRepo', save: 'save' },
@@ -558,7 +558,7 @@ describe('UserService', () => {
       userRepo.create.mockReturnValue(returnData.userRepo.create);
       userRepo.save.mockReturnValue(returnData.userRepo.save);
       // ? run
-      const result = await userService.updateUser(userMock, args);
+      const result = await userService.updateUser(userMock, args, files);
       // ? test
       expect(cacheManager.get).toHaveBeenNthCalledWith(1, args.phoneNumber);
       expect(userRepo.create).toHaveBeenNthCalledWith(1, {
@@ -567,7 +567,7 @@ describe('UserService', () => {
         birthDate: args.birthDate,
         password: args.password,
         nickname: args.nickname,
-        thumbnail: args.thumbnail,
+        thumbnail: files.thumbnail[0],
       });
       expect(userRepo.save).toHaveBeenNthCalledWith(
         1,
