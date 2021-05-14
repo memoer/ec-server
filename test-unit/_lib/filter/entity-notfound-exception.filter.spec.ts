@@ -1,40 +1,25 @@
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm';
 import { EntityNotFoundExceptionFilter } from '~/_lib';
 
 describe('LogExceptionFilter', () => {
   // ? init variables
-  const logExceptionFilter = new EntityNotFoundExceptionFilter();
+  const entityNotFoundException = new EntityNotFoundExceptionFilter();
   // ? init mocks
+  class MockEntity {}
+
   it('should be defined', () => {
-    expect(logExceptionFilter).toBeDefined();
+    expect(entityNotFoundException).toBeDefined();
   });
 
-  it('HttpException', () => {
+  it('', () => {
     // ? init variables
-    const returnException = new BadRequestException('test');
+    const exception = new EntityNotFoundError(MockEntity, 'id');
     // ? run
-    try {
-      logExceptionFilter.catch(returnException);
-    } catch (error) {
-      // ? test
-      expect(error).toMatchObject(returnException);
-    }
-  });
-
-  it('no HttpException', () => {
-    // ? init variables
-    const returnException = new Error('test');
-    // ? run
-    try {
-      logExceptionFilter.catch(returnException);
-    } catch (error) {
-      // ? test
-      expect(error).toMatchObject(
-        new InternalServerErrorException(returnException),
-      );
-    }
+    const result = entityNotFoundException.catch(exception);
+    // ? test
+    expect(result).toEqual(
+      new NotFoundException(exception.message, exception.name),
+    );
   });
 });
