@@ -35,6 +35,9 @@ declare global {
       KAKAO_CLIENT_ID: string;
       KAKAO_SECRET_KEY: string;
       KAKAO_CALLBACK: string;
+      INSTAGRAM_CLIENT_ID: string;
+      INSTAGRAM_SECRET_KEY: string;
+      INSTAGRAM_CALLBACK: string;
     }
   }
 }

@@ -5,10 +5,10 @@ import { JwtService } from '~/jwt/jwt.service';
 import { UserInfo, UserInfoRelation, UserProvider } from '~/user/entity';
 import { UserService } from '~/user/user.service';
 import { exception } from '~/_lib';
-import { OauthInfoUser } from './oauth.interface';
+import { ValidateProfile } from './strategy';
 
 @Injectable()
-export class OAuthService {
+export class AuthService {
   constructor(
     @InjectRepository(UserInfo)
     private readonly _userInfoRepo: Repository<UserInfo>,
@@ -16,29 +16,27 @@ export class OAuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  async oauthCallback({ user }: Express.Request) {
+  async authCallback({ user }: Express.Request) {
     if (!user) {
       throw exception({
         type: 'NotFoundException',
-        loc: 'OAuthService.oauthCallback',
+        loc: 'AuthService.oauthCallback',
         msg: 'user not found',
       });
     }
-    const { oauthId, provider } = user as OauthInfoUser;
+    const { id, provider } = user as ValidateProfile;
     const userInfo = await this._userInfoRepo.findOne({
-      where: { oauthId },
+      where: { oauthId: id },
       relations: [UserInfoRelation.user],
     });
     if (!userInfo) {
       return this._userService.createUser(
         {
-          oauthId,
+          oauthId: id,
           password: '',
           nickname: await this._userService.getUniqueNickname(),
         },
-        UserProvider[
-          provider.toUpperCase() as Uppercase<OauthInfoUser['provider']>
-        ],
+        UserProvider[provider.toUpperCase() as UserProvider],
       );
     }
     return {
