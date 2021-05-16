@@ -1,4 +1,4 @@
-export { getAuthEnv, commonValidate } from './commonFn';
+export { getAuthEnv, commonValidate } from '../lib/commonFn';
 export { FacebookStrategy } from './facebook.strategy';
 export { GoogleStrategy } from './google.strategy';
 export { KakaoStrategy } from './kakao.strategy';

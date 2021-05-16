@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Strategy } from 'passport-google-oauth20';
 import { ValidateProfile } from './strategy.interface';
 import { UserProvider } from '~/user/entity';
-import { commonValidate, getAuthEnv } from './commonFn';
+import { commonValidate, getAuthEnv } from '../lib/commonFn';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(

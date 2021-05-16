@@ -1,4 +1,4 @@
-import { ValidateProfile } from './strategy.interface';
+import { ValidateProfile } from '../strategy/strategy.interface';
 import { UserProvider } from '~/user/entity';
 
 export function getAuthEnv(strategyName: Exclude<UserProvider, 'LOCAL'>) {
