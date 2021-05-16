@@ -9,15 +9,6 @@ import {
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '.';
 
-export enum UserProvider {
-  LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE',
-  KAKAO = 'KAKAO',
-  TWITTER = 'TWITTER',
-  FACEBOOK = 'FACEBOOK',
-}
-registerEnumType(UserProvider, { name: 'UserProvider' });
-
 export enum UserRole {
   CLIENT = 'CLIENT',
   CLIENT_ADMIN = 'CLIENT_ADMIN',
@@ -35,6 +26,13 @@ registerEnumType(UserStatus, {
   description: 'ACTIVE[활동], DORMANCY[휴면]',
 });
 
+export enum UserProvider {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE',
+  KAKAO = 'KAKAO',
+}
+registerEnumType(UserProvider, { name: 'UserProvider' });
+
 export enum UserInfoRelation {
   user = 'user',
 }
@@ -50,18 +48,22 @@ export default class UserInfo {
   userId!: number;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.CLIENT })
+  @Field(() => UserRole)
   @IsEnum(UserRole)
   role!: UserRole;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
+  @Field(() => UserStatus)
   @IsEnum(UserStatus)
   status!: UserStatus;
 
-  @Column({ type: 'enum', enum: UserProvider })
+  @Column()
+  @Field(() => UserProvider)
   @IsEnum(UserProvider)
   provider!: UserProvider;
 
   @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
   oauthId?: string;
@@ -72,9 +74,10 @@ export default class UserInfo {
   @IsOptional()
   reason?: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   @Length(2)
+  @IsOptional()
   locale?: string;
 
   @OneToOne(() => User, (user) => user.id, {

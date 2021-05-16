@@ -13,11 +13,11 @@ import { exception, compareHash, generateHash } from '~/_lib';
 import { Core } from '~/@database/entity';
 import UserInfo from './user.info.entity';
 
-export enum UserSex {
+export enum UserGender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
-registerEnumType(UserSex, { name: 'UserSex' });
+registerEnumType(UserGender, { name: 'UserGender' });
 
 export enum UserRelation {
   info = 'info',
@@ -61,10 +61,10 @@ export default class User extends Core {
   @IsDate()
   birthDate?: Date;
 
-  @Column({ type: 'enum', enum: UserSex, nullable: true })
-  @Field(() => UserSex, { nullable: true })
-  @IsEnum(UserSex)
-  sex?: UserSex;
+  @Column({ type: 'enum', enum: UserGender, nullable: true })
+  @Field(() => UserGender, { nullable: true })
+  @IsEnum(UserGender)
+  gender?: UserGender;
 
   @OneToOne(() => UserInfo, (userInfo) => userInfo.user)
   [UserRelation.info]!: UserInfo;

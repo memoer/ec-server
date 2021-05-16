@@ -12,7 +12,7 @@ import { CreateUserInput } from './createUser.dto';
 @InputType()
 export class UpdateUserInput extends PartialType(
   IntersectionType(
-    PickType(CreateUserInput, ['sex', 'birthDate', 'password']),
+    PickType(CreateUserInput, ['gender', 'birthDate', 'password']),
     PickType(User, ['nickname', 'email', 'phoneNumber']),
   ),
   InputType,

@@ -16,6 +16,7 @@ export class AppService {
         msg: 'no clientIp',
       });
     }
+    console.log(clientIp);
     const geo = geoIp.lookup(clientIp);
     if (!geo) {
       throw exception({

@@ -23,7 +23,7 @@ export class UserBaseService {
     protected readonly _jwtService: JwtService,
   ) {}
 
-  protected async _getUniqueNickname() {
+  public async getUniqueNickname() {
     const randIdx = this._utilService.getRandNum(0, nicknameList.length);
     const nickname = nicknameList[randIdx];
     const [data] = await this._userRepo.find({

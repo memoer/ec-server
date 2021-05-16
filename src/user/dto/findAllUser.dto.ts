@@ -14,6 +14,6 @@ export class FindAllUserOutput extends PaginationOutput(User) {}
 @InputType()
 export class FindAllUserInput extends IntersectionType(
   PaginationInputBySkip,
-  PartialType(PickType(User, ['email', 'nickname', 'sex'])),
+  PartialType(PickType(User, ['email', 'nickname', 'gender'])),
   InputType,
 ) {}

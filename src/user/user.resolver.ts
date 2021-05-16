@@ -56,8 +56,9 @@ export class UserResolver {
     return this.userService.checkVerifyCodeUser(input);
   }
 
+  // ? nickname -> client에서 넘겨줄 것.
   @Mutation(() => CreateUserOutput)
-  @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'phoneNumber')
+  @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'nickname')
   createUser(@Args('input') input: CreateUserInput) {
     return this.userService.createUser(input, UserProvider.LOCAL);
   }

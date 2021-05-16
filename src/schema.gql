@@ -6,13 +6,13 @@ type User {
   id: Int!
   phoneNumber: String!
   nickname: String!
-  sex: UserSex!
+  sex: UserGender!
   birthDate: DateTime!
   email: String
   thumbnail: String
 }
 
-enum UserSex {
+enum UserGender {
   MALE
   FEMALE
 }
@@ -65,7 +65,7 @@ input FindAllUserInput {
   pageNumber: Int = 1
   take: Int = 10
   nickname: String
-  sex: UserSex
+  sex: UserGender
   email: String
 }
 
@@ -97,14 +97,14 @@ input CheckVerifyCodeUserInput {
 
 input CreateUserInput {
   phoneNumber: String!
-  sex: UserSex!
+  sex: UserGender!
   birthDate: DateTime!
   country: String!
   password: String!
 }
 
 input UpdateUserInput {
-  sex: UserSex
+  sex: UserGender
   birthDate: DateTime
   password: String
   phoneNumber: String
@@ -114,12 +114,16 @@ input UpdateUserInput {
 }
 
 input RemoveUserInput {
-  """회원탈퇴/복구 이유"""
+  """
+  회원탈퇴/복구 이유
+  """
   reason: String
 }
 
 input RestoreUserInput {
-  """회원탈퇴/복구 이유"""
+  """
+  회원탈퇴/복구 이유
+  """
   reason: String
   phoneNumber: String
   nickname: String
