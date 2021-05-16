@@ -1,7 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
+import * as libphonenumber from 'libphonenumber-js';
 import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
-import { User, UserProvider } from './entity';
+import { User, UserInfo, UserProvider } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
   CreateUserInput,
@@ -172,6 +173,13 @@ export class UserService extends UserBaseService {
       gender,
       thumbnail: thumbnail?.[0],
     });
+    if (phoneNumber) {
+      const { country } = libphonenumber.parse(phoneNumber);
+      return this._dbConn.transaction('SERIALIZABLE', async (manager) => {
+        await manager.update(UserInfo, user.id, { locale: country });
+        return manager.save(User, updatedUser);
+      });
+    }
     return this._userRepo.save(updatedUser);
   }
 
