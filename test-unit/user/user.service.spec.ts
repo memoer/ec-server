@@ -6,7 +6,7 @@ import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
 import { UserService } from '~/user/user.service';
 import { UtilService } from '~/util/util.service';
-import { User, UserInfo, UserSex } from '~/user/entity';
+import { User, UserInfo, UserGender } from '~/user/entity';
 import * as nicknameList from '~/user/lib/nicknameList.json';
 import { exception } from '~/_lib';
 import {
@@ -314,7 +314,7 @@ describe('UserService', () => {
   describe('createUser', () => {
     const args: CreateUserInput = {
       phoneNumber: 'phoneNumber',
-      sex: UserSex.FEMALE,
+      sex: UserGender.FEMALE,
       birthDate: new Date(),
       password: 'Qwesdwd1234@',
       country: 'kr',
@@ -448,7 +448,7 @@ describe('UserService', () => {
       take: 1,
       email: 'test@naver.com',
       nickname: 'nickname',
-      sex: UserSex.FEMALE,
+      sex: UserGender.FEMALE,
     };
     const returnData = {
       userRepo: { findAndCount: ['good', 1] },
@@ -507,7 +507,7 @@ describe('UserService', () => {
     it('if cache invalid, throw exception', async () => {
       // ? init variables
       const args: UpdateUserInput = {
-        sex: UserSex.FEMALE,
+        sex: UserGender.FEMALE,
         birthDate: new Date(),
         password: '',
         nickname: '',
@@ -538,7 +538,7 @@ describe('UserService', () => {
     it('succeefully execute', async () => {
       // ? init variables
       const args: UpdateUserInput = {
-        sex: UserSex.FEMALE,
+        sex: UserGender.FEMALE,
         birthDate: new Date(),
         password: 'password',
         nickname: 'nickname',

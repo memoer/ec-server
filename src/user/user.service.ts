@@ -96,31 +96,18 @@ export class UserService extends UserBaseService {
 
   // ? create local user
   async createUser(
-    {
-      sex,
-      birthDate,
-      nickname: _nickname,
-      thumbnail,
-      email,
-      oauthId,
-      locale,
-      password,
-    }: CreateUserInput,
+    { nickname, gender, birthDate, oauthId, password }: CreateUserInput,
     provider: UserProvider,
   ) {
-    const nickname = _nickname || (await this._getUniqueNickname());
     const newUserEntity = this._userRepo.create({
-      sex,
+      gender,
       birthDate,
       nickname,
-      thumbnail,
-      email,
       password,
     });
     const newUserInfoEntity = this._userInfoRepo.create({
       provider,
       oauthId,
-      locale,
     });
     const newUser = await this._dbConn.transaction(
       'SERIALIZABLE',
@@ -139,7 +126,7 @@ export class UserService extends UserBaseService {
     take = DEFAULT_VALUE.TAKE,
     email,
     nickname,
-    sex,
+    gender,
   }: FindAllUserInput) {
     return this._userRepo.findAndCount({
       take,
@@ -147,7 +134,7 @@ export class UserService extends UserBaseService {
       where: {
         ...(email && { email: Like(`%${email}%`) }),
         ...(nickname && { nickname: Like(`%${nickname}%`) }),
-        ...(sex && { sex }),
+        ...(gender && { gender }),
       },
     });
   }
@@ -161,9 +148,17 @@ export class UserService extends UserBaseService {
 
   async updateUser(
     user: User,
-    { nickname, phoneNumber, email, password, birthDate, sex }: UpdateUserInput,
+    {
+      nickname,
+      phoneNumber,
+      email,
+      password,
+      birthDate,
+      gender,
+    }: UpdateUserInput,
     { thumbnail }: UploadedFilesInput<'thumbnail'>,
   ) {
+    // ! phoneNumber 등록할 때, update local
     await Promise.all(
       (<string[]>[email, phoneNumber].filter(Boolean)).map((key) =>
         this._checkVerifyCodeOrFail(key),
@@ -174,7 +169,7 @@ export class UserService extends UserBaseService {
       nickname,
       password,
       birthDate,
-      sex,
+      gender,
       thumbnail: thumbnail?.[0],
     });
     return this._userRepo.save(updatedUser);

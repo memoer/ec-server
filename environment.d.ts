@@ -32,6 +32,9 @@ declare global {
       GOOGLE_CLIENT_ID: string;
       GOOGLE_SECRET_KEY: string;
       GOOGLE_CALLBACK: string;
+      KAKAO_CLIENT_ID: string;
+      KAKAO_SECRET_KEY: string;
+      KAKAO_CALLBACK: string;
     }
   }
 }

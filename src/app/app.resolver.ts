@@ -1,3 +1,4 @@
+import { Ip } from '@nestjs/common';
 import { Resolver, Query, Context } from '@nestjs/graphql';
 import { GqlCtx } from '~/@graphql/graphql.interface';
 import { AppService } from './app.service';
@@ -12,7 +13,8 @@ export class AppResolver {
   }
 
   @Query(() => GetGeoOutput)
-  getGeo(@Context() { req }: GqlCtx) {
+  getGeo(@Ip() ip: string, @Context() { req }: GqlCtx) {
+    console.log(ip);
     return this._appService.getGeo(req);
   }
 }

@@ -9,7 +9,7 @@ import { JwtService } from '~/jwt/jwt.service';
 import { UserModule } from '~/user/user.module';
 import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
-import { AuthModule } from '~/auth/auth.module';
+import { OAuthModule } from '~/oauth/oauth.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { AuthModule } from '~/auth/auth.module';
     AwsModule,
     JwtService,
     UserModule,
-    AuthModule,
+    OAuthModule,
   ],
   providers: [AppResolver, AppService],
 })
