@@ -30,6 +30,7 @@ export enum UserProvider {
   LOCAL = 'LOCAL',
   GOOGLE = 'GOOGLE',
   KAKAO = 'KAKAO',
+  FACEBOOK = 'FACEBOOK',
 }
 registerEnumType(UserProvider, { name: 'UserProvider' });
 

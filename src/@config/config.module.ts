@@ -10,7 +10,7 @@ import {
   awsConfigSchema,
   dbConfigSchema,
   redisConfigSchema,
-  oauthConfigSchema,
+  authConfigSchema,
   authConfig,
 } from './register';
 
@@ -24,7 +24,7 @@ export const ConfigModule = ConfigM.forRoot({
     ...awsConfigSchema,
     ...dbConfigSchema,
     ...redisConfigSchema,
-    ...oauthConfigSchema,
+    ...authConfigSchema,
   }),
   validationOptions: {
     // 환경 변수의 값이 unknown인 변수들을 허용할 것인가?
