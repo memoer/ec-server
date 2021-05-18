@@ -9,7 +9,7 @@ import { IsString, Length, Matches } from 'class-validator';
 import { User, UserInfo } from '~/user/entity';
 import { passwordRegex } from '~/_lib';
 
-// ? sex, birthDate, locale -> 클라이언트에서 넘겨야할 값들
+// ? nickname, gender, birthDate -> 클라이언트에서 넘겨야할 값들
 // ? oauthId -> auth 회원가입 시, 넘기는 값
 @InputType()
 export class CreateUserInput extends IntersectionType(

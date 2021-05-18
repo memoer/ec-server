@@ -79,7 +79,7 @@ export default class UserInfo {
   @Field(() => String, { nullable: true })
   @Length(2)
   @IsOptional()
-  locale?: string;
+  country?: string;
 
   @OneToOne(() => User, (user) => user.id, {
     onDelete: 'CASCADE',

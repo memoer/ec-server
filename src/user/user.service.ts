@@ -176,7 +176,7 @@ export class UserService extends UserBaseService {
     if (phoneNumber) {
       const { country } = libphonenumber.parse(phoneNumber);
       return this._dbConn.transaction('SERIALIZABLE', async (manager) => {
-        await manager.update(UserInfo, user.id, { locale: country });
+        await manager.update(UserInfo, user.id, { country });
         return manager.save(User, updatedUser);
       });
     }
