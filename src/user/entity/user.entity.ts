@@ -57,8 +57,9 @@ export default class User extends Core {
   password?: string;
 
   @Column({ nullable: true })
-  @Field(() => Date)
+  @Field(() => Date, { nullable: true })
   @IsDate()
+  @IsOptional()
   birthDate?: Date;
 
   @Column({ type: 'enum', enum: UserGender, nullable: true })

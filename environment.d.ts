@@ -10,6 +10,7 @@ declare global {
       CSRF_MAX_AGE: string;
       THROTTLER_TTL: string;
       THROTTLER_LIMIT: string;
+      GQL_CACHE_DEFAULT_MAX_AGE: string;
       //
       TYPEORM_HOST: string;
       TYPEORM_USERNAME: string;
@@ -35,9 +36,6 @@ declare global {
       KAKAO_CLIENT_ID: string;
       KAKAO_SECRET_KEY: string;
       KAKAO_CALLBACK: string;
-      INSTAGRAM_CLIENT_ID: string;
-      INSTAGRAM_SECRET_KEY: string;
-      INSTAGRAM_CALLBACK: string;
     }
   }
 }

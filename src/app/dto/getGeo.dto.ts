@@ -23,6 +23,7 @@ export class GetGeoOutput implements Lookup {
 
   @Field(() => [Int])
   ll!: [number, number];
+
   @Field(() => Int)
   metro!: number;
 

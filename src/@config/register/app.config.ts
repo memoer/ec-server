@@ -1,6 +1,5 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
-import isEnv from '~/_lib/isEnv';
 
 export const appConfigSchema = {
   SERVER_PORT: Joi.number().required(),
@@ -12,10 +11,7 @@ export const appConfigSchema = {
   SENTRY_DSN: Joi.string().required(),
   CORS_ORIGIN: Joi.string().required(),
   CSRF_MAX_AGE: Joi.number().required(),
-  ...(isEnv('prod') && {
-    THROTTLER_TTL: Joi.number().required(),
-    THROTTLER_LIMIT: Joi.number().required(),
-  }),
+  GQL_CACHE_DEFAULT_MAX_AGE: Joi.number().required(),
 };
 
 export default registerAs('CONFIG_APP', () => ({
@@ -28,4 +24,5 @@ export default registerAs('CONFIG_APP', () => ({
   CSRF_MAX_AGE: +process.env.CSRF_MAX_AGE,
   THROTTLER_TTL: +process.env.THROTTLER_TTL,
   THROTTLER_LIMIT: +process.env.THROTTLER_LIMIT,
+  GQL_CACHE_DEFAULT_MAX_AGE: +process.env.GQL_CACHE_DEFAULT_MAX_AGE,
 }));
