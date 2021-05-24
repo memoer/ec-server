@@ -97,13 +97,13 @@ export class UserService extends UserBaseService {
 
   // ? create local user
   async createUser(
-    { nickname, gender, birthDate, oauthId, password }: CreateUserInput,
+    { gender, birthDate, oauthId, password }: CreateUserInput,
     provider: UserProvider,
   ) {
     const newUserEntity = this._userRepo.create({
       gender,
       birthDate,
-      nickname,
+      nickname: await this.getUniqueNickname(),
       password,
     });
     const newUserInfoEntity = this._userInfoRepo.create({

@@ -11,7 +11,8 @@ export class JwtService {
     private readonly _appConfig: ConfigType<typeof appConfig>,
   ) {}
   sign(userId: User['id']) {
-    return jwt.sign({ id: userId }, this._appConfig.JWT_PRIVATE_KEY);
+    const token = jwt.sign({ id: userId }, this._appConfig.JWT_PRIVATE_KEY);
+    return token;
   }
   verify(token: string): string | Record<string, any> {
     return jwt.verify(token, this._appConfig.JWT_PRIVATE_KEY);

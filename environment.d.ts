@@ -11,6 +11,7 @@ declare global {
       THROTTLER_TTL: string;
       THROTTLER_LIMIT: string;
       GQL_CACHE_DEFAULT_MAX_AGE: string;
+      API_SECRET_KEY: string;
       //
       TYPEORM_HOST: string;
       TYPEORM_USERNAME: string;

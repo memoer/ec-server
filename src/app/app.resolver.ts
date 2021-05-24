@@ -8,8 +8,9 @@ import { GetGeoOutput } from './dto';
 export class AppResolver {
   constructor(private readonly _appService: AppService) {}
   @Query(() => String)
-  async hello() {
-    return 'hello';
+  async hello(@Context() ctx: GqlCtx) {
+    ctx.res.cookie('temp', '123');
+    return 'hello333';
   }
 
   @Query(() => GetGeoOutput)

@@ -7,13 +7,14 @@ import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 import * as logger from 'morgan';
 import * as requestIp from 'request-ip';
-// import * as csurf from 'csurf';
 import { AppModule } from './app/app.module';
 import {
   isEnv,
   GlobalExceptionFilter,
   EntityNotFoundExceptionFilter,
+  exception,
 } from './_lib';
+import { NextFunction, Request, Response } from 'express';
 
 function initLogger(app: NestExpressApplication) {
   // 로깅은 사용자 추적을 위해서 사용
@@ -28,6 +29,27 @@ function initLogger(app: NestExpressApplication) {
     // 'dev' -> :method :url :status :response-time ms - :res[content-length]
     app.use(logger('dev'));
   }
+}
+function guardRequest(req: Request, _: Response, next: NextFunction) {
+  const { origin, authorization } = req.headers;
+  const auth = authorization?.split(' ');
+  if (!isEnv('local')) {
+    const isValid =
+      auth && auth[0] === 'basic' && auth[1] === process.env.API_SECRET_KEY;
+    if (origin === process.env.CORS_ORIGIN || isValid) {
+      // origin 이 있을 경우 -> CORS_ORIGIN만 서버 요청 가능
+      // opigin 이 없을 경우 -> 별도의 인증 필요
+      return next();
+    }
+  } else {
+    // local일 경우 pass
+    return next();
+  }
+  throw exception({
+    type: 'ForbiddenException',
+    loc: 'app.use',
+    msg: `${origin} is not whitelist`,
+  });
 }
 
 function initSentry(app: NestExpressApplication) {
@@ -56,22 +78,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: isEnv('local') || isEnv('dev'),
   });
+  app.use(guardRequest);
   initLogger(app);
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(requestIp.mw());
-  // key: the name of the cookie to use to store the token secret -> _csrf (default)
-  // path: the path of the cookie -> / (default)
-  // httpOnly: flags the cookie to be accessible only by the web server -> false (default)
-  // domain: sets the domain the cookie is valid on(defaults to current domain).
-  // app.use(
-  //   csurf({
-  //     cookie: {
-  //       maxAge: Number(process.env.CSRF_MAX_AGE),
-  //       secure: isEnv('prod'),
-  //       httpOnly: true,
-  //     },
-  //   }),
-  // );
   if (isEnv('staging') || isEnv('prod')) {
     // https://docs.nestjs.com/techniques/compression
     // For high-traffic websites in production, it is strongly recommended to offload compression from the application server

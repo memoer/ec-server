@@ -5,21 +5,22 @@ import Redis from 'ioredis';
 import { join } from 'path';
 import { appConfig, redisConfig } from '~/@config/register';
 import { isEnv } from '~/_lib';
+import { GqlCtx } from './graphql.interface';
 
 export default (
   ac: ConfigType<typeof appConfig>,
   rc: ConfigType<typeof redisConfig>,
 ): GqlModuleOptions => ({
-  playground: isEnv('local'),
+  introspection: isEnv('local') || isEnv('dev'),
+  playground: isEnv('local') || isEnv('dev'),
   debug: !isEnv('prod'),
   // throttler 사용하려면 res까지 리턴해야 한다.
-  context: ({ req, res }) => ({ req, res }),
+  context: ({ req, res }: GqlCtx) => ({ req, res }),
   installSubscriptionHandlers: true,
   uploads: {
     maxFileSize: 10000000, // 10 MB
     maxFiles: 5,
   },
-  introspection: isEnv('local') || isEnv('dev'),
   autoSchemaFile: join(__dirname, '..', 'schema.gql'),
   cors: {
     origin: [ac.CORS_ORIGIN, 'https://studio.apollographql.com'],

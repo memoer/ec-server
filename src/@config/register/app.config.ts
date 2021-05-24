@@ -12,6 +12,7 @@ export const appConfigSchema = {
   CORS_ORIGIN: Joi.string().required(),
   CSRF_MAX_AGE: Joi.number().required(),
   GQL_CACHE_DEFAULT_MAX_AGE: Joi.number().required(),
+  API_SECRET_KEY: Joi.string().required(),
 };
 
 export default registerAs('CONFIG_APP', () => ({
@@ -25,4 +26,5 @@ export default registerAs('CONFIG_APP', () => ({
   THROTTLER_TTL: +process.env.THROTTLER_TTL,
   THROTTLER_LIMIT: +process.env.THROTTLER_LIMIT,
   GQL_CACHE_DEFAULT_MAX_AGE: +process.env.GQL_CACHE_DEFAULT_MAX_AGE,
+  API_SECRET_KEY: process.env.API_SECRET_KEY,
 }));

@@ -34,7 +34,6 @@ export class AuthService {
         {
           oauthId: id,
           password: '',
-          nickname: await this._userService.getUniqueNickname(),
         },
         UserProvider[provider.toUpperCase() as UserProvider],
       );
