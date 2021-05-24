@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import libphonenumber from 'libphonenumber-js';
 import { DEFAULT_VALUE } from '~/_lib';
 import { PaginationInputBySkip } from '../_lib';
 import { GetMs } from './util.interface';
@@ -47,5 +48,10 @@ export class UtilService {
       if (obj[key] !== undefined) o[key] = obj[key];
       return o;
     }, {});
+  }
+
+  parsePhoneNumber(phoneNumber: string, country: string): string {
+    return (libphonenumber(phoneNumber, country as any)
+      ?.number as unknown) as string;
   }
 }

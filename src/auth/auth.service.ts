@@ -21,7 +21,7 @@ export class AuthService {
       throw exception({
         type: 'NotFoundException',
         loc: 'AuthService.oauthCallback',
-        msg: 'user not found',
+        msg: 'no user',
       });
     }
     const { id, provider } = user as ValidateProfile;
@@ -36,6 +36,7 @@ export class AuthService {
           password: '',
         },
         UserProvider[provider.toUpperCase() as UserProvider],
+        '',
       );
     }
     return {

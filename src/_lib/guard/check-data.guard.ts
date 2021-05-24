@@ -42,7 +42,7 @@ export class CheckDataGuard implements CanActivate {
           throw exception({
             type: 'NotFoundException',
             loc: 'CheckDataGuard.canActive',
-            msg: `${entity.name}_${key}<${value}> is not found`,
+            msg: `no ${entity.name}_${key}<${value}>`,
           });
         }
         break;

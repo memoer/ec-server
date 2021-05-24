@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   Length,
 } from 'class-validator';
@@ -38,7 +37,7 @@ export default class User extends Core {
   // * optional
   @Column({ nullable: true, unique: true })
   @Field(() => String, { nullable: true })
-  @IsPhoneNumber()
+  @Length(8, 12)
   phoneNumber?: string;
 
   @Column({ nullable: true, unique: true })
@@ -86,7 +85,7 @@ export default class User extends Core {
       throw exception({
         type: 'NotFoundException',
         loc: 'User.verifyPassword',
-        msg: 'this.password is not found',
+        msg: 'no this.password',
       });
     }
     return compareHash(plainPassword, this.password);

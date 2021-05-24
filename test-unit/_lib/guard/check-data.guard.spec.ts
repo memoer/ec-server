@@ -126,11 +126,9 @@ describe('CheckDataGuard', () => {
                 exception({
                   type: 'NotFoundException',
                   loc: 'CheckDataGuard.canActive',
-                  msg: `${(returnData.reflectorMock.get[0] as any).name}_${
+                  msg: `no ${(returnData.reflectorMock.get[0] as any).name}_${
                     returnData.reflectorMock.get[1]
-                  }<${
-                    returnData.gqlExecCtxMock.getArgs.input.id
-                  }> is not found`,
+                  }<${returnData.gqlExecCtxMock.getArgs.input.id}>`,
                 }),
               );
               break;

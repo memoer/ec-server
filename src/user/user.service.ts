@@ -33,12 +33,20 @@ export class UserService extends UserBaseService {
     return this._jwtService.sign(user.id);
   }
 
-  async sendVerifyCodeUser({ phoneNumber, email }: SendVerifyCodeUserInput) {
-    const key = phoneNumber ? 'phoeNumber' : 'email';
+  async sendVerifyCodeUser(
+    { phoneNumber, email }: SendVerifyCodeUserInput,
+    country: string,
+  ) {
+    const key = phoneNumber ? 'phoneNumber' : 'email';
     // ? 마지막 '' 넣은 이유는 key 타입에서 `undefined`를 제거하기 위함
     // ? 어차피 `sendVerifyCodeUser`가 호출되기 전,
     // ? resolver에서 phoeNumber, email 중 하나라도 넣지 않으면 여기로 들어오지도 않음
-    const value = phoneNumber || email || '';
+    let value = '';
+    if (phoneNumber) {
+      value = this._utilService.parsePhoneNumber(phoneNumber, country);
+    } else if (email) {
+      value = email;
+    }
     const user = await this._userRepo.findOne({ where: { [key]: value } });
     if (user) {
       throw exception({
@@ -58,11 +66,11 @@ export class UserService extends UserBaseService {
       if (!isEmail) {
         await this._awsService.sendSMS({
           Message: message,
-          PhoneNumber: key,
+          PhoneNumber: value,
         });
       } else {
         await this._awsService.sendEmail({
-          to: key,
+          to: value,
           subject: '[End Coumminty] 이메일 확인',
           text: message,
         });
@@ -76,18 +84,22 @@ export class UserService extends UserBaseService {
     return true;
   }
 
-  async checkVerifyCodeUser({
-    email,
-    phoneNumber,
-    verifyCode,
-  }: CheckVerifyCodeUserInput) {
-    const key = phoneNumber || email || '';
+  async checkVerifyCodeUser(
+    { email, phoneNumber, verifyCode }: CheckVerifyCodeUserInput,
+    country: string,
+  ) {
+    let key = '';
+    if (phoneNumber) {
+      key = this._utilService.parsePhoneNumber(phoneNumber, country);
+    } else if (email) {
+      key = email;
+    }
     const cache = await this._cacheManager.get(key);
     if (cache !== verifyCode) {
       throw exception({
         type: 'UnauthorizedException',
         loc: 'UserService.createUser',
-        msg: 'served verifyCode invalid',
+        msg: 'verifyCode invalid',
       });
     }
     const ttl = this._utilService.getMs({ value: 30, type: 'minute' }) / 1000;
@@ -97,9 +109,15 @@ export class UserService extends UserBaseService {
 
   // ? create local user
   async createUser(
-    { gender, birthDate, oauthId, password }: CreateUserInput,
+    { phoneNumber, gender, birthDate, oauthId, password }: CreateUserInput,
     provider: UserProvider,
+    country: string,
   ) {
+    let parsedNumber = '';
+    if (phoneNumber) {
+      parsedNumber = this._utilService.parsePhoneNumber(phoneNumber, country);
+      await this._checkVerifyCodeOrFail(parsedNumber);
+    }
     const newUserEntity = this._userRepo.create({
       gender,
       birthDate,
@@ -119,6 +137,9 @@ export class UserService extends UserBaseService {
         return newUser;
       },
     );
+    if (phoneNumber) {
+      await this._cacheManager.del(parsedNumber);
+    }
     return { data: newUser, token: this._jwtService.sign(newUser.id) };
   }
 

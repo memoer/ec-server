@@ -21,7 +21,7 @@ export class AuthMiddleware implements NestMiddleware {
         throw exception({
           type: 'NotImplementedException',
           loc: 'AuthMiddleware.use',
-          msg: 'authorization header type invalid',
+          msg: 'authorization invalid',
         });
       }
       try {

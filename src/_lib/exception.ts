@@ -9,6 +9,6 @@ interface IException {
 export default ({ type, loc, msg, error }: IException) =>
   new Exceptions[type]({
     loc,
-    msg,
+    msg: `EC-ERROR/${msg}`,
     ...error,
   });

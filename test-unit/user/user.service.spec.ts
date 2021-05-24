@@ -244,7 +244,7 @@ describe('UserService', () => {
       );
       try {
         // ? run
-        await userService.sendVerifyCodeUser(args);
+        await userService.sendVerifyCodeUser(args, '');
       } catch (error) {
         // ? test
         expect(cacheManager.get).toHaveBeenCalledTimes(2);

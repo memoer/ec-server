@@ -7,6 +7,8 @@ export { default as isEnv } from './isEnv';
 export { passwordRegex } from './regex';
 export { LoggedInUser } from './decorator/current-user.decorator';
 export { UploadedFiles } from './decorator/uploaded-files.decorator';
+export { GetGeo } from './decorator/get-geo.decorator';
+export type { IGetGeo } from './decorator/get-geo.decorator';
 export { EntityNotFoundExceptionFilter } from './filter/entity-notfound-exception.filter';
 export { GlobalExceptionFilter } from './filter/global-exception.filter';
 export {

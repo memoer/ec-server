@@ -56,7 +56,7 @@ describe('AuthMiddleware', () => {
         exception({
           type: 'NotImplementedException',
           loc: 'AuthMiddleware.use',
-          msg: 'authorization header type invalid',
+          msg: 'authorization invalid',
         }),
       );
     }

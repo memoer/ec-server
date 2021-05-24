@@ -11,6 +11,8 @@ import {
   GqlFileInterceptor,
   UploadedFilesInput,
   UploadedFiles,
+  GetGeo,
+  IGetGeo,
 } from '~/_lib';
 import {
   CreateUserInput,
@@ -46,20 +48,29 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'email'])
-  sendVerifyCodeUser(@Args('input') input: SendVerifyCodeUserInput) {
-    return this.userService.sendVerifyCodeUser(input);
+  sendVerifyCodeUser(
+    @GetGeo() { country }: IGetGeo,
+    @Args('input') input: SendVerifyCodeUserInput,
+  ) {
+    return this.userService.sendVerifyCodeUser(input, country);
   }
 
   @Mutation(() => Boolean)
   @atLeastOneArgsOfGuardFn<User>(['phoneNumber', 'email'])
-  checkVerifyCodeUser(@Args('input') input: CheckVerifyCodeUserInput) {
-    return this.userService.checkVerifyCodeUser(input);
+  checkVerifyCodeUser(
+    @GetGeo() { country }: IGetGeo,
+    @Args('input') input: CheckVerifyCodeUserInput,
+  ) {
+    return this.userService.checkVerifyCodeUser(input, country);
   }
 
   @Mutation(() => CreateUserOutput)
   @checkDataGuardFn(User, CheckDataGuardType.shouldNotExist, 'nickname')
-  createUser(@Args('input') input: CreateUserInput) {
-    return this.userService.createUser(input, UserProvider.LOCAL);
+  createUser(
+    @Args('input') input: CreateUserInput,
+    @GetGeo() { country }: IGetGeo,
+  ) {
+    return this.userService.createUser(input, UserProvider.LOCAL, country);
   }
 
   @Query(() => FindAllUserOutput)
