@@ -10,21 +10,18 @@ import {
   awsConfigSchema,
   dbConfigSchema,
   redisConfigSchema,
-  authConfigSchema,
-  authConfig,
 } from './register';
 
 export const ConfigModule = ConfigM.forRoot({
   isGlobal: true,
   envFilePath: `.env.${process.env.NODE_ENV}`,
   ignoreEnvFile: isEnv('staging') || isEnv('prod'),
-  load: [appConfig, awsConfig, dbConfig, redisConfig, authConfig],
+  load: [appConfig, awsConfig, dbConfig, redisConfig],
   validationSchema: Joi.object({
     ...appConfigSchema,
     ...awsConfigSchema,
     ...dbConfigSchema,
     ...redisConfigSchema,
-    ...authConfigSchema,
   }),
   validationOptions: {
     // 환경 변수의 값이 unknown인 변수들을 허용할 것인가?
