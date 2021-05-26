@@ -1,6 +1,6 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateUserOutput } from '~/user/dto';
+import { CallbackOutput } from './dto/callback.dto';
 import { UserProvider } from '~/user/entity';
 import { AuthService } from './auth.service';
 
@@ -14,7 +14,7 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard(UserProvider.GOOGLE))
-  googleAuthCallback(@Req() req: Express.Request): Promise<CreateUserOutput> {
+  googleAuthCallback(@Req() req: Express.Request): Promise<CallbackOutput> {
     return this._oauthService.authCallback(req);
   }
 
@@ -24,7 +24,7 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard(UserProvider.KAKAO))
-  kakaoAuthCallback(@Req() req: Express.Request): Promise<CreateUserOutput> {
+  kakaoAuthCallback(@Req() req: Express.Request): Promise<CallbackOutput> {
     return this._oauthService.authCallback(req);
   }
 
@@ -34,9 +34,7 @@ export class AuthController {
 
   @Get('facebook/callback')
   @UseGuards(AuthGuard(UserProvider.FACEBOOK))
-  instagramAuthCallback(
-    @Req() req: Express.Request,
-  ): Promise<CreateUserOutput> {
+  instagramAuthCallback(@Req() req: Express.Request): Promise<CallbackOutput> {
     return this._oauthService.authCallback(req);
   }
 }

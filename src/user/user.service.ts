@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
 import * as libphonenumber from 'libphonenumber-js';
 import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
-import { User, UserInfo, UserProvider } from './entity';
+import { User, UserInfo } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
   CreateUserInput,
@@ -33,20 +33,10 @@ export class UserService extends UserBaseService {
     return this._jwtService.sign(user.id);
   }
 
-  async sendVerifyCodeUser(
-    { phoneNumber, email }: SendVerifyCodeUserInput,
-    country: string,
-  ) {
+  async sendVerifyCodeUser({ phoneNumber, email }: SendVerifyCodeUserInput) {
+    if (!phoneNumber || !email) return null;
     const key = phoneNumber ? 'phoneNumber' : 'email';
-    // ? 마지막 '' 넣은 이유는 key 타입에서 `undefined`를 제거하기 위함
-    // ? 어차피 `sendVerifyCodeUser`가 호출되기 전,
-    // ? resolver에서 phoeNumber, email 중 하나라도 넣지 않으면 여기로 들어오지도 않음
-    let value = '';
-    if (phoneNumber) {
-      value = this._utilService.parsePhoneNumber(phoneNumber, country);
-    } else if (email) {
-      value = email;
-    }
+    const value = key === 'phoneNumber' ? phoneNumber : email;
     const user = await this._userRepo.findOne({ where: { [key]: value } });
     if (user) {
       throw exception({
@@ -84,16 +74,13 @@ export class UserService extends UserBaseService {
     return true;
   }
 
-  async checkVerifyCodeUser(
-    { email, phoneNumber, verifyCode }: CheckVerifyCodeUserInput,
-    country: string,
-  ) {
-    let key = '';
-    if (phoneNumber) {
-      key = this._utilService.parsePhoneNumber(phoneNumber, country);
-    } else if (email) {
-      key = email;
-    }
+  async checkVerifyCodeUser({
+    email,
+    phoneNumber,
+    verifyCode,
+  }: CheckVerifyCodeUserInput) {
+    if (!phoneNumber || !email) return null;
+    const key = email || phoneNumber;
     const cache = await this._cacheManager.get(key);
     if (cache !== verifyCode) {
       throw exception({
@@ -108,16 +95,15 @@ export class UserService extends UserBaseService {
   }
 
   // ? create local user
-  async createUser(
-    { phoneNumber, gender, birthDate, oauthId, password }: CreateUserInput,
-    provider: UserProvider,
-    country: string,
-  ) {
-    let parsedNumber = '';
-    if (phoneNumber) {
-      parsedNumber = this._utilService.parsePhoneNumber(phoneNumber, country);
-      await this._checkVerifyCodeOrFail(parsedNumber);
-    }
+  async createUser({
+    phoneNumber,
+    gender,
+    birthDate,
+    oauthId,
+    password,
+    provider,
+  }: CreateUserInput) {
+    await this._checkVerifyCodeOrFail(phoneNumber);
     const newUserEntity = this._userRepo.create({
       gender,
       birthDate,
@@ -138,7 +124,7 @@ export class UserService extends UserBaseService {
       },
     );
     if (phoneNumber) {
-      await this._cacheManager.del(parsedNumber);
+      await this._cacheManager.del(phoneNumber);
     }
     return { data: newUser, token: this._jwtService.sign(newUser.id) };
   }

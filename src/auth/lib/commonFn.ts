@@ -1,5 +1,5 @@
-import { ValidateProfile } from '../strategy/strategy.interface';
 import { UserProvider } from '~/user/entity';
+import { CallbackOutputData } from '../dto/callback.dto';
 
 export function getAuthEnv(strategyName: Exclude<UserProvider, 'LOCAL'>) {
   return {
@@ -14,7 +14,7 @@ export function getAuthEnv(strategyName: Exclude<UserProvider, 'LOCAL'>) {
 export function commonValidate(
   _: string,
   __: string,
-  { provider, id }: ValidateProfile,
+  { provider, id }: CallbackOutputData,
   done: any,
 ): any {
   done(null, {

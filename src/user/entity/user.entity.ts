@@ -34,11 +34,12 @@ export default class User extends Core {
   @Length(1, 128)
   nickname!: string;
 
-  // * optional
   @Column({ nullable: true, unique: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @Length(8, 12)
-  phoneNumber?: string;
+  phoneNumber!: string;
+
+  // * optional
 
   @Column({ nullable: true, unique: true })
   @Field(() => String, { nullable: true })

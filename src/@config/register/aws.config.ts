@@ -12,8 +12,8 @@ export const awsConfigSchema = {
 };
 
 export default registerAs('CONFIG_AWS', () => ({
-  AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY: process.env.AWS_ACCESS_KEY_ID,
+  AWS_ACCESS_KEY_ID: 'AKIAS6ZWYN65LIC3735Z',
+  AWS_SECRET_ACCESS_KEY: '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',
   AWS_SMS_REGION: process.env.AWS_SMS_REGION,
   AWS_SNS_REGION: process.env.AWS_SNS_REGION,
   AWS_S3_REGION: process.env.AWS_S3_REGION,

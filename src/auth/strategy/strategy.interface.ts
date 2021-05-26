@@ -1,12 +1,7 @@
-import { UserProvider } from '~/user/entity';
-
-export interface ValidateProfile {
-  provider: Lowercase<Exclude<UserProvider, 'LOCAL'>>;
-  id: string;
-}
+import { CallbackOutputData } from '../dto/callback.dto';
 
 export interface GoogleOauthInfo {
-  provider: Extract<ValidateProfile['provider'], 'google'>;
+  provider: Extract<CallbackOutputData['provider'], 'google'>;
   id: string;
   displayName: string;
   name: { familyName: string; givenName: string };
@@ -33,11 +28,11 @@ export interface FacebookOauthInfo {
   displayName: string;
   gender: undefined;
   profileUrl: undefined;
-  provider: Extract<ValidateProfile['provider'], 'facebook'>;
+  provider: Extract<CallbackOutputData['provider'], 'facebook'>;
 }
 
 export interface KakaoOauthInfo {
-  provider: Extract<ValidateProfile['provider'], 'kakao'>;
+  provider: Extract<CallbackOutputData['provider'], 'kakao'>;
   id: number;
   username: string; // '미연동 계정'
   displayName: string; // '미연동 계정'

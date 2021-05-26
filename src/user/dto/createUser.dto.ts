@@ -14,7 +14,7 @@ import { passwordRegex } from '~/_lib';
 @InputType()
 export class CreateUserInput extends IntersectionType(
   PickType(User, ['phoneNumber', 'gender', 'birthDate']),
-  PickType(UserInfo, ['oauthId']),
+  PickType(UserInfo, ['oauthId', 'provider']),
   InputType,
 ) {
   @Field(() => String)
