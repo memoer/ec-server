@@ -36,7 +36,7 @@ export default class User extends Core {
 
   @Column({ nullable: true, unique: true })
   @Field(() => String)
-  @Length(8, 12)
+  @Length(8, 16)
   phoneNumber!: string;
 
   // * optional

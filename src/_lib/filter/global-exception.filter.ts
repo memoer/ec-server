@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { GqlExceptionFilter } from '@nestjs/graphql';
 import * as Sentry from '@sentry/node';
-// import { exception as myException } from '../index';
+import isEnv from '../isEnv';
 
 @Catch()
 export class GlobalExceptionFilter implements GqlExceptionFilter {
@@ -21,12 +21,18 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       Sentry.withScope((scope) => {
         scope.setTag('status', 500);
         if (isHttpException) scope.setTag('isHttpException', isHttpException);
+        scope.setTag('captureLocation', 'globalExceptionFilter');
         Sentry.captureException(exception);
       });
     }
   }
-  processInEnv(httpException: HttpException, isHttpException: boolean) {
-    // ! 500 이상 에러만 확인
+  catchError(httpException: HttpException, isHttpException: boolean) {
+    if (
+      (isEnv('staging') || isEnv('prod')) &&
+      httpException.getStatus() < 500
+    ) {
+      return HttpException;
+    }
     // ! 에러 테스트해보기 -> 요청할 때의 args 도 sentry에 출력되어야 한다. [ 테스트 아직 안해봄 ]
     switch (process.env.NODE_ENV) {
       case 'local':
@@ -45,8 +51,6 @@ export class GlobalExceptionFilter implements GqlExceptionFilter {
       exception instanceof HttpException
         ? exception
         : new InternalServerErrorException(exception.message, exception.name);
-    return httpException.getStatus() < 500
-      ? httpException
-      : this.processInEnv(httpException, exception instanceof HttpException);
+    return this.catchError(httpException, exception instanceof HttpException);
   }
 }

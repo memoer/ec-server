@@ -13,7 +13,7 @@ import { passwordRegex } from '~/_lib';
 // ? oauthId -> auth 회원가입 시, 넘기는 값
 @InputType()
 export class CreateUserInput extends IntersectionType(
-  PickType(User, ['phoneNumber', 'gender', 'birthDate']),
+  PickType(User, ['phoneNumber', 'gender', 'birthDate', 'email']),
   PickType(UserInfo, ['oauthId', 'provider']),
   InputType,
 ) {

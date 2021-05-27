@@ -5,7 +5,7 @@ import { Cache } from 'cache-manager';
 import { UtilService } from '~/util/util.service';
 import { AwsService } from '~/aws/aws.service';
 import { JwtService } from '~/jwt/jwt.service';
-import { exception } from '~/_lib';
+import { ErrorCode, exception } from '~/_lib';
 import * as nicknameList from './lib/nicknameList.json';
 import { User, UserInfo } from './entity';
 import { RemoveOrRestore } from './user.service.interface';
@@ -52,7 +52,7 @@ export class UserBaseService {
       throw exception({
         type: 'UnauthorizedException',
         loc: 'UserService.createUser',
-        msg: 'verifyCode stored cache must be checked',
+        code: ErrorCode.invalid,
       });
     }
     return cache;

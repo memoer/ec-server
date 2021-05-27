@@ -1,7 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Like } from 'typeorm';
 import * as libphonenumber from 'libphonenumber-js';
-import { exception, DEFAULT_VALUE, UploadedFilesInput } from '~/_lib';
+import {
+  exception,
+  DEFAULT_VALUE,
+  UploadedFilesInput,
+  ErrorCode,
+} from '~/_lib';
 import { User, UserInfo } from './entity';
 import { UserBaseService } from './user.base.service';
 import {
@@ -27,14 +32,17 @@ export class UserService extends UserBaseService {
       throw exception({
         type: 'UnauthorizedException',
         loc: 'UserService.logIn',
-        msg: 'password invalid',
+        code: ErrorCode.invalid,
       });
     }
     return this._jwtService.sign(user.id);
   }
 
-  async sendVerifyCodeUser({ phoneNumber, email }: SendVerifyCodeUserInput) {
-    if (!phoneNumber || !email) return null;
+  async sendVerifyCodeUser({
+    phoneNumber = '',
+    email = '',
+  }: SendVerifyCodeUserInput) {
+    if (phoneNumber === '' && email === '') return false;
     const key = phoneNumber ? 'phoneNumber' : 'email';
     const value = key === 'phoneNumber' ? phoneNumber : email;
     const user = await this._userRepo.findOne({ where: { [key]: value } });
@@ -42,7 +50,7 @@ export class UserService extends UserBaseService {
       throw exception({
         type: 'ConflictException',
         loc: 'UserService.sendVerifyCodeUser',
-        msg: `user with ${key}:${value} is already existed`,
+        code: ErrorCode.conflict,
       });
     }
     const isEmail = key.includes('@');
@@ -51,7 +59,10 @@ export class UserService extends UserBaseService {
     const ttl =
       this._utilService.getMs({ value: isEmail ? 30 : 3, type: 'minute' }) /
       1000;
-    await this._cacheManager.set(key, verifyCode, { ttl });
+    await this._cacheManager.set(value, verifyCode, { ttl });
+    // message;
+    // InternalServerErrorException;
+    // console.log(value, verifyCode);
     try {
       if (!isEmail) {
         await this._awsService.sendSMS({
@@ -66,8 +77,8 @@ export class UserService extends UserBaseService {
         });
       }
     } catch (error) {
-      if (this._cacheManager.get(verifyCode)) {
-        await this._cacheManager.del(verifyCode);
+      if (this._cacheManager.get(value)) {
+        await this._cacheManager.del(value);
       }
       throw new InternalServerErrorException(error);
     }
@@ -75,18 +86,18 @@ export class UserService extends UserBaseService {
   }
 
   async checkVerifyCodeUser({
-    email,
-    phoneNumber,
+    email = '',
+    phoneNumber = '',
     verifyCode,
   }: CheckVerifyCodeUserInput) {
-    if (!phoneNumber || !email) return null;
+    if (phoneNumber === '' && email === '') return false;
     const key = email || phoneNumber;
     const cache = await this._cacheManager.get(key);
     if (cache !== verifyCode) {
       throw exception({
         type: 'UnauthorizedException',
         loc: 'UserService.createUser',
-        msg: 'verifyCode invalid',
+        code: ErrorCode.invalid,
       });
     }
     const ttl = this._utilService.getMs({ value: 30, type: 'minute' }) / 1000;
@@ -99,14 +110,17 @@ export class UserService extends UserBaseService {
     phoneNumber,
     gender,
     birthDate,
+    email,
     oauthId,
-    password,
     provider,
+    password,
   }: CreateUserInput) {
     await this._checkVerifyCodeOrFail(phoneNumber);
     const newUserEntity = this._userRepo.create({
+      phoneNumber,
       gender,
       birthDate,
+      email,
       nickname: await this.getUniqueNickname(),
       password,
     });
@@ -213,7 +227,7 @@ export class UserService extends UserBaseService {
       throw exception({
         type: 'UnauthorizedException',
         loc: 'UserService.restoreUser',
-        msg: 'password invalid',
+        code: ErrorCode.invalid,
       });
     }
     return this._removeOrRestore({

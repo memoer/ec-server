@@ -8,6 +8,7 @@ import { AwsModule } from '~/aws/aws.module';
 import { JwtService } from '~/jwt/jwt.service';
 import { UserModule } from '~/user/user.module';
 import { AppResolver } from './app.resolver';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { AppResolver } from './app.resolver';
     JwtService,
     UserModule,
   ],
-  providers: [AppResolver],
+  providers: [AppResolver, AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

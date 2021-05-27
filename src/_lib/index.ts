@@ -1,6 +1,5 @@
-export { META_DATA } from './constant';
-export { DEFAULT_VALUE } from './constant';
-export { default as exception } from './exception';
+export { META_DATA, DEFAULT_VALUE } from './constant';
+export { default as exception, ErrorCode } from './exception';
 export { generateHash } from './hash';
 export { compareHash } from './hash';
 export { default as isEnv } from './isEnv';

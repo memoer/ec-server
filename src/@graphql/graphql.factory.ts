@@ -3,9 +3,11 @@ import { GqlModuleOptions } from '@nestjs/graphql';
 import { BaseRedisCache } from 'apollo-server-cache-redis';
 import Redis from 'ioredis';
 import { join } from 'path';
+import * as Sentry from '@sentry/node';
 import { appConfig, redisConfig } from '~/@config/register';
 import { isEnv } from '~/_lib';
 import { GqlCtx } from './graphql.interface';
+import { GraphQLError } from 'graphql';
 
 export default (
   ac: ConfigType<typeof appConfig>,
@@ -33,4 +35,16 @@ export default (
     }),
   }),
   cacheControl: { defaultMaxAge: ac.GQL_CACHE_DEFAULT_MAX_AGE },
+  formatError: (error: GraphQLError) => {
+    if (isEnv('local') || isEnv('dev')) {
+      console.error(error);
+    } else {
+      Sentry.withScope((scope) => {
+        scope.setTag('status', 500);
+        scope.setTag('captureLocation', 'graphqlFormatError');
+        Sentry.captureException(error);
+      });
+    }
+    return error;
+  },
 });
